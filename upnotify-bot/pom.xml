@@ -1,0 +1,19 @@
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 https://maven.apache.org/xsd/maven-4.0.0.xsd">
+  <modelVersion>4.0.0</modelVersion>
+  <groupId>com.batikanor.upnotify.bot</groupId>
+  <artifactId>upnotify-bot</artifactId>
+  <version>0.0.1-SNAPSHOT</version>
+  <name>Upnotify Bot</name>
+  <description>
+  Telegram bot of the upnotify project. use the link t.me/upnotify_bot to contact the bot
+  </description>
+  <dependencies>
+  	<!-- https://mvnrepository.com/artifact/org.telegram/telegrambots -->
+	<dependency>
+	    <groupId>org.telegram</groupId>
+	    <artifactId>telegrambots</artifactId>
+	    <version>5.1.1</version>
+	</dependency>
+  </dependencies>
+
+</project>
