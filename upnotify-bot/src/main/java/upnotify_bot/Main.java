@@ -6,9 +6,7 @@ import org.telegram.telegrambots.meta.exceptions.TelegramApiException;
 import org.telegram.telegrambots.updatesreceivers.DefaultBotSession;
 
 /**
- * Main class of the upnotify-bot project, here the telegram bot API will be initialized,
- * the bot will be initialized while also passing in the wished size of the thread pool that
- * the updates on the bot are supposed to work on, and the bot will be registered.
+ * Main class of the upnotify-bot project, here the telegram bot API will be initialized, bot will be initialized and registered.
  */
 public class Main {
 	
@@ -20,14 +18,13 @@ public class Main {
 	 * The main method that eventually makes the whole bot function
 	 * @param args input arguments
 	 */
-	
 	public static void main(String[] args) {
 		
 		
 		// Instantiate the TelegramBots API by RubenLagus		
         TelegramBotsApi telegramBotsApi;
 
-        // Register the bot, pass in the pool size as a parameter
+        // Register the bot
 		try {
 			telegramBotsApi = new TelegramBotsApi(DefaultBotSession.class);
 			telegramBotsApi.registerBot(new UpnotifyBot());

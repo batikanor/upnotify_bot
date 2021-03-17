@@ -10,6 +10,7 @@ import upnotify_bot.Main;
 import upnotify_bot.UpdateReceiver;
 import upnotify_bot.UpnotifyBot;
 
+
 interface MultiprocessingUtilsInterface {
 	/**
 	 * Returns the size of the thread pool which is potentially about to be created
@@ -23,10 +24,23 @@ interface MultiprocessingUtilsInterface {
 	 * @return Count of cores within the processor
 	 */
 	public int getCoreCount();
+	
+	/**
+	 * Submits updates to the thread pool.
+	 * @param ub bot instance
+	 * @param update the whole update object
+	 * 
+	 */
+	public void submitUpdate(UpnotifyBot ub, Update update);
 }
 
+/**
+ * Handles the multiprocessing needs such as the thread pool structure beneath the bot
+ * Has a private constructor and only one instance of it is allowed, therefore this is a singleton.
+ *
+ */
 public class MultiprocessingUtils implements MultiprocessingUtilsInterface {
-	public static MultiprocessingUtils single_instance = null;
+	private static MultiprocessingUtils single_instance = null;
 	
 	public static MultiprocessingUtils getMultiProcessingUtils() {
 		if (single_instance == null) {
@@ -39,7 +53,7 @@ public class MultiprocessingUtils implements MultiprocessingUtilsInterface {
 	
 	private ExecutorService executor;
 	
-	public MultiprocessingUtils() {
+	private MultiprocessingUtils() {
 		this.executor = Executors.newFixedThreadPool(getThreadPoolSize(Main.THREAD_PER_CORE));
 	}
 	
@@ -60,7 +74,12 @@ public class MultiprocessingUtils implements MultiprocessingUtilsInterface {
 		return Runtime.getRuntime().availableProcessors();
 	}
 	
-	
+	/**
+	 * Submits updates to the thread pool.
+	 * @param ub bot instance
+	 * @param update the whole update object
+	 * 
+	 */
 	public void submitUpdate(UpnotifyBot ub, Update update) {
 		executor.submit(new UpdateReceiver(ub, update));
 	}
