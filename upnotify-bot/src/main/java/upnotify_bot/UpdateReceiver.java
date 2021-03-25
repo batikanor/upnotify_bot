@@ -33,7 +33,7 @@ public class UpdateReceiver implements Runnable{
 	 */
 	public void run() {
 		String threadId = Long.toString(Thread.currentThread().getId());
-		
+
 		
 		//System.out.println(update);
 		
@@ -45,13 +45,16 @@ public class UpdateReceiver implements Runnable{
 				
 				// Now, depending on the text we have, and maybe the current state of the situation of our conversation within the group (group id) or with the person (from id), we will handle the message
 				
-				
+
 				// Direct text handling, without any importance being given to the conversation stance
-				if (msgText.contentEquals("debugmsg")) {
+				if (msgText.contentEquals("debugmsg".toLowerCase())) {
 					while (!MessageUtils.getMessageUtils().sendDebugMessage(ub, threadId, chatId, update)) {
 						// Logging is to be done within the MessageUtils class, so here printing out would suffice.
-						System.out.println("Error whilst sending message, trying again...");
+						System.out.println("Error whilst sending the message, trying again...");
 					}
+				
+				} else if (msgText.startsWith("Check site".toLowerCase())) {
+					MessageUtils.getMessageUtils().checkSiteHTTPResponse(ub, threadId, chatId, update.getMessage().getText().substring(10));
 				}
 
 				

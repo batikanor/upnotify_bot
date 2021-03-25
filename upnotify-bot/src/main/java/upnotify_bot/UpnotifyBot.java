@@ -12,6 +12,7 @@ import utils.MultiprocessingUtils;
  * The long polling bot that takes updates implicitly from the telegram bot http api.
  *
  */
+
 public class UpnotifyBot extends TelegramLongPollingBot {
 	String botToken;
 	String botUsername;

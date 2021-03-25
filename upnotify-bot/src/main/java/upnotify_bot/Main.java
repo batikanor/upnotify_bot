@@ -10,9 +10,6 @@ import org.telegram.telegrambots.updatesreceivers.DefaultBotSession;
  */
 public class Main {
 	
-	// If the bot becomes widely used,raise this multiplier
-	public static final int THREAD_PER_CORE = 10; 
-
 
 	/**
 	 * The main method that eventually makes the whole bot function
