@@ -17,7 +17,6 @@ public class Main {
 	 */
 	public static void main(String[] args) {
 		
-		
 		// Instantiate the TelegramBots API by RubenLagus		
         TelegramBotsApi telegramBotsApi;
 

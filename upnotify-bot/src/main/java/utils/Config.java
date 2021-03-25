@@ -39,10 +39,8 @@ public class Config {
 		while (true) {
 			try {
 				prop.load(ins);
-	
 				break;
-				
-			
+
 			} catch (IOException e) {
 				// TODO Auto-generated catch block
 				System.out.println("Properties file couldn't be loaded");
