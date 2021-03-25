@@ -20,25 +20,21 @@ public class UpdateReceiver implements Runnable{
 	
 	
 	public UpdateReceiver(UpnotifyBot ub, Update update) {
-		
 		this.ub = ub;
 		this.update = update;
-		
-		
-	
 	}
 
+	
 	/**
 	 * Gets run on a thread from the pool, handles an update.
 	 */
 	public void run() {
 		String threadId = Long.toString(Thread.currentThread().getId());
 
-		
 		//System.out.println(update);
 		
 		if (update.hasMessage()) {
-			Message msg = update.getMessage();
+			msg = update.getMessage();
 			String chatId = msg.getChatId().toString();
 			if (msg.hasText()) {
 				String msgText = msg.getText();
@@ -55,11 +51,8 @@ public class UpdateReceiver implements Runnable{
 				
 				} else if (msgText.startsWith("Check site".toLowerCase())) {
 					MessageUtils.getMessageUtils().checkSiteHTTPResponse(ub, threadId, chatId, update.getMessage().getText().substring(10));
-				}
-
-				
+				}		
 			}
-		}
-		
+		}	
 	}
 }

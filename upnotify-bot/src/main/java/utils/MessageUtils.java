@@ -1,10 +1,7 @@
 package utils;
 
-import java.io.IOException;
-import java.io.OutputStream;
+
 import java.net.HttpURLConnection;
-import java.net.MalformedURLException;
-import java.net.ProtocolException;
 import java.net.URL;
 
 import org.telegram.telegrambots.meta.api.methods.send.SendMessage;
@@ -61,7 +58,6 @@ public class MessageUtils {
         	e.printStackTrace();
             return false;
         }
-        
 		
 		// wait for given time
 		try {
@@ -92,12 +88,7 @@ public class MessageUtils {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
-        
-        
         return true;
-        
-		
-		
 	}
 	
 	/**
@@ -126,9 +117,5 @@ public class MessageUtils {
 		e.printStackTrace();  
 		return false;
 	  }
-		
-		
-
 	}
-	
 }

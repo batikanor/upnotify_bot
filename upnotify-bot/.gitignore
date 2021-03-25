@@ -1,2 +1,3 @@
 /target/
 /src/main/resources/SECRET_KEYS/
+/src/main/resources/SECRET_KEYS/Keys.properties

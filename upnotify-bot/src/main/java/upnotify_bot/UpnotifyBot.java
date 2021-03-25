@@ -9,7 +9,7 @@ import org.telegram.telegrambots.meta.api.objects.Update;
 import utils.MultiprocessingUtils;
 
 /**
- * The long polling bot that takes updates implicitly from the telegram bot http api.
+ * The long polling bot that takes updates implicitly from the (http) telegram bot api.
  *
  */
 
@@ -37,10 +37,6 @@ public class UpnotifyBot extends TelegramLongPollingBot {
 			e.printStackTrace();
 		}
 
-		
-	  
-		
-
 	}
 
 	/**
@@ -50,9 +46,7 @@ public class UpnotifyBot extends TelegramLongPollingBot {
 	public void onUpdateReceived(Update update) {
 		// Get the only instance of the MultiprocessingUtils class
 		System.out.println("Received a new update!");
-		MultiprocessingUtils.getMultiProcessingUtils().submitUpdate(this, update);
-	
-		
+		MultiprocessingUtils.getMultiProcessingUtils().submitUpdate(this, update);	
 	}
 
 	/**

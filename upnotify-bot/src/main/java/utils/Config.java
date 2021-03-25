@@ -30,11 +30,9 @@ public class Config {
 		return single_instance;
 		
 	}
-	
-	private Config() {
-		
-		InputStream ins = ClassLoader.getSystemResourceAsStream("CONFIGURATION/Config.properties");
 
+	private Config() {		
+		InputStream ins = ClassLoader.getSystemResourceAsStream("CONFIGURATION/Config.properties");
 		Properties prop = new Properties();
 		while (true) {
 			try {

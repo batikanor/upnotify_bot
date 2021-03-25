@@ -47,18 +47,13 @@ public class MultiprocessingUtils implements MultiprocessingUtilsInterface {
 			System.out.println("Instance of 'MultiprocessingUtils' has been created");
 		}
 		return single_instance;
-		
 	}
 	
 	private ExecutorService executor;
 	
 	private MultiprocessingUtils() {
-
 		int tps = getThreadPoolSize(Config.getConfig().THREAD_PER_CORE);
-
 		this.executor = Executors.newFixedThreadPool(tps);
-
-
 	}
 	
 	/**
@@ -68,7 +63,6 @@ public class MultiprocessingUtils implements MultiprocessingUtilsInterface {
 	 */
 	public int getThreadPoolSize(int tpc) {
 		return getCoreCount() * tpc;
-		
 	}
 	/**
 	 * Returns the core count of cores within the processor
@@ -88,7 +82,4 @@ public class MultiprocessingUtils implements MultiprocessingUtilsInterface {
 		System.out.println("Submtitting the update to the thread pool");
 		executor.submit(new UpdateReceiver(ub, update));
 	}
-	
-	
-
 }
