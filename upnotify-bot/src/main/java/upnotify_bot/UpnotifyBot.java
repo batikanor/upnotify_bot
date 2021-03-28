@@ -8,11 +8,18 @@ import org.telegram.telegrambots.meta.api.objects.Update;
 
 import utils.MultiprocessingUtils;
 
+/**
+ * The long polling bot that takes updates implicitly from the (http) telegram bot api.
+ *
+ */
 
 public class UpnotifyBot extends TelegramLongPollingBot {
 	String botToken;
 	String botUsername;
 	
+	/**
+	 * Constructor for the bot class, also handles the private keys file and initializes its variables from it.
+	 */
 	public UpnotifyBot() {
 		System.out.println("Constructing the bot...");
 		InputStream ins = ClassLoader.getSystemResourceAsStream("SECRET_KEYS/Keys.properties");
@@ -30,26 +37,29 @@ public class UpnotifyBot extends TelegramLongPollingBot {
 			e.printStackTrace();
 		}
 
-		
-	  
-		
-
 	}
 
+	/**
+	 * This method gets called whenever an update is received.
+	 * Then the mpu unit will be used to submit the updates to respective threads within the pool.
+	 */
 	public void onUpdateReceived(Update update) {
 		// Get the only instance of the MultiprocessingUtils class
 		System.out.println("Received a new update!");
-		MultiprocessingUtils mpu = new MultiprocessingUtils();
-		mpu.submitUpdate(this, update);
-		// TODO Auto-generated method stub
-		
+		MultiprocessingUtils.getMultiProcessingUtils().submitUpdate(this, update);	
 	}
 
+	/**
+	 * Returns the bot username.
+	 */
 	public String getBotUsername() {
 		// TODO Auto-generated method stub
 		return botUsername;
 	}
 
+	/**
+	 * Returns the bot token.
+	 */
 	@Override
 	public String getBotToken() {
 		// TODO Auto-generated method stub
