@@ -16,8 +16,6 @@ import upnotify_bot.UpnotifyBot;
 /**
  * Handles the functions with which telegram messages are sent. Kind of like 'front end'
  * 
- * @author inductiomori
- *
  */
 public class MessageUtils {
 	
@@ -118,4 +116,37 @@ public class MessageUtils {
 		return false;
 	  }
 	}
+	
+	public boolean checkIfHTMLBodyStatic(UpnotifyBot ub, String chatId, String url){
+		WebUtils wu = WebUtils.getWebUtils();
+		String body = wu.getHTMLBodyFromUrl(url);
+		try {
+			Thread.sleep(100);
+		} catch (InterruptedException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+		String bodyNew = wu.getHTMLBodyFromUrl(url);
+		
+		
+		
+		SendMessage sm = new SendMessage(chatId, 
+				String.valueOf(body.contentEquals(bodyNew)));
+		try {
+			ub.execute(sm);
+		} catch (TelegramApiException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+			return false;
+		}
+		
+		return true;
+		
+		
+		
+	}
+	
+	
+	
+	
 }

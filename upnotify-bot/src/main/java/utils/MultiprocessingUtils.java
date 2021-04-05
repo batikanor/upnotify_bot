@@ -42,6 +42,7 @@ public class MultiprocessingUtils implements MultiprocessingUtilsInterface {
 	private static MultiprocessingUtils single_instance = null;
 	
 	public static MultiprocessingUtils getMultiProcessingUtils() {
+	
 		if (single_instance == null) {
 			single_instance = new MultiprocessingUtils();
 			System.out.println("Instance of 'MultiprocessingUtils' has been created");

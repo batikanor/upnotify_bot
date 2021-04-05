@@ -1,5 +1,8 @@
 package upnotify_bot;
 
+import java.util.ArrayList;
+import java.util.List;
+
 import org.telegram.telegrambots.meta.api.objects.Message;
 import org.telegram.telegrambots.meta.api.objects.Update;
 
@@ -17,7 +20,8 @@ public class UpdateReceiver implements Runnable{
 	private UpnotifyBot ub;
 	private Update update;
 	private Message msg;
-	
+	private String command;
+	private String[] args;
 	
 	public UpdateReceiver(UpnotifyBot ub, Update update) {
 		this.ub = ub;
@@ -43,15 +47,45 @@ public class UpdateReceiver implements Runnable{
 				
 
 				// Direct text handling, without any importance being given to the conversation stance
-				if (msgText.contentEquals("debugmsg".toLowerCase())) {
-					while (!MessageUtils.getMessageUtils().sendDebugMessage(ub, threadId, chatId, update)) {
-						// Logging is to be done within the MessageUtils class, so here printing out would suffice.
-						System.out.println("Error whilst sending the message, trying again...");
-					}
 				
-				} else if (msgText.startsWith("Check site".toLowerCase())) {
-					MessageUtils.getMessageUtils().checkSiteHTTPResponse(ub, threadId, chatId, update.getMessage().getText().substring(10));
-				}		
+				// Commands
+				if (msgText.startsWith("/")) {
+					
+					command = msgText.substring(1, msgText.indexOf(" ")).toLowerCase();
+					args = msgText.substring(2 + command.length()).split(" ");
+					
+					switch (command) {
+						case "msginfo":
+							while (!MessageUtils.getMessageUtils().sendDebugMessage(ub, threadId, chatId, update)) {
+								// Logging is to be done within the MessageUtils class, so here printing out would suffice.
+								System.out.println("Error whilst sending the message, trying again...");
+							}
+						case "checksite":
+							for (String arg : args) {
+								System.out.println("Working with argument: " + arg);
+								// Note that a single thread will work with all of them. If we ever want to change this, we could do these controls within OnUpdateReceived function of UpnotifyBot class, or we could have a separate class for these, and the assignment of jobs to threads could be later etc..
+								MessageUtils.getMessageUtils().checkSiteHTTPResponse(ub, threadId, chatId, arg);
+							}
+						case "checkstatic":
+							for (String arg : args) {
+								MessageUtils.getMessageUtils().checkIfHTMLBodyStatic(ub, chatId, arg);
+							}
+						
+					}
+			
+					
+					
+				
+				}
+				
+			
+			
+				
+				
+				
+				
+				
+				
 			}
 		}	
 	}
