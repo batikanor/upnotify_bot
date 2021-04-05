@@ -1,5 +1,6 @@
 package utils;
 
+import java.io.IOException;
 import java.net.URL;
 import java.net.URLConnection;
 import java.util.Scanner;
@@ -17,7 +18,7 @@ interface WebUtilsInterface{
 	 * @param url url of the website
 	 * @return
 	 */
-	public String getHTMLBodyFromUrl(String url);
+	public String getHTMLBodyStringFromUrl(String url);
 }
 
 public class WebUtils implements WebUtilsInterface{
@@ -49,8 +50,7 @@ public class WebUtils implements WebUtilsInterface{
 	 * 
 	 * @param url
 	 */
-	public String getHTMLBodyFromUrl(String url) {
-		// TODO Auto-generated method stub
+	public String getHTMLBodyStringFromUrl(String url) {
 		
 		url = fixUrl(url);
 			
@@ -66,23 +66,57 @@ public class WebUtils implements WebUtilsInterface{
 		}catch ( Exception ex ) {
 		    ex.printStackTrace();
 		}
-		//System.out.println(content);
-		Document doc = Jsoup.parse(content);
-		Elements elements = doc.select("body").first().children();
-		//or only `<p>` elements
-		//Elements elements = doc.select("p"); 
-		//for (Element el : elements)
-		    //System.out.println("element: "+el);
-	
-		//return content;
-		System.out.println(elements.toString());
-		return elements.toString();
+
+		return content;
 
 	}
 
+	public Document getHTMLBodyFromUrlJSoup (String url) {
+		url = fixUrl(url);
+		try {
+			Document doc = Jsoup.connect(url)
+					.timeout(6000).get();
+//			System.out.println(doc);
+			return doc;
+		} catch (IOException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+		// TODO nope
+		return null;
+		
+	}
+	public String getHTMLBodyStringFromUrlJSoup (String url) {
+		return getHTMLBodyFromUrlJSoup(url).toString();
+		
+	}
+	
 	
 
+	/**
+	 * 
+	 * @param url
+	 * @param xPath e.g. //*[@id="content"]/div/div[1]/div[2]/div[2]/a
+	 * @return
+	 */
+	public Element getNumericElementFromUrlAndSelectorPathJsoup(String url, String selectorPath) {
+		url = fixUrl(url);
+		Document doc = getHTMLBodyFromUrlJSoup(url);
+		
+		Elements elements = doc.select(selectorPath);
+		Element el = elements.get(0);
+		return el;
+	}
 	
+	public String getNumericStringFromUrlAndSelectorPathJsoup(String url, String selectorPath) {
+		Element el = getNumericElementFromUrlAndSelectorPathJsoup(url, selectorPath);
+		
+		return el.text();
+		// <span class="disqus-comment-count" data-disqus-identifier="index" data-disqus-url="http://www.batikanor.com + /index">...</span>
+		
+		
+		
+	}
 	
 	
 	

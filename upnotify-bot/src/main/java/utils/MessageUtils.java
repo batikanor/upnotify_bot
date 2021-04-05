@@ -61,7 +61,7 @@ public class MessageUtils {
 		try {
 			System.out.println("Thread " + threadId + " is Waiting for " + Config.getConfig().WAIT_UNTIL_MESSAGE_DELETE + " seconds.");
 			
-			Thread.sleep(1000 * Config.getConfig().WAIT_UNTIL_MESSAGE_DELETE);
+			Thread.sleep(Config.getConfig().WAIT_UNTIL_MESSAGE_DELETE);
 		} catch (InterruptedException e1) {
 			// TODO Auto-generated catch block
 			e1.printStackTrace();
@@ -119,14 +119,14 @@ public class MessageUtils {
 	
 	public boolean checkIfHTMLBodyStatic(UpnotifyBot ub, String chatId, String url){
 		WebUtils wu = WebUtils.getWebUtils();
-		String body = wu.getHTMLBodyFromUrl(url);
+		String body = wu.getHTMLBodyStringFromUrl(url);
 		try {
-			Thread.sleep(100);
+			Thread.sleep(Config.getConfig().WAIT_STATIC_CHECK);
 		} catch (InterruptedException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
-		String bodyNew = wu.getHTMLBodyFromUrl(url);
+		String bodyNew = wu.getHTMLBodyStringFromUrl(url);
 		
 		
 		

@@ -1,7 +1,6 @@
 package upnotify_bot;
 
-import java.util.ArrayList;
-import java.util.List;
+
 
 import org.telegram.telegrambots.meta.api.objects.Message;
 import org.telegram.telegrambots.meta.api.objects.Update;

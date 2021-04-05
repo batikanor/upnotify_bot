@@ -16,6 +16,7 @@ public class Config {
 	
 	public final int THREAD_PER_CORE;
 	public final int WAIT_UNTIL_MESSAGE_DELETE;
+	public final int WAIT_STATIC_CHECK;
 	
 	private static Config single_instance = null;
 	
@@ -32,6 +33,7 @@ public class Config {
 	}
 
 	private Config() {		
+		
 		InputStream ins = ClassLoader.getSystemResourceAsStream("CONFIGURATION/Config.properties");
 		Properties prop = new Properties();
 		while (true) {
@@ -56,6 +58,6 @@ public class Config {
 
 		this.THREAD_PER_CORE = Integer.parseInt(prop.getProperty("THREAD_PER_CORE"));
 		this.WAIT_UNTIL_MESSAGE_DELETE = Integer.parseInt(prop.getProperty("WAIT_UNTIL_MESSAGE_DELETE"));
-
+		this.WAIT_STATIC_CHECK = Integer.parseInt(prop.getProperty("WAIT_STATIC_CHECK"));
 	}
 }
