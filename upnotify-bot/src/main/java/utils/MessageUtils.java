@@ -16,8 +16,6 @@ import upnotify_bot.UpnotifyBot;
 /**
  * Handles the functions with which telegram messages are sent. Kind of like 'front end'
  * 
- * @author inductiomori
- *
  */
 public class MessageUtils {
 	
@@ -63,7 +61,7 @@ public class MessageUtils {
 		try {
 			System.out.println("Thread " + threadId + " is Waiting for " + Config.getConfig().WAIT_UNTIL_MESSAGE_DELETE + " seconds.");
 			
-			Thread.sleep(1000 * Config.getConfig().WAIT_UNTIL_MESSAGE_DELETE);
+			Thread.sleep(Config.getConfig().WAIT_UNTIL_MESSAGE_DELETE);
 		} catch (InterruptedException e1) {
 			// TODO Auto-generated catch block
 			e1.printStackTrace();
@@ -118,4 +116,37 @@ public class MessageUtils {
 		return false;
 	  }
 	}
+	
+	public boolean checkIfHTMLBodyStatic(UpnotifyBot ub, String chatId, String url){
+		WebUtils wu = WebUtils.getWebUtils();
+		String body = wu.getHTMLBodyStringFromUrl(url);
+		try {
+			Thread.sleep(Config.getConfig().WAIT_STATIC_CHECK);
+		} catch (InterruptedException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+		String bodyNew = wu.getHTMLBodyStringFromUrl(url);
+		
+		
+		
+		SendMessage sm = new SendMessage(chatId, 
+				String.valueOf(body.contentEquals(bodyNew)));
+		try {
+			ub.execute(sm);
+		} catch (TelegramApiException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+			return false;
+		}
+		
+		return true;
+		
+		
+		
+	}
+	
+	
+	
+	
 }
