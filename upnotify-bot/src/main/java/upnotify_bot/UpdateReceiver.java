@@ -1,7 +1,6 @@
 package upnotify_bot;
 
 
-
 import org.telegram.telegrambots.meta.api.objects.Message;
 import org.telegram.telegrambots.meta.api.objects.Update;
 
@@ -69,6 +68,9 @@ public class UpdateReceiver implements Runnable{
 							for (String arg : args) {
 								MessageUtils.getMessageUtils().checkIfHTMLBodyStatic(ub, chatId, arg);
 							}
+							
+						case "donothing":
+							break;
 						
 					}
 			
