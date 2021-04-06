@@ -95,26 +95,17 @@ public class MessageUtils {
 	 * @return
 	 */
 	public boolean checkSiteHTTPResponse(UpnotifyBot ub, String threadId, String chatId, String url){
-		url = url.strip();
-		URL u;
-	  int code = -1;
-	  try {
-		  u = new URL(url);
-		  HttpURLConnection huc;
-		  huc = ( HttpURLConnection )  
-		  u.openConnection ();
-		  huc.setRequestMethod ("GET");
-		  huc.connect ();
-		  code = huc.getResponseCode ();
-		  //System.out.println(code);
-		  
-		  SendMessage sm = new SendMessage(chatId, "Response code for " + url + " is as follows: " + String.valueOf(code));
-		  ub.execute(sm);
-		  return true;
-	  } catch(Exception e) {
-		e.printStackTrace();  
-		return false;
-	  }
+		String code = WebUtils.getWebUtils().getHTTPResponseFromUrl(url);
+		SendMessage sm = new SendMessage(chatId, "Response code for " + url + " is as follows: " + code);
+		try {
+			ub.execute(sm);
+		} catch (TelegramApiException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+			return false;
+		}
+		return true;
+	
 	}
 	
 	public boolean checkIfHTMLBodyStatic(UpnotifyBot ub, String chatId, String url){

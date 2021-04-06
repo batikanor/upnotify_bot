@@ -66,10 +66,21 @@ public class WebUtilsTest {
 	}
 	
 	@Test
-	public void testGetNumericStringFromUrlAndXPathJsoup() {
+	public void testGetStringFromUrlAndXPathJsoup() {
 		String url = "www.batikanor.com";
 		String selectorPath = "#gatsby-focus-wrapper > div > div.layout-module--container--2TGku > div > span"; // "4 Comments"
-		System.out.println(WebUtils.getWebUtils().getNumericStringFromUrlAndSelectorPathJsoup(url, selectorPath));
+		String res = WebUtils.getWebUtils().getStringFromUrlAndSelectorPathJsoup(url, selectorPath);
+		System.out.println("Result: " + res);
+		Assert.assertTrue(res.endsWith("Comments")); // Should be "4 Comments" or so...
+	}
+	
+	@Test
+	public void testGetHTTPResponseFromUrl() {
+		String url = "www.batikanor.com";
+		String res = WebUtils.getWebUtils().getHTTPResponseFromUrl(url);
+		System.out.println("Res: " + res);
+		Assert.assertEquals(res, "Moved Permanently"); // cuz it should redirect from http to https.
+		
 	}
 
 }
