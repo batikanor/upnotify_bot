@@ -16,4 +16,14 @@ checkstatic - checks if the given site is **probably** somehow static. Does that
 
 
 ## Important Notices
-1) You can't 100% tell that a website is static or dynamic. So the **checkstatic** command 
+1) You can't 100% tell that a website is static or dynamic. So the correctness of the **checkstatic** can only be evaluated statistically.
+
+## Feedback
+* You can give us feedback to improve this bot via emailing to batikanor@gmail.com
+// TODO create a feedback bot or sth, there may already be templates for it...
+
+## Contribute
+// TODO Prepare CONTRIBUTING.md with instructions about how people may contribute to the project iff we stay open-sourced.
+
+
+

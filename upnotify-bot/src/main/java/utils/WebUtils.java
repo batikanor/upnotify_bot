@@ -1,6 +1,7 @@
 package utils;
 
 import java.io.IOException;
+import java.net.HttpURLConnection;
 import java.net.URL;
 import java.net.URLConnection;
 import java.util.Scanner;
@@ -31,30 +32,36 @@ public class WebUtils implements WebUtilsInterface{
 			System.out.println("Instance of 'WebUtils' has been created");
 		}
 		return single_instance;
-		
 	}
+	
 	// Has only a private constructor, so that only one instance can exist
 	private WebUtils() {}
 	
-	
+	/**
+	 * Fixes the input string that should correspond to a url.
+	 * Does this by assuring the connection is made via http:// 
+	 * @param url input URL
+	 * @return fixed string
+	 */
 	private String fixUrl(String url) {
-		if (!(url.startsWith("http://") || url.startsWith("https://"))) {
-			url = "http://" + url;
-		} 
-		return url;
-		
+		if (url.startsWith("http://")) {
+			return url;
+		} else if (url.startsWith("https://")) {
+			return url.replaceFirst("https", "http");	
+		} else {
+			return "http://" + url;
+		}
 	}
-
 	
 	/**
-	 * 
+	 * Returns HTML body as string using Java.Net.URLConnection library.
 	 * @param url
+	 * @return HTML Body as string
 	 */
 	public String getHTMLBodyStringFromUrl(String url) {
 		
 		url = fixUrl(url);
 			
-		
 		String content = null;
 		URLConnection connection = null;
 		try {
@@ -71,6 +78,11 @@ public class WebUtils implements WebUtilsInterface{
 
 	}
 
+	/**
+	 * Returns HTML body as Document using JSoup.
+	 * @param url input URL
+	 * @return HTML body as Document
+	 */
 	public Document getHTMLBodyFromUrlJSoup (String url) {
 		url = fixUrl(url);
 		try {
@@ -84,22 +96,19 @@ public class WebUtils implements WebUtilsInterface{
 		}
 		// TODO nope
 		return null;
-		
 	}
+	
 	public String getHTMLBodyStringFromUrlJSoup (String url) {
 		return getHTMLBodyFromUrlJSoup(url).toString();
-		
 	}
 	
-	
-
 	/**
-	 * 
-	 * @param url
-	 * @param xPath e.g. //*[@id="content"]/div/div[1]/div[2]/div[2]/a
+	 * Returns element corresponding to the given URL and selector path using JSoup
+	 * @param url input URL
+	 * @param selectorPath e.g. //*[@id="content"]/div/div[1]/div[2]/div[2]/a
 	 * @return
 	 */
-	public Element getNumericElementFromUrlAndSelectorPathJsoup(String url, String selectorPath) {
+	public Element getElementFromUrlAndSelectorPathJsoup(String url, String selectorPath) {
 		url = fixUrl(url);
 		Document doc = getHTMLBodyFromUrlJSoup(url);
 		
@@ -108,14 +117,33 @@ public class WebUtils implements WebUtilsInterface{
 		return el;
 	}
 	
-	public String getNumericStringFromUrlAndSelectorPathJsoup(String url, String selectorPath) {
-		Element el = getNumericElementFromUrlAndSelectorPathJsoup(url, selectorPath);
-		
+	/**
+	 * @TODO  Doesn't work as expected, see testGetNumericStringFromUrlAndSelectorPathJsoup
+	 * @param url
+	 * @param selectorPath
+	 * @return
+	 */
+	public String getStringFromUrlAndSelectorPathJsoup(String url, String selectorPath) {
+		Element el = getElementFromUrlAndSelectorPathJsoup(url, selectorPath);
 		return el.text();
-		// <span class="disqus-comment-count" data-disqus-identifier="index" data-disqus-url="http://www.batikanor.com + /index">...</span>
+	}
+	
+	public String getHTTPResponseFromUrl(String url) {
+		url = fixUrl(url);
+		String response = null;
 		
+		try {
+			HttpURLConnection connection = (HttpURLConnection) new URL(url).openConnection();
+			connection.setRequestMethod("GET");
+			connection.connect();
+			response = connection.getResponseMessage();
+		} catch (IOException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+
+		}
 		
-		
+		return response;
 	}
 	
 	

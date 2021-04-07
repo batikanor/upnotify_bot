@@ -51,23 +51,31 @@ public class UpdateReceiver implements Runnable{
 					
 					command = msgText.substring(1, msgText.indexOf(" ")).toLowerCase();
 					args = msgText.substring(2 + command.length()).split(" ");
+
+					// TODO logging instead of printing
+					System.out.println("Running command: " + command);
 					
 					switch (command) {
+			
 						case "msginfo":
 							while (!MessageUtils.getMessageUtils().sendDebugMessage(ub, threadId, chatId, update)) {
 								// Logging is to be done within the MessageUtils class, so here printing out would suffice.
 								System.out.println("Error whilst sending the message, trying again...");
 							}
+							break;
 						case "checksite":
 							for (String arg : args) {
 								System.out.println("Working with argument: " + arg);
 								// Note that a single thread will work with all of them. If we ever want to change this, we could do these controls within OnUpdateReceived function of UpnotifyBot class, or we could have a separate class for these, and the assignment of jobs to threads could be later etc..
 								MessageUtils.getMessageUtils().checkSiteHTTPResponse(ub, threadId, chatId, arg);
 							}
+							break;
 						case "checkstatic":
 							for (String arg : args) {
+								System.out.println("Working with argument: " + arg);
 								MessageUtils.getMessageUtils().checkIfHTMLBodyStatic(ub, chatId, arg);
 							}
+							break;
 							
 						case "donothing":
 							break;
