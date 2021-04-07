@@ -23,7 +23,6 @@ checkstatic - checks if the given site is **probably** somehow static. Does that
 // TODO create a feedback bot or sth, there may already be templates for it...
 
 ## Contribute
-// TODO Prepare CONTRIBUTING.md with instructions about how people may contribute to the project if we stay open-sourced.
-
+// TODO Prepare CONTRIBUTING.md with instructions about how people may contribute to the project iff the project remains to be open-source.
 
 

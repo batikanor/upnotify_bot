@@ -43,6 +43,7 @@ public class UpnotifyBot extends TelegramLongPollingBot {
 	 * This method gets called whenever an update is received.
 	 * Then the mpu unit will be used to submit the updates to respective threads within the pool.
 	 */
+	@Override
 	public void onUpdateReceived(Update update) {
 		// Get the only instance of the MultiprocessingUtils class
 		System.out.println("Received a new update!");
@@ -52,6 +53,7 @@ public class UpnotifyBot extends TelegramLongPollingBot {
 	/**
 	 * Returns the bot username.
 	 */
+	@Override
 	public String getBotUsername() {
 		// TODO Auto-generated method stub
 		return botUsername;

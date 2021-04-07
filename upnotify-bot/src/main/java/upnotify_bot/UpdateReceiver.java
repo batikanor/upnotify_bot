@@ -1,6 +1,8 @@
 package upnotify_bot;
 
 
+import java.util.Arrays;
+
 import org.telegram.telegrambots.meta.api.objects.Message;
 import org.telegram.telegrambots.meta.api.objects.Update;
 
@@ -49,11 +51,17 @@ public class UpdateReceiver implements Runnable{
 				// Commands
 				if (msgText.startsWith("/")) {
 					
-					command = msgText.substring(1, msgText.indexOf(" ")).toLowerCase();
-					args = msgText.substring(2 + command.length()).split(" ");
-
-					// TODO logging instead of printing
+					System.out.println("00");
+				
+					boolean withArgs = msgText.contains(" ");
+					
+	
+					command = withArgs ? msgText.substring(1, msgText.indexOf(" ")).toLowerCase() : msgText.substring(1);					
 					System.out.println("Running command: " + command);
+					args = withArgs ? (msgText.substring(2 + command.length()).split(" ")) : null;
+					System.out.println("For args: " + Arrays.toString(args));
+					// TODO logging instead of printing
+				
 					
 					switch (command) {
 			
@@ -76,25 +84,10 @@ public class UpdateReceiver implements Runnable{
 								MessageUtils.getMessageUtils().checkIfHTMLBodyStatic(ub, chatId, arg);
 							}
 							break;
-							
 						case "donothing":
 							break;
-						
 					}
-			
-					
-					
-				
 				}
-				
-			
-			
-				
-				
-				
-				
-				
-				
 			}
 		}	
 	}
