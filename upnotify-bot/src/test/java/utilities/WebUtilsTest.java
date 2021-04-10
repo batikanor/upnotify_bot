@@ -66,7 +66,7 @@ public class WebUtilsTest {
 	}
 	
 	@Test
-	public void testGetStringFromUrlAndXPathJsoup() {
+	public void testGetStringFromUrlAndSelectorPathJsoup() {
 		String url = "www.batikanor.com";
 		String selectorPath = "#gatsby-focus-wrapper > div > div.layout-module--container--2TGku > div > span"; // "4 Comments"
 		String res = WebUtils.getWebUtils().getStringFromUrlAndSelectorPathJsoup(url, selectorPath);

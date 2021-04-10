@@ -51,8 +51,6 @@ public class UpdateReceiver implements Runnable{
 				// Commands
 				if (msgText.startsWith("/")) {
 					
-					System.out.println("00");
-				
 					boolean withArgs = msgText.contains(" ");
 					
 	
