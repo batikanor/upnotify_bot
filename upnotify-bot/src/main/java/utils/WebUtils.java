@@ -4,7 +4,10 @@ import java.io.IOException;
 import java.net.HttpURLConnection;
 import java.net.URL;
 import java.net.URLConnection;
+import java.nio.file.Paths;
+import java.util.ArrayList;
 import java.util.Scanner;
+import java.util.concurrent.TimeUnit;
 
 import org.jsoup.Jsoup;
 import org.jsoup.nodes.Document;
@@ -13,6 +16,8 @@ import org.jsoup.select.Elements;
 import org.openqa.selenium.WebDriver;
 import org.openqa.selenium.chrome.ChromeDriver;
 import org.openqa.selenium.firefox.FirefoxDriver;
+
+import utils.Config.OS;
 
 
 interface WebUtilsInterface{
@@ -47,13 +52,12 @@ public class WebUtils implements WebUtilsInterface{
 	 * @return fixed string
 	 */
 	private String fixUrl(String url) {
-		if (url.startsWith("http://")) {
+		if (url.startsWith("http://") || url.startsWith("https://")) {
 			return url;
-		} else if (url.startsWith("https://")) {
-			return url.replaceFirst("https", "http");	
-		} else {
-			return "http://" + url;
 		}
+		// TODO check if the site has ssl, if so return https if not return http
+		return "https://" + url; 
+		
 	}
 	
 	/**
@@ -124,7 +128,7 @@ public class WebUtils implements WebUtilsInterface{
 	 * @TODO  Doesn't work as expected, see testGetNumericStringFromUrlAndSelectorPathJsoup
 	 * @param url
 	 * @param selectorPath
-	 * @return 
+	 * @return text found within the inputted element.
 	 */
 	public String getStringFromUrlAndSelectorPathJsoup(String url, String selectorPath) {
 		Element el = getElementFromUrlAndSelectorPathJsoup(url, selectorPath);
@@ -134,13 +138,27 @@ public class WebUtils implements WebUtilsInterface{
 	public String getStringFromUrlAndSelectorPathUsingJsoupAndSelenium(String url, String selectorPath) {
 		//URL driverURL = getClass().getClassLoader().getResource("chromedriver.exe");
 		//System.out.println("URL:" + driverURL);
-		System.setProperty("webdriver.chrome.driver", "src/main/resources/chromedriver.exe");
+		
+
+		String path = "CHROME_DRIVERS/chromedriver_89_" + (Config.getConfig().os == OS.LINUX ? "linux" : "win.exe");
+//		System.out.println("path: " + path);
+		
+		URL chrome_driver_url = getClass().getClassLoader().getResource(path);
+
+		System.out.println(chrome_driver_url);
+		String chrome_driver_path = chrome_driver_url.getPath();
+//		System.out.println("driver path: " + chrome_driver_path);
+		//String chrome_driver_path = "src/main/resources/CHROME_DRIVERS/chromedriver_89_" + (Config.getConfig().os == OS.LINUX ? "linux" : "win.exe");
+		System.setProperty("webdriver.chrome.driver", chrome_driver_path);
 		WebDriver driver = new ChromeDriver();
-		driver.get(url);
+		driver.get(fixUrl(url));
+		driver.manage().timeouts().implicitlyWait(30, TimeUnit.SECONDS);
+
 		Document doc = Jsoup.parse(driver.getPageSource());
 		Elements elements = doc.select(selectorPath);
 		Element el = elements.get(0);
-		return el.toString();
+		return el.text();
+		
 	}
 
 	public void getScreenshotUsingSelenium(String url, String selectorPath) {

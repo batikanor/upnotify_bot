@@ -12,11 +12,17 @@ import java.util.Properties;
  */
 public class Config {
 	
+	enum OS {
+		WIN,
+		LINUX
+	}
+	
 	// These are all declared as final, so they all MUST be initialized within the constructor.
 	
 	public final int THREAD_PER_CORE;
 	public final int WAIT_UNTIL_MESSAGE_DELETE;
 	public final int WAIT_STATIC_CHECK;
+	public final OS os; 
 	
 	private static Config single_instance = null;
 	
@@ -59,5 +65,7 @@ public class Config {
 		this.THREAD_PER_CORE = Integer.parseInt(prop.getProperty("THREAD_PER_CORE"));
 		this.WAIT_UNTIL_MESSAGE_DELETE = Integer.parseInt(prop.getProperty("WAIT_UNTIL_MESSAGE_DELETE"));
 		this.WAIT_STATIC_CHECK = Integer.parseInt(prop.getProperty("WAIT_STATIC_CHECK"));
+		System.out.println();
+		this.os = prop.getProperty("OS").toLowerCase().contentEquals("linux") ? OS.LINUX : OS.WIN;
 	}
 }
