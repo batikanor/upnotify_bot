@@ -83,4 +83,13 @@ public class WebUtilsTest {
 		
 	}
 
+	@Test
+	public void testGetStringFromUrlAndXPathUsingSelenium() {
+		String url = "http://www.batikanor.com";
+		String selectorPath = "#gatsby-focus-wrapper > div > div.layout-module--container--2TGku > div > span"; // "4 Comments"
+		String res = WebUtils.getWebUtils().getStringFromUrlAndSelectorPathUsingJsoupAndSelenium(url, selectorPath);
+		System.out.println("Result: " + res);
+		Assert.assertTrue(res.endsWith("Comments"));
+	}
+
 }
