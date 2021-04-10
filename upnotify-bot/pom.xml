@@ -3,7 +3,19 @@
   <groupId>com.batikanor.upnotify.bot</groupId>
   <artifactId>upnotify-bot</artifactId>
   <version>0.0.1-SNAPSHOT</version>
-  <name>Upnotify Bot</name>
+	<build>
+		<plugins>
+			<plugin>
+				<groupId>org.apache.maven.plugins</groupId>
+				<artifactId>maven-compiler-plugin</artifactId>
+				<configuration>
+					<source>7</source>
+					<target>7</target>
+				</configuration>
+			</plugin>
+		</plugins>
+	</build>
+	<name>Upnotify Bot</name>
   <description>
   Telegram bot of the upnotify project. use the link t.me/upnotify_bot to contact the bot
   </description>
@@ -25,7 +37,24 @@
 	    <artifactId>jsoup</artifactId>
 	    <version>1.13.1</version>
 	</dependency>
-	
+
+	  <dependency>
+		  <groupId>org.seleniumhq.selenium</groupId>
+		  <artifactId>selenium-java</artifactId>
+		  <version>4.0.0-alpha-5</version>
+	  </dependency>
+	  <dependency>
+		  <groupId>junit</groupId>
+		  <artifactId>junit</artifactId>
+		  <version>RELEASE</version>
+		  <scope>test</scope>
+	  </dependency>
+	  <dependency>
+		  <groupId>org.xerial</groupId>
+		  <artifactId>sqlite-jdbc</artifactId>
+		  <version>3.34.0</version>
+	  </dependency>
+
   </dependencies>
 
 </project>

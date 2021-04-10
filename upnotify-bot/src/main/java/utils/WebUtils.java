@@ -10,6 +10,9 @@ import org.jsoup.Jsoup;
 import org.jsoup.nodes.Document;
 import org.jsoup.nodes.Element;
 import org.jsoup.select.Elements;
+import org.openqa.selenium.WebDriver;
+import org.openqa.selenium.chrome.ChromeDriver;
+import org.openqa.selenium.firefox.FirefoxDriver;
 
 
 interface WebUtilsInterface{
@@ -126,6 +129,24 @@ public class WebUtils implements WebUtilsInterface{
 	public String getStringFromUrlAndSelectorPathJsoup(String url, String selectorPath) {
 		Element el = getElementFromUrlAndSelectorPathJsoup(url, selectorPath);
 		return el.text();
+	}
+
+	public String getStringFromUrlAndSelectorPathUsingJsoupAndSelenium(String url, String selectorPath) {
+		//URL driverURL = getClass().getClassLoader().getResource("chromedriver.exe");
+		//System.out.println("URL:" + driverURL);
+		System.setProperty("webdriver.chrome.driver", "src/main/resources/chromedriver.exe");
+		WebDriver driver = new ChromeDriver();
+		driver.get(url);
+		Document doc = Jsoup.parse(driver.getPageSource());
+		Elements elements = doc.select(selectorPath);
+		Element el = elements.get(0);
+		return el.toString();
+	}
+
+	public void getScreenshotUsingSelenium(String url, String selectorPath) {
+		System.setProperty("webdriver.chrome.driver", "src/main/resources/chromedriver.exe");
+		WebDriver driver = new ChromeDriver();
+		driver.get(url);
 	}
 	
 	public String getHTTPResponseFromUrl(String url) {
