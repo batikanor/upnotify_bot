@@ -30,6 +30,12 @@ interface MultiprocessingUtilsInterface {
 	 * 
 	 */
 	public void submitUpdate(UpnotifyBot ub, Update update);
+	
+	/**
+	 * Submits upnotifies to their respective thread pool
+	 * 
+	 */
+//	public void submitUpnotify();
 }
 
 /**
@@ -51,10 +57,12 @@ public class MultiprocessingUtils implements MultiprocessingUtilsInterface {
 	}
 	
 	private ExecutorService executor;
+	private ExecutorService upnotifyExecutor;
 	
 	private MultiprocessingUtils() {
 		int tps = getThreadPoolSize(Config.getConfig().THREAD_PER_CORE);
 		this.executor = Executors.newFixedThreadPool(tps);
+		this.upnotifyExecutor = Executors.newFixedThreadPool(tps);
 	}
 	
 	/**
@@ -83,4 +91,8 @@ public class MultiprocessingUtils implements MultiprocessingUtilsInterface {
 		System.out.println("Submtitting the update to the thread pool");
 		executor.submit(new UpdateReceiver(ub, update));
 	}
+	
+	
+	
+
 }

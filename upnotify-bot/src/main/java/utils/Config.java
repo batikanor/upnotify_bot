@@ -42,25 +42,23 @@ public class Config {
 		
 		InputStream ins = ClassLoader.getSystemResourceAsStream("CONFIGURATION/Config.properties");
 		Properties prop = new Properties();
-		while (true) {
-			try {
-				prop.load(ins);
-				break;
+		try {
+			prop.load(ins);
 
-			} catch (IOException e) {
+		} catch (Exception e) {
+			// TODO Auto-generated catch block
+			System.out.println("Properties file couldn't be loaded");
+			e.printStackTrace();
+			
+			try { // wait a sec
+				Thread.sleep(1000);
+			} catch (InterruptedException e1) {
 				// TODO Auto-generated catch block
-				System.out.println("Properties file couldn't be loaded");
-				e.printStackTrace();
-				
-				try { // wait a sec
-					Thread.sleep(1000);
-				} catch (InterruptedException e1) {
-					// TODO Auto-generated catch block
-					e1.printStackTrace();
-				} 
-				
-			}
+				e1.printStackTrace();
+			} 
+			
 		}
+		
 
 		this.THREAD_PER_CORE = Integer.parseInt(prop.getProperty("THREAD_PER_CORE"));
 		this.WAIT_UNTIL_MESSAGE_DELETE = Integer.parseInt(prop.getProperty("WAIT_UNTIL_MESSAGE_DELETE"));

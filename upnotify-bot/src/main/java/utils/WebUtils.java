@@ -20,7 +20,7 @@ import org.openqa.selenium.firefox.FirefoxDriver;
 import utils.Config.OS;
 
 
-interface WebUtilsInterface{
+interface WebUtilsInterface{	
 	
 	/**
 	 * Returns the http response code
@@ -135,6 +135,8 @@ public class WebUtils implements WebUtilsInterface{
 		return el.text();
 	}
 
+
+ 
 	public String getStringFromUrlAndSelectorPathUsingJsoupAndSelenium(String url, String selectorPath) {
 		//URL driverURL = getClass().getClassLoader().getResource("chromedriver.exe");
 		//System.out.println("URL:" + driverURL);
