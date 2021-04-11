@@ -66,7 +66,7 @@ public class MultiprocessingUtils implements MultiprocessingUtilsInterface {
 		return getCoreCount() * tpc;
 	}
 	/**
-	 * Returns the core count of cores within the processor
+	 * Returns the count of cores within the processor
 	 * @return Count of cores within the processor
 	 */
 	public int getCoreCount() {

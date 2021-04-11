@@ -66,7 +66,7 @@ public class WebUtilsTest {
 	}
 	
 	@Test
-	public void testGetStringFromUrlAndXPathJsoup() {
+	public void testGetStringFromUrlAndSelectorPathJsoup() {
 		String url = "www.batikanor.com";
 		String selectorPath = "#gatsby-focus-wrapper > div > div.layout-module--container--2TGku > div > span"; // "4 Comments"
 		String res = WebUtils.getWebUtils().getStringFromUrlAndSelectorPathJsoup(url, selectorPath);
@@ -81,6 +81,15 @@ public class WebUtilsTest {
 		System.out.println("Res: " + res);
 		Assert.assertEquals(res, "Moved Permanently"); // cuz it should redirect from http to https.
 		
+	}
+
+	@Test
+	public void testGetStringFromUrlAndSelectorPathUsingSelenium() {
+		String url = "http://www.batikanor.com";
+		String selectorPath = "#gatsby-focus-wrapper > div > div.layout-module--container--2TGku > div > span"; // "4 Comments"
+		String res = WebUtils.getWebUtils().getStringFromUrlAndSelectorPathUsingJsoupAndSelenium(url, selectorPath);
+		System.out.println("Result: " + res);
+		Assert.assertTrue(res.endsWith("Comments"));
 	}
 
 }

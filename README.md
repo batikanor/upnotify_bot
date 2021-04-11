@@ -16,7 +16,7 @@ checkstatic - checks if the given site is **probably** somehow static. Does that
 
 
 ## Important Notices
-1) You can't 100% tell that a website is static or dynamic. So the correctness of the **checkstatic** can only be evaluated statistically.
+1) You can't 100% tell that a website is static or dynamic. So the correctness of the **checkstatic** command can only be evaluated statistically.
 
 ## Feedback
 * You can give us feedback to improve this bot via emailing to batikanor@gmail.com
@@ -26,3 +26,9 @@ checkstatic - checks if the given site is **probably** somehow static. Does that
 // TODO Prepare CONTRIBUTING.md with instructions about how people may contribute to the project iff the project remains to be open-source.
 
 
+## Running the code on your local machine
+
+### Problems
+#### Chromedriver cannot be executed
+* Linux: chmod +x upnotify_bot/upnotify-bot/target/classes/CHROME_DRIVERS/chromedriver_89_linux
+ 

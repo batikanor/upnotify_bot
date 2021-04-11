@@ -59,7 +59,7 @@ public class MessageUtils {
 		
 		// wait for given time
 		try {
-			System.out.println("Thread " + threadId + " is Waiting for " + Config.getConfig().WAIT_UNTIL_MESSAGE_DELETE + " seconds.");
+			System.out.println("Thread " + threadId + " is Waiting for " + (float)Config.getConfig().WAIT_UNTIL_MESSAGE_DELETE / 1000 + " seconds.");
 			
 			Thread.sleep(Config.getConfig().WAIT_UNTIL_MESSAGE_DELETE);
 		} catch (InterruptedException e1) {
