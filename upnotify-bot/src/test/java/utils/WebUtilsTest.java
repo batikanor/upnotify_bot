@@ -1,4 +1,10 @@
 package utils;
+import java.io.IOException;
+import java.net.URL;
+import java.nio.file.Files;
+import java.nio.file.NoSuchFileException;
+import java.nio.file.Path;
+import java.nio.file.Paths;
 import java.util.Arrays;
 import java.util.List;
 
@@ -90,6 +96,36 @@ public class WebUtilsTest {
 		String res = WebUtils.getWebUtils().getStringFromUrlAndSelectorPathUsingJsoupAndSelenium(url, selectorPath);
 		System.out.println("Result: " + res);
 		Assert.assertTrue(res.endsWith("Comments"));
+	}
+
+	@Test
+	public void testGetScreenshotUsingSelenium() {
+		boolean checkIfExists = false;
+		String url = "http://www.batikanor.com";
+		Integer requestId = 10;
+		String selectorPath = "#gatsby-focus-wrapper > div > div.layout-module--container--2TGku > div > span"; // "4 Comments"
+		try {
+			checkIfExists = WebUtils.getWebUtils().getScreenshotUsingSelenium(url, selectorPath, requestId);
+		} catch (IOException e) {
+			e.printStackTrace();
+		}
+		try {
+			Thread.sleep(1000);
+		} catch (InterruptedException e) {
+			e.printStackTrace();
+		}
+
+		Assert.assertTrue(checkIfExists);
+
+		//delete the taken screenshot after if assertion is successful
+
+		try {
+			Path fileToDeletePath = Paths.get("src/main/resources/SELENIUM_SCREENSHOTS/" + requestId + ".png");
+			Files.delete(fileToDeletePath);
+		} catch (Exception e) {
+			System.out.println("file exception during test");
+		}
+
 	}
 
 }
