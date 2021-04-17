@@ -15,7 +15,7 @@ public class DatabaseUtilsTest {
 
     @Test
     public void check_tables(){
-        DatabaseUtils.create_tables();
+        DatabaseUtils.getDatabaseUtils().create_tables();
     }
 
 
