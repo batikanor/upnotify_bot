@@ -31,7 +31,7 @@ public class UpnotifyBot extends TelegramLongPollingBot {
 			this.botToken = prop.getProperty("botToken");
 			this.botUsername = prop.getProperty("botUsername");
 			
-		} catch (IOException e) {
+		} catch (Exception e) {
 			// TODO Auto-generated catch block
 			System.out.println("Properties file couldn't be loaded");
 			e.printStackTrace();

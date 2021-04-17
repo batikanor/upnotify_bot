@@ -5,9 +5,15 @@ import org.telegram.telegrambots.meta.TelegramBotsApi;
 import org.telegram.telegrambots.meta.exceptions.TelegramApiException;
 import org.telegram.telegrambots.updatesreceivers.DefaultBotSession;
 
+import utils.Config;
+import utils.DatabaseUtils;
+import utils.MultiprocessingUtils;
+
 /**
  * Main class of the upnotify-bot project, here the telegram bot API will be initialized, bot will be instantiated and registered.
  */
+
+
 public class Main {
 
 	/**
@@ -16,13 +22,25 @@ public class Main {
 	 */
 	public static void main(String[] args) {
 		// Instantiate the TelegramBots API by RubenLagus, then register the bot
+        
+		
 		try {
 			TelegramBotsApi telegramBotsApi = new TelegramBotsApi(DefaultBotSession.class);
 			telegramBotsApi.registerBot(new UpnotifyBot());
+			
 		} catch (TelegramApiException e) {
 			// TODO logging
 			e.printStackTrace();
 		}
+		
+//		// Get active upnotify list from db
+//		ArrayList<> upnotifies = DatabaseUtils.getUpnotifies();
+//		for (upnotify : upnotifies) {
+//			MultiprocessingUtils.getMultiProcessingUtils().submitUpnotify(new UpnotifyReceiver(upnotify));
+//		}
+//		
+//		Thread.sleep(1000);
+//	
 		
 
 	}

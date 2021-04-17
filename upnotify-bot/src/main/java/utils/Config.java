@@ -3,6 +3,7 @@ package utils;
 import java.io.IOException;
 import java.io.InputStream;
 import java.util.Properties;
+import java.util.Scanner;
 
 
 /**
@@ -42,30 +43,48 @@ public class Config {
 		
 		InputStream ins = ClassLoader.getSystemResourceAsStream("CONFIGURATION/Config.properties");
 		Properties prop = new Properties();
-		while (true) {
-			try {
-				prop.load(ins);
-				break;
+		try {
+			prop.load(ins);
 
-			} catch (IOException e) {
+		} catch (Exception e) {
+			// TODO Auto-generated catch block
+			System.out.println("Properties file couldn't be loaded");
+			e.printStackTrace();
+			
+			try { // wait a sec
+				Thread.sleep(1000);
+			} catch (InterruptedException e1) {
 				// TODO Auto-generated catch block
-				System.out.println("Properties file couldn't be loaded");
-				e.printStackTrace();
-				
-				try { // wait a sec
-					Thread.sleep(1000);
-				} catch (InterruptedException e1) {
-					// TODO Auto-generated catch block
-					e1.printStackTrace();
-				} 
-				
-			}
+				e1.printStackTrace();
+			} 
+			
 		}
+		
 
 		this.THREAD_PER_CORE = Integer.parseInt(prop.getProperty("THREAD_PER_CORE"));
 		this.WAIT_UNTIL_MESSAGE_DELETE = Integer.parseInt(prop.getProperty("WAIT_UNTIL_MESSAGE_DELETE"));
 		this.WAIT_STATIC_CHECK = Integer.parseInt(prop.getProperty("WAIT_STATIC_CHECK"));
 		System.out.println();
-		this.os = prop.getProperty("OS").toLowerCase().contentEquals("linux") ? OS.LINUX : OS.WIN;
+		//this.os = prop.getProperty("OS").toLowerCase().contentEquals("linux") ? OS.LINUX : OS.WIN;
+		String osNameProp = prop.getProperty("OS").toLowerCase();
+		String osNameJava = System.getProperty("os.name").toLowerCase();
+		String chosenOs;
+		if (osNameProp.startsWith(osNameJava.substring(0, 3))) {
+			chosenOs = osNameProp;
+		}
+		else {
+			System.out.println("Your Config.properties file states the operation system as: \n" + 
+		osNameProp + 
+		"\nbut the program has detected your operation system to be: \n" +
+		osNameJava + 
+		"\nThe program will work with the program-detected OS by default. \n" + 
+		"Input 'p' if you would like to enforce the program to use the OS stated in the properties file.\n" +
+		"Otherwise just press enter.");	
+		
+			Scanner sc = new Scanner(System.in);
+			chosenOs = sc.nextLine().startsWith("p") ? osNameProp : osNameJava;
+		}
+		this.os = chosenOs.startsWith("lin") ? OS.LINUX : OS.WIN;
+		
 	}
 }
