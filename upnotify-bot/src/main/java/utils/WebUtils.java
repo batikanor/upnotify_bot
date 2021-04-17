@@ -1,5 +1,6 @@
 package utils;
 
+import java.io.File;
 import java.io.IOException;
 import java.net.HttpURLConnection;
 import java.net.URL;
@@ -9,15 +10,23 @@ import java.util.ArrayList;
 import java.util.Scanner;
 import java.util.concurrent.TimeUnit;
 
+import org.apache.commons.io.FileUtils;
 import org.jsoup.Jsoup;
 import org.jsoup.nodes.Document;
 import org.jsoup.nodes.Element;
 import org.jsoup.select.Elements;
+import org.openqa.selenium.OutputType;
+import org.openqa.selenium.TakesScreenshot;
 import org.openqa.selenium.WebDriver;
 import org.openqa.selenium.chrome.ChromeDriver;
 import org.openqa.selenium.firefox.FirefoxDriver;
 
+import ru.yandex.qatools.ashot.AShot;
+import ru.yandex.qatools.ashot.Screenshot;
+import ru.yandex.qatools.ashot.shooting.ShootingStrategies;
 import utils.Config.OS;
+
+import javax.imageio.ImageIO;
 
 
 interface WebUtilsInterface{	
@@ -163,10 +172,36 @@ public class WebUtils implements WebUtilsInterface{
 		
 	}
 
-	public void getScreenshotUsingSelenium(String url, String selectorPath) {
-		System.setProperty("webdriver.chrome.driver", "src/main/resources/chromedriver.exe");
+	public boolean getScreenshotUsingSelenium(String url, String selectorPath, Integer requestId) throws IOException {
+		//requestId will be sent to this function as a parameter as soon as DB is implemented.
+		//requestId will be fetched from DB.
+		//requests.getSiteId().getAddress();
+		String path = "CHROME_DRIVERS/chromedriver_89_" + (Config.getConfig().os == OS.LINUX ? "linux" : "win.exe");
+		URL chrome_driver_url = getClass().getClassLoader().getResource(path);
+		String chrome_driver_path = chrome_driver_url.getPath();
+		System.setProperty("webdriver.chrome.driver", chrome_driver_path);
 		WebDriver driver = new ChromeDriver();
-		driver.get(url);
+		driver.get(fixUrl(url));
+		driver.manage().timeouts().implicitlyWait(30, TimeUnit.SECONDS);
+
+		//automatised full screenshot using AShot plugin with 1.25f scale (in order to take properly scaled) and 1000 ms scroll interval.
+
+		Screenshot fullScreenshot = new AShot().shootingStrategy(ShootingStrategies.viewportPasting(ShootingStrategies.scaling(1.25f), 1000)).takeScreenshot(driver);
+		try {
+			ImageIO.write(fullScreenshot.getImage(),"PNG",new File("src/main/resources/SELENIUM_SCREENSHOTS/" + requestId + ".png"));
+		} catch (IOException ioe) {
+			return false;
+		}
+		return true;
+		//code below takes only partial screenshot without using ashot plugin. commented for now.
+
+		/*File screenshotFile = ((TakesScreenshot)driver).getScreenshotAs(OutputType.FILE);
+
+		try {
+			FileUtils.copyFile(screenshotFile, new File("src/main/resources/SELENIUM_SCREENSHOTS/" + requestId)); //screenshot files will be named with requestId
+		} catch (IOException e) {
+			e.printStackTrace();
+		}*/
 	}
 	
 	public String getHTTPResponseFromUrl(String url) {
@@ -185,6 +220,14 @@ public class WebUtils implements WebUtilsInterface{
 		}
 		
 		return response;
+	}
+
+	/*public void compareSeleniumScreenshots(File f1, File f2) {
+		FileUtils.getFile()
+	}*/
+
+	public void compareHtmlContent() {
+
 	}
 	
 	
