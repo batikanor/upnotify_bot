@@ -14,8 +14,8 @@ import utils.DatabaseUtils;
 public class DatabaseUtilsTest {
 
     @Test
-    public void testDBConnection() {
-        DatabaseUtils.buildConnection();
+    public void check_tables(){
+        DatabaseUtils.create_tables();
     }
 
 

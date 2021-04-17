@@ -1,43 +1,59 @@
 package utils;
 
-import java.sql.Connection;
-import java.sql.DriverManager;
-import java.sql.ResultSet;
-import java.sql.SQLException;
-import java.sql.Statement;
+import java.sql.*;
 
 public class DatabaseUtils
 {
-    //this is a sample database connection function.
-    public static void buildConnection() {
-        Connection connection = null;
-        try
-        {
-            // create a database connection
+    public static Connection connection = null;
+
+
+    //tablo dbde var ise true yok ise false döndüren bir fonksiyon
+    public static boolean tableExists(String tableName,Connection conn){
+
+        try{
+            DatabaseMetaData md = conn.getMetaData();
+            ResultSet rs = md.getTables(null, null, tableName, null);
+            rs.last();
+            return rs.getRow() > 0;
+        }catch(SQLException e){
+            System.err.println(e.getMessage());
+        }
+        return false;
+    }
+
+    public static void create_tables(){
+        try{
             connection = DriverManager.getConnection("jdbc:sqlite:src/main/resources/upnotify.db");
             Statement statement = connection.createStatement();
             statement.setQueryTimeout(30);  // set timeout to 30 sec.
 
-            statement.executeUpdate("drop table if exists person");
-            statement.executeUpdate("create table person (id integer, name string)");
-            statement.executeUpdate("insert into person values(1, 'serdar')");
-            statement.executeUpdate("insert into person values(2, 'anil')");
-            statement.executeUpdate("insert into person values(3, 'berat')");
-            statement.executeUpdate("insert into person values(4, 'batikan')");
-            statement.executeUpdate("insert into person values(5, 'arman')");
-            statement.executeUpdate("insert into person values(6, 'firat')");
-            ResultSet rs = statement.executeQuery("select * from person");
-            while(rs.next())
-            {
-                // read the result set
-                System.out.println("name = " + rs.getString("name"));
-                System.out.println("id = " + rs.getInt("id"));
+            // create users table if not exist
+            if(!tableExists("users",connection)){
+                String create_user_table = "create table users\n" +
+                        "                    (\n" +
+                        "                            id integer not null\n" +
+                        "            constraint users_pk\n" +
+                        "            primary key autoincrement,\n" +
+                        "                    userName text\n" +
+                        ");\n" +
+                        "\n" +
+                        "            create unique index users_id_uindex\n" +
+                        "            on users (id);" ;
+
+                try {
+                    statement.executeQuery(create_user_table);
+                    System.out.print("Users table has created");
+                } catch (SQLException e){
+                    System.err.println(e.getMessage());
+                }
             }
+            else{
+                //table allready exists
+            }
+
         }
-        catch(SQLException e)
-        {
-            // if the error message is "out of memory",
-            // it probably means no database file is found
+        catch(SQLException e){
+            System.out.println("there is a problem with db connection");
             System.err.println(e.getMessage());
         }
         finally
@@ -54,4 +70,7 @@ public class DatabaseUtils
             }
         }
     }
+
+
+
 }
