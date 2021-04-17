@@ -173,8 +173,8 @@ public class WebUtils implements WebUtilsInterface{
 	}
 
 	public boolean getScreenshotUsingSelenium(String url, String selectorPath, Integer requestId) throws IOException {
-		//requestId will be sent to this function as a parameter as soon as DB is implemented.
-		//requestId will be fetched from DB.
+		// requestId will be sent to this function as a parameter as soon as DB is implemented.
+		// requestId will be fetched from DB.
 		//requests.getSiteId().getAddress();
 		String path = "CHROME_DRIVERS/chromedriver_89_" + (Config.getConfig().os == OS.LINUX ? "linux" : "win.exe");
 		URL chrome_driver_url = getClass().getClassLoader().getResource(path);
@@ -184,7 +184,7 @@ public class WebUtils implements WebUtilsInterface{
 		driver.get(fixUrl(url));
 		driver.manage().timeouts().implicitlyWait(30, TimeUnit.SECONDS);
 
-		//automatised full screenshot using AShot plugin with 1.25f scale (in order to take properly scaled) and 1000 ms scroll interval.
+		// automatised full screenshot using AShot plugin with 1.25f scale (in order to take properly scaled) and 1000 ms scroll interval.
 
 		Screenshot fullScreenshot = new AShot().shootingStrategy(ShootingStrategies.viewportPasting(ShootingStrategies.scaling(1.25f), 1000)).takeScreenshot(driver);
 		try {
@@ -193,15 +193,15 @@ public class WebUtils implements WebUtilsInterface{
 			return false;
 		}
 		return true;
-		//code below takes only partial screenshot without using ashot plugin. commented for now.
+		// code below takes only partial screenshot without using ashot plugin. commented for now.
 
-		/*File screenshotFile = ((TakesScreenshot)driver).getScreenshotAs(OutputType.FILE);
-
-		try {
-			FileUtils.copyFile(screenshotFile, new File("src/main/resources/SELENIUM_SCREENSHOTS/" + requestId)); //screenshot files will be named with requestId
-		} catch (IOException e) {
-			e.printStackTrace();
-		}*/
+//		File screenshotFile = ((TakesScreenshot)driver).getScreenshotAs(OutputType.FILE);
+//
+//		try {
+//			FileUtils.copyFile(screenshotFile, new File("src/main/resources/SELENIUM_SCREENSHOTS/" + requestId)); //screenshot files will be named with requestId
+//		} catch (IOException e) {
+//			e.printStackTrace();
+//		}
 	}
 	
 	public String getHTTPResponseFromUrl(String url) {
@@ -222,9 +222,9 @@ public class WebUtils implements WebUtilsInterface{
 		return response;
 	}
 
-	/*public void compareSeleniumScreenshots(File f1, File f2) {
-		FileUtils.getFile()
-	}*/
+//	public void compareSeleniumScreenshots(File f1, File f2) {
+//		FileUtils.getFile()
+//	}
 
 	public void compareHtmlContent() {
 

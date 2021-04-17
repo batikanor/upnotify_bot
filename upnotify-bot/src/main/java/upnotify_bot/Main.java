@@ -22,6 +22,8 @@ public class Main {
 	 */
 	public static void main(String[] args) {
 		// Instantiate the TelegramBots API by RubenLagus, then register the bot
+        
+		
 		try {
 			TelegramBotsApi telegramBotsApi = new TelegramBotsApi(DefaultBotSession.class);
 			telegramBotsApi.registerBot(new UpnotifyBot());
