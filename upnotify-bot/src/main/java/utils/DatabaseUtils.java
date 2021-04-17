@@ -1,16 +1,27 @@
 package utils;
 
+import javax.xml.crypto.Data;
 import java.sql.*;
 
 public class DatabaseUtils
 {
-    public static Connection connection = null;
-    public static String url = "jdbc:sqlite:src/main/resources/upnotify.db";
+    public Connection connection = null;
+    public String url = "jdbc:sqlite:src/main/resources/upnotify.db";
+
+    private static DatabaseUtils single_instance = null;
+
+    public static DatabaseUtils getDatabaseUtils() {
+        if (single_instance == null) {
+            single_instance = new DatabaseUtils();
+            System.out.println("Instance of 'DatabaseUtils' has been created");
+        }
+        return single_instance;
+    }
 
     private DatabaseUtils(){
     }
 
-    public static void buildConnection(){
+    public void buildConnection(){
         try {
             connection = DriverManager.getConnection(url);
         }
@@ -20,7 +31,7 @@ public class DatabaseUtils
         }
     }
 
-    public static void close_connection(){
+    public void close_connection(){
         try
         {
             if(connection != null)
@@ -36,7 +47,7 @@ public class DatabaseUtils
 
 
     //tablo dbde var ise true yok ise false döndüren bir fonksiyon
-    public static boolean tableExists(String tableName,Connection conn){
+    public boolean tableExists(String tableName,Connection conn){
         try{
             DatabaseMetaData md = conn.getMetaData();
             ResultSet rs = md.getTables(null, null, tableName, null);
@@ -53,7 +64,7 @@ public class DatabaseUtils
         }
     }
 
-    public static void create_tables(){
+    public void create_tables(){
             buildConnection();
             try{
                 Statement statement = connection.createStatement();
