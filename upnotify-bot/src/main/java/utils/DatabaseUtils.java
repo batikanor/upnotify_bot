@@ -31,7 +31,7 @@ public class DatabaseUtils
         }
     }
 
-    public void close_connection(){
+    public void closeConnection(){
         try
         {
             if(connection != null)
@@ -64,7 +64,7 @@ public class DatabaseUtils
         }
     }
 
-    public void create_tables(){
+    public void createTables(){
             buildConnection();
             try{
                 Statement statement = connection.createStatement();
@@ -123,7 +123,7 @@ public class DatabaseUtils
                 System.err.println(e.getMessage());
             }
 
-            close_connection();
+            closeConnection();
 
         }
 
