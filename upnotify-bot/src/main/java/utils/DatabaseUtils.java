@@ -31,7 +31,7 @@ public class DatabaseUtils
         }
     }
 
-    public void close_connection(){
+    public void closeConnection(){
         try
         {
             if(connection != null)
@@ -64,7 +64,7 @@ public class DatabaseUtils
         }
     }
 
-    public void create_tables(){
+    public void createTables(){
             buildConnection();
             try{
                 Statement statement = connection.createStatement();
@@ -73,15 +73,16 @@ public class DatabaseUtils
                 // yok ise USERS tablosunu oluştur
                 if(!tableExists("USERS",connection)){
                     String create_user_table = "create table USERS\n" +
-                            "                    (\n" +
-                            "                            id integer not null\n" +
-                            "            constraint users_pk\n" +
-                            "            primary key autoincrement,\n" +
-                            "                    userName text\n" +
+                            "(\n" +
+                            "\ttelegramId INTEGER\n" +
+                            "\t\tconstraint USERS_pk\n" +
+                            "\t\t\tprimary key autoincrement,\n" +
+                            "\tcheckLevel int\n" +
                             ");\n" +
                             "\n" +
-                            "            create unique index users_id_uindex\n" +
-                            "            on users (id);" ;
+                            "create unique index USERS_telegramId_uindex\n" +
+                            "\ton USERS (telegramId);\n" +
+                            "\n" ;
 
                     try {
                         statement.executeQuery(create_user_table);
@@ -98,13 +99,15 @@ public class DatabaseUtils
                 if(!tableExists("WEB_PAGES",connection)){
                     String create_webpages_table = "create table WEB_PAGES\n" +
                             "(\n" +
-                            "\tid int\n" +
+                            "\tid INTEGER\n" +
                             "\t\tconstraint WEB_PAGES_pk\n" +
-                            "\t\t\tprimary key autoincrement\n" +
+                            "\t\t\tprimary key autoincrement,\n" +
+                            "\taddress String,\n" +
+                            "\tlastChecked String\n" +
                             ");\n" +
                             "\n" +
                             "create unique index WEB_PAGES_id_uindex\n" +
-                            "\ton WEB_PAGES (id);\n";
+                            "\ton WEB_PAGES (id);";
 
                     try {
                         statement.executeQuery(create_webpages_table);
@@ -117,13 +120,40 @@ public class DatabaseUtils
                     //WEB_PAGES table allready exists
                 }
 
+                // yok ise WEB_PAGES tablosunu oluştur
+                if(!tableExists("REQUESTS",connection)){
+                    String create_requests_table = "create table REQUESTS\n" +
+                            "(\n" +
+                            "\trequestId INTEGER\n" +
+                            "\t\tconstraint REQUESTS_pk\n" +
+                            "\t\t\tprimary key autoincrement,\n" +
+                            "\ttelegramId int,\n" +
+                            "\tsiteId int\n" +
+                            ");\n" +
+                            "\n" +
+                            "create unique index REQUESTS_requestId_uindex\n" +
+                            "\ton REQUESTS (requestId);\n";
+
+                    try {
+                        statement.executeQuery(create_requests_table);
+                        System.out.print("REQUESTS table has created");
+                    } catch (SQLException e){
+                        System.err.println(e.getMessage());
+                    }
+                }else{
+                    System.out.println("REQUESTS table already exists");
+                    //WEB_PAGES table allready exists
+                }
+
+
 
 
             }catch (SQLException e){
                 System.err.println(e.getMessage());
             }
 
-            close_connection();
+
+            closeConnection();
 
         }
 

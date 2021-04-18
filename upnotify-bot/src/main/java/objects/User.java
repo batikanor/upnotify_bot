@@ -1,6 +1,6 @@
 package objects;
 
 public class User {
-    public int id;
-    public String userName;
+    public int telegramId;
+    public int checkLevel;
 }

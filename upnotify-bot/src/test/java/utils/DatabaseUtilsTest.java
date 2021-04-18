@@ -14,8 +14,8 @@ import utils.DatabaseUtils;
 public class DatabaseUtilsTest {
 
     @Test
-    public void check_tables(){
-        DatabaseUtils.getDatabaseUtils().create_tables();
+    public void createTablesTest(){
+        DatabaseUtils.getDatabaseUtils().createTables();
     }
 
 
