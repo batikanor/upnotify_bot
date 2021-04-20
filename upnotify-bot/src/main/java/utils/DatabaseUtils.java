@@ -71,82 +71,85 @@ public class DatabaseUtils
                 statement.setQueryTimeout(30);  // set timeout to 30 sec.
 
                 // yok ise USERS tablosunu oluştur
-                if(!tableExists("USERS",connection)){
-                    String create_user_table = "create table USERS\n" +
+                if(!tableExists("USER",connection)){
+                    String create_user_table = "create table USER\n" +
                             "(\n" +
                             "\ttelegramId INTEGER\n" +
-                            "\t\tconstraint USERS_pk\n" +
+                            "\t\tconstraint USER_pk\n" +
                             "\t\t\tprimary key autoincrement,\n" +
-                            "\tcheckLevel int\n" +
+                            "\tcheckLevel int default 3,\n" +
+                            "\tuserName String\n" +
                             ");\n" +
                             "\n" +
-                            "create unique index USERS_telegramId_uindex\n" +
-                            "\ton USERS (telegramId);\n" +
+                            "create unique index USER_telegramId_uindex\n" +
+                            "\ton USER (telegramId);\n" +
                             "\n" ;
 
                     try {
                         statement.executeQuery(create_user_table);
-                        System.out.print("USERS table has created");
+                        System.out.print("USER table has created");
                     } catch (SQLException e){
                         System.err.println(e.getMessage());
                     }
                 }
                 else{
-                    System.out.println("USERS table already exists");
+                    System.out.println("USER table already exists");
                     //USERS table allready exists
                 }
                 // yok ise WEB_PAGES tablosunu oluştur
-                if(!tableExists("WEB_PAGES",connection)){
-                    String create_webpages_table = "create table WEB_PAGES\n" +
+                if(!tableExists("SNAPSHOT",connection)){
+                    String create_webpages_table = "create table SNAPSHOT\n" +
                             "(\n" +
-                            "\tid INTEGER\n" +
-                            "\t\tconstraint WEB_PAGES_pk\n" +
+                            "\tsnapshotId INTEGER\n" +
+                            "\t\tconstraint SNAPSHOT_pk\n" +
                             "\t\t\tprimary key autoincrement,\n" +
-                            "\taddress String,\n" +
-                            "\tlastChecked String\n" +
+                            "\turl String\n" +
                             ");\n" +
                             "\n" +
-                            "create unique index WEB_PAGES_id_uindex\n" +
-                            "\ton WEB_PAGES (id);";
+                            "create unique index SNAPSHOT_snapshotId_uindex\n" +
+                            "\ton SNAPSHOT (snapshotId);\n";
 
                     try {
                         statement.executeQuery(create_webpages_table);
-                        System.out.print("WEB_PAGES table has created");
+                        System.out.print("SNAPSHOT table has created");
                     } catch (SQLException e){
                         System.err.println(e.getMessage());
                     }
                 }else{
-                    System.out.println("WEB_PAGES table already exists");
+                    System.out.println("SNAPSHOT table already exists");
                     //WEB_PAGES table allready exists
                 }
 
                 // yok ise WEB_PAGES tablosunu oluştur
-                if(!tableExists("REQUESTS",connection)){
-                    String create_requests_table = "create table REQUESTS\n" +
+                if(!tableExists("REQUEST",connection)){
+                    String create_requests_table = "create table REQUEST\n" +
                             "(\n" +
-                            "\trequestId INTEGER\n" +
-                            "\t\tconstraint REQUESTS_pk\n" +
-                            "\t\t\tprimary key autoincrement,\n" +
-                            "\ttelegramId int,\n" +
-                            "\tsiteId int\n" +
+                            "    requestId     INTEGER\n" +
+                            "        constraint REQUEST_pk\n" +
+                            "            primary key autoincrement,\n" +
+                            "    telegramId    int\n" +
+                            "        references USER,\n" +
+                            "    snapshotId    int,\n" +
+                            "        references SNAPSHOT\n" +
+                            "    checkInterval int,\n" +
+                            "    lastCheckUnix int\n" +
                             ");\n" +
                             "\n" +
-                            "create unique index REQUESTS_requestId_uindex\n" +
-                            "\ton REQUESTS (requestId);\n";
+                            "create unique index REQUEST_requestId_uindex\n" +
+                            "    on REQUEST (requestId);\n" +
+                            "\n";
+
 
                     try {
                         statement.executeQuery(create_requests_table);
-                        System.out.print("REQUESTS table has created");
+                        System.out.print("REQUEST table has created");
                     } catch (SQLException e){
                         System.err.println(e.getMessage());
                     }
                 }else{
-                    System.out.println("REQUESTS table already exists");
+                    System.out.println("REQUEST table already exists");
                     //WEB_PAGES table allready exists
                 }
-
-
-
 
             }catch (SQLException e){
                 System.err.println(e.getMessage());
@@ -156,6 +159,10 @@ public class DatabaseUtils
             closeConnection();
 
         }
+
+
+
+
 
 
 
