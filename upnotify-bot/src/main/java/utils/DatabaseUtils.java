@@ -226,8 +226,59 @@ public class DatabaseUtils
                 System.err.println(e.getMessage());
             }
 
+        }
+
+        public void insertSnapshot(String url,Blob screenshot,String siteContentHash){
+            buildConnection();
+            try{
+                Statement statement = connection.createStatement();
+                statement.setQueryTimeout(30);  // set timeout to 30 sec.
+
+                String insertSnapshotQ= String.format("INSERT INTO SNAPSHOT(url,screenshot,siteContentHash)" +
+                        "VALUES(%s,%b,%s)",url,screenshot,siteContentHash);
+
+                statement.executeQuery(insertSnapshotQ);
+
+            }catch(SQLException e){
+                System.err.println(e.getMessage());
+            }
+        }
+
+        public void insertRequest(int telegramId,String userName, int checkInterval,String url,Blob screenshot,
+                                  String siteContentHash){
+
+            buildConnection();
+            try{
+                Statement statement = connection.createStatement();
+                statement.setQueryTimeout(30);  // set timeout to 30 sec.
+
+
+                // insert user if not exists
+                User checkUser = selectUserFromId(telegramId);
+                if(checkUser.userName == null){
+                    insertUser(telegramId,checkInterval,userName);
+                }
+
+
+                // insert snapshot and get the id
+                insertSnapshot(url,screenshot,siteContentHash);
+                int snapshotId = statement.executeQuery("SELECT last_insert_rowid()").getInt(0);
+
+                // insert Request
+                int lastCheckedUnix = 100;
+                String insertReqQuery = String.format("INSERT INTO REQUEST" +
+                        "(telegramId,snapshotId,checkInterval,lastCheckedUnix) VALUES" +
+                        "(%d,%d,%d,%d)",telegramId,snapshotId,checkInterval,lastCheckedUnix);
+                statement.executeQuery(insertReqQuery);
+
+
+            }catch(SQLException e){
+                System.err.println(e.getMessage());
+            }
 
         }
+
+
 
 
 

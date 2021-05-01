@@ -13,6 +13,8 @@ import org.junit.Test;
 import utils.Config;
 import utils.DatabaseUtils;
 
+import javax.validation.constraints.Null;
+
 public class DatabaseUtilsTest {
 
     @Test
@@ -41,9 +43,12 @@ public class DatabaseUtilsTest {
 
     @Test
     public void selectUserFromIdTest(){
-        int myTelegramId = 3;
+        int myTelegramId = 33;
 
         User selectedUser = DatabaseUtils.getDatabaseUtils().selectUserFromId(myTelegramId);
+        if(selectedUser.userName == null){
+            System.out.println("no user");
+        }
         System.out.println("selected Users info:");
         System.out.println(String.format("telegramId: %d\ncheckLevel: %d\nuserName:" +
                 "%s",selectedUser.telegramId,selectedUser.checkLevel,selectedUser.userName));
