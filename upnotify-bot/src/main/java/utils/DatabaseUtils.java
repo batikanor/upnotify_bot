@@ -3,6 +3,7 @@ package utils;
 import objects.User;
 
 import javax.xml.crypto.Data;
+import java.io.InputStream;
 import java.sql.*;
 import java.util.ArrayList;
 
@@ -184,11 +185,13 @@ public class DatabaseUtils
             }catch(SQLException e){
                 System.err.println(e.getMessage());
             }
+            closeConnection();
             return userList;
+
         }
 
         //select a user with a specific telegramId
-        public User selectUserFromId(int telegramId){
+        public User retrieveUserFromId(int telegramId){
             User selectedUser = new User();
             buildConnection();
             try{
@@ -206,7 +209,9 @@ public class DatabaseUtils
             }catch(SQLException e){
                 System.err.println(e.getMessage());
             }
+            closeConnection();
             return selectedUser;
+
         }
 
         // insert a user into USER table
@@ -225,26 +230,48 @@ public class DatabaseUtils
             }catch(SQLException e){
                 System.err.println(e.getMessage());
             }
+            closeConnection();
 
         }
 
-        public void insertSnapshot(String url,Blob screenshot,String siteContentHash){
+        public void insertSnapshot(String url, InputStream screenshot, String siteContentHash){
             buildConnection();
             try{
-                Statement statement = connection.createStatement();
-                statement.setQueryTimeout(30);  // set timeout to 30 sec.
+                String insertSnapshotQ= "INSERT INTO SNAPSHOT(url,screenshot,siteContentHash)" + "VALUES(?,?,?)";
 
-                String insertSnapshotQ= String.format("INSERT INTO SNAPSHOT(url,screenshot,siteContentHash)" +
-                        "VALUES(%s,%b,%s)",url,screenshot,siteContentHash);
-
-                statement.executeQuery(insertSnapshotQ);
+                PreparedStatement ps = connection.prepareStatement(insertSnapshotQ);
+                ps.setString(1,url);
+                ps.setBinaryStream(2,screenshot);
+                ps.setString(3,siteContentHash);
+                ps.execute();
 
             }catch(SQLException e){
                 System.err.println(e.getMessage());
             }
+            closeConnection();
         }
 
-        public void insertRequest(int telegramId,String userName, int checkInterval,String url,Blob screenshot,
+
+        public InputStream retrieveImageInputStreamFromSnapshotId(int SnapshotId){
+            buildConnection();
+            InputStream is = null;
+            try{
+                Statement statement = connection.createStatement();
+                String retrieveSnapshot = String.format("SELECT screenshot FROM SNAPSHOT" +
+                        "WHERE SnapshotId = %d",SnapshotId);
+                ResultSet rs = statement.executeQuery(retrieveSnapshot);
+                Blob ablob = rs.getBlob("screenshot");
+                is = ablob.getBinaryStream();
+
+            }catch(SQLException e){
+                System.err.println(e.getMessage());
+            }
+        closeConnection();
+        return is;
+        }
+
+
+        public void insertRequest(int telegramId,String userName, int checkInterval,String url,InputStream screenshot,
                                   String siteContentHash){
 
             buildConnection();
@@ -254,7 +281,7 @@ public class DatabaseUtils
 
 
                 // insert user if not exists
-                User checkUser = selectUserFromId(telegramId);
+                User checkUser = retrieveUserFromId(telegramId);
                 if(checkUser.userName == null){
                     insertUser(telegramId,checkInterval,userName);
                 }
