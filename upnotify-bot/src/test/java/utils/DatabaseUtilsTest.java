@@ -32,10 +32,21 @@ public class DatabaseUtilsTest {
 
     @Test
     public void insertUserTest(){
+        int myTelegramId = 4;
         int myCheckLevel = 1;
         String myUserName = "noob";
-        DatabaseUtils.getDatabaseUtils().insertUser(myCheckLevel,myUserName);
+        DatabaseUtils.getDatabaseUtils().insertUser(myTelegramId,myCheckLevel,myUserName);
         selectUsersTest();
+    }
+
+    @Test
+    public void selectUserFromIdTest(){
+        int myTelegramId = 3;
+
+        User selectedUser = DatabaseUtils.getDatabaseUtils().selectUserFromId(myTelegramId);
+        System.out.println("selected Users info:");
+        System.out.println(String.format("telegramId: %d\ncheckLevel: %d\nuserName:" +
+                "%s",selectedUser.telegramId,selectedUser.checkLevel,selectedUser.userName));
     }
 
 

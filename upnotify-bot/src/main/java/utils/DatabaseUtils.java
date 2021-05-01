@@ -187,15 +187,38 @@ public class DatabaseUtils
             return userList;
         }
 
-        // insert a user into USER table
-        public void insertUser(int checkLevel, String userName){
+        //select a user with a specific telegramId
+        public User selectUserFromId(int telegramId){
+            User selectedUser = new User();
             buildConnection();
             try{
                 Statement statement = connection.createStatement();
                 statement.setQueryTimeout(30);  // set timeout to 30 sec.
 
-                String insertQuery = String.format("INSERT INTO USER(checkLevel,userName)\n"+
-                        "VALUES(%d,'%s');",checkLevel,userName);
+                String selectFromIdQuery = String.format("SELECT * FROM USER\n" +
+                        "WHERE USER.telegramId = %d;",telegramId);
+                ResultSet rs = statement.executeQuery(selectFromIdQuery);
+
+                selectedUser.telegramId = rs.getInt("telegramId");
+                selectedUser.userName = rs.getString("userName");
+                selectedUser.checkLevel = rs.getInt("checkLevel");
+
+            }catch(SQLException e){
+                System.err.println(e.getMessage());
+            }
+            return selectedUser;
+        }
+
+        // insert a user into USER table
+        public void insertUser(int telegramId,int checkLevel, String userName){
+            buildConnection();
+            try{
+                Statement statement = connection.createStatement();
+                statement.setQueryTimeout(30);  // set timeout to 30 sec.
+
+                String insertQuery = String.format("INSERT INTO USER(" +
+                        "telegramId,checkLevel,userName)\n"+
+                        "VALUES(%d,%d,'%s');",telegramId,checkLevel,userName);
 
                 statement.executeQuery(insertQuery);
 
