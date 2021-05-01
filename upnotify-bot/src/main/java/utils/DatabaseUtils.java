@@ -1,7 +1,10 @@
 package utils;
 
+import objects.User;
+
 import javax.xml.crypto.Data;
 import java.sql.*;
+import java.util.ArrayList;
 
 public class DatabaseUtils
 {
@@ -100,10 +103,12 @@ public class DatabaseUtils
                 if(!tableExists("SNAPSHOT",connection)){
                     String create_webpages_table = "create table SNAPSHOT\n" +
                             "(\n" +
-                            "\tsnapshotId INTEGER\n" +
+                            "\tsnapshotId INTEGER not null\n" +
                             "\t\tconstraint SNAPSHOT_pk\n" +
                             "\t\t\tprimary key autoincrement,\n" +
-                            "\turl String\n" +
+                            "\turl String,\n" +
+                            "\tscreenshot BLOB,\n" +
+                            "\tsiteContentHash String\n" +
                             ");\n" +
                             "\n" +
                             "create unique index SNAPSHOT_snapshotId_uindex\n" +
@@ -157,6 +162,47 @@ public class DatabaseUtils
 
 
             closeConnection();
+
+        }
+
+        //Select all users from USER table and return a user list
+        public ArrayList<User> selectUsers(){
+
+            ArrayList<User> userList = new ArrayList<User>();
+            buildConnection();
+            try{
+                Statement statement = connection.createStatement();
+                statement.setQueryTimeout(30);  // set timeout to 30 sec.
+
+                String selectQuery = "SELECT * FROM USER";
+                ResultSet rs = statement.executeQuery(selectQuery);
+                while (rs.next()) {
+                    User selectedUser = new User(rs.getInt("telegramId"),
+                            rs.getInt("checkLevel"), rs.getString("userName"));
+                    userList.add(selectedUser);
+                }
+            }catch(SQLException e){
+                System.err.println(e.getMessage());
+            }
+            return userList;
+        }
+
+        // insert a user into USER table
+        public void insertUser(int checkLevel, String userName){
+            buildConnection();
+            try{
+                Statement statement = connection.createStatement();
+                statement.setQueryTimeout(30);  // set timeout to 30 sec.
+
+                String insertQuery = String.format("INSERT INTO USER(checkLevel,userName)\n"+
+                        "VALUES(%d,'%s');",checkLevel,userName);
+
+                statement.executeQuery(insertQuery);
+
+            }catch(SQLException e){
+                System.err.println(e.getMessage());
+            }
+
 
         }
 

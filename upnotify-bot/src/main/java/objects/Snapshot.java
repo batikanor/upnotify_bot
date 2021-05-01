@@ -1,8 +1,11 @@
 package objects;
 
+import java.sql.Blob;
+
 public class Snapshot {
     public int snapshotId;
     public String url ;
-    // TODO screenshot blob
-    // TODO site content hash
+    public Blob screenshot;
+    public String siteContentHash;
+
 }
