@@ -1,6 +1,5 @@
 package utils;
 
-import javax.xml.crypto.Data;
 import java.sql.*;
 
 public class DatabaseUtils
@@ -69,7 +68,8 @@ public class DatabaseUtils
             try{
                 Statement statement = connection.createStatement();
                 statement.setQueryTimeout(30);  // set timeout to 30 sec.
-
+                
+                
                 // yok ise USERS tablosunu oluştur
                 if(!tableExists("USERS",connection)){
                     String create_user_table = "create table USERS\n" +
@@ -92,7 +92,7 @@ public class DatabaseUtils
                 }
                 else{
                     System.out.println("USERS table already exists");
-                    //USERS table allready exists
+                    //USERS table already exists
                 }
                 // yok ise WEB_PAGES tablosunu oluştur
                 if(!tableExists("WEB_PAGES",connection)){
@@ -114,7 +114,7 @@ public class DatabaseUtils
                     }
                 }else{
                     System.out.println("WEB_PAGES table already exists");
-                    //WEB_PAGES table allready exists
+                    //WEB_PAGES table already exists
                 }
 
 

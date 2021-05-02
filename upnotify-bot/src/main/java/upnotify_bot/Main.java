@@ -5,9 +5,6 @@ import org.telegram.telegrambots.meta.TelegramBotsApi;
 import org.telegram.telegrambots.meta.exceptions.TelegramApiException;
 import org.telegram.telegrambots.updatesreceivers.DefaultBotSession;
 
-import utils.Config;
-import utils.DatabaseUtils;
-import utils.MultiprocessingUtils;
 
 /**
  * Main class of the upnotify-bot project, here the telegram bot API will be initialized, bot will be instantiated and registered.
