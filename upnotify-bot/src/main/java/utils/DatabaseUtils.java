@@ -1,7 +1,11 @@
 package utils;
 
+import objects.User;
+
 import javax.xml.crypto.Data;
+import java.io.InputStream;
 import java.sql.*;
+import java.util.ArrayList;
 
 public class DatabaseUtils
 {
@@ -100,10 +104,12 @@ public class DatabaseUtils
                 if(!tableExists("SNAPSHOT",connection)){
                     String create_webpages_table = "create table SNAPSHOT\n" +
                             "(\n" +
-                            "\tsnapshotId INTEGER\n" +
+                            "\tsnapshotId INTEGER not null\n" +
                             "\t\tconstraint SNAPSHOT_pk\n" +
                             "\t\t\tprimary key autoincrement,\n" +
-                            "\turl String\n" +
+                            "\turl String,\n" +
+                            "\tscreenshot BLOB,\n" +
+                            "\tsiteContentHash String\n" +
                             ");\n" +
                             "\n" +
                             "create unique index SNAPSHOT_snapshotId_uindex\n" +
@@ -159,6 +165,147 @@ public class DatabaseUtils
             closeConnection();
 
         }
+
+        //Select all users from USER table and return a user list
+        public ArrayList<User> selectUsers(){
+
+            ArrayList<User> userList = new ArrayList<User>();
+            buildConnection();
+            try{
+                Statement statement = connection.createStatement();
+                statement.setQueryTimeout(30);  // set timeout to 30 sec.
+
+                String selectQuery = "SELECT * FROM USER";
+                ResultSet rs = statement.executeQuery(selectQuery);
+                while (rs.next()) {
+                    User selectedUser = new User(rs.getInt("telegramId"),
+                            rs.getInt("checkLevel"), rs.getString("userName"));
+                    userList.add(selectedUser);
+                }
+            }catch(SQLException e){
+                System.err.println(e.getMessage());
+            }
+            closeConnection();
+            return userList;
+
+        }
+
+        //select a user with a specific telegramId
+        public User retrieveUserFromId(int telegramId){
+            User selectedUser = new User();
+            buildConnection();
+            try{
+                Statement statement = connection.createStatement();
+                statement.setQueryTimeout(30);  // set timeout to 30 sec.
+
+                String selectFromIdQuery = String.format("SELECT * FROM USER\n" +
+                        "WHERE USER.telegramId = %d;",telegramId);
+                ResultSet rs = statement.executeQuery(selectFromIdQuery);
+
+                selectedUser.telegramId = rs.getInt("telegramId");
+                selectedUser.userName = rs.getString("userName");
+                selectedUser.checkLevel = rs.getInt("checkLevel");
+
+            }catch(SQLException e){
+                System.err.println(e.getMessage());
+            }
+            closeConnection();
+            return selectedUser;
+
+        }
+
+        // insert a user into USER table
+        public void insertUser(int telegramId,int checkLevel, String userName){
+            buildConnection();
+            try{
+                Statement statement = connection.createStatement();
+                statement.setQueryTimeout(30);  // set timeout to 30 sec.
+
+                String insertQuery = String.format("INSERT INTO USER(" +
+                        "telegramId,checkLevel,userName)\n"+
+                        "VALUES(%d,%d,'%s');",telegramId,checkLevel,userName);
+
+                statement.executeQuery(insertQuery);
+
+            }catch(SQLException e){
+                System.err.println(e.getMessage());
+            }
+            closeConnection();
+
+        }
+
+        public void insertSnapshot(String url, InputStream screenshot, String siteContentHash){
+            buildConnection();
+            try{
+                String insertSnapshotQ= "INSERT INTO SNAPSHOT(url,screenshot,siteContentHash)" + "VALUES(?,?,?)";
+
+                PreparedStatement ps = connection.prepareStatement(insertSnapshotQ);
+                ps.setString(1,url);
+                ps.setBinaryStream(2,screenshot);
+                ps.setString(3,siteContentHash);
+                ps.execute();
+
+            }catch(SQLException e){
+                System.err.println(e.getMessage());
+            }
+            closeConnection();
+        }
+
+
+        public InputStream retrieveImageInputStreamFromSnapshotId(int SnapshotId){
+            buildConnection();
+            InputStream is = null;
+            try{
+                Statement statement = connection.createStatement();
+                String retrieveSnapshot = String.format("SELECT screenshot FROM SNAPSHOT" +
+                        "WHERE SnapshotId = %d",SnapshotId);
+                ResultSet rs = statement.executeQuery(retrieveSnapshot);
+                Blob ablob = rs.getBlob("screenshot");
+                is = ablob.getBinaryStream();
+
+            }catch(SQLException e){
+                System.err.println(e.getMessage());
+            }
+        closeConnection();
+        return is;
+        }
+
+
+        public void insertRequest(int telegramId,String userName, int checkInterval,String url,InputStream screenshot,
+                                  String siteContentHash){
+
+            buildConnection();
+            try{
+                Statement statement = connection.createStatement();
+                statement.setQueryTimeout(30);  // set timeout to 30 sec.
+
+
+                // insert user if not exists
+                User checkUser = retrieveUserFromId(telegramId);
+                if(checkUser.userName == null){
+                    insertUser(telegramId,checkInterval,userName);
+                }
+
+
+                // insert snapshot and get the id
+                insertSnapshot(url,screenshot,siteContentHash);
+                int snapshotId = statement.executeQuery("SELECT last_insert_rowid()").getInt(0);
+
+                // insert Request
+                int lastCheckedUnix = 100;
+                String insertReqQuery = String.format("INSERT INTO REQUEST" +
+                        "(telegramId,snapshotId,checkInterval,lastCheckedUnix) VALUES" +
+                        "(%d,%d,%d,%d)",telegramId,snapshotId,checkInterval,lastCheckedUnix);
+                statement.executeQuery(insertReqQuery);
+
+
+            }catch(SQLException e){
+                System.err.println(e.getMessage());
+            }
+
+        }
+
+
 
 
 
