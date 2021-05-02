@@ -49,6 +49,7 @@ public class MessageUtils {
 		SendMessage debugMessage = new SendMessage(chatId, debugText); // Create a SendMessage object with mandatory fields
 		Message mg;
 	
+	
 		try {
 			mg = ub.execute(debugMessage); 
         } catch (TelegramApiException e) {
@@ -134,6 +135,10 @@ public class MessageUtils {
 		return true;
 		
 		
+		
+	}
+	
+	public boolean insertRequest() {
 		
 	}
 	

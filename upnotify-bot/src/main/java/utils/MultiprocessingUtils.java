@@ -55,14 +55,22 @@ public class MultiprocessingUtils implements MultiprocessingUtilsInterface {
 		}
 		return single_instance;
 	}
-	
+	/**
+	 *  Runs new updates received
+	 */
 	private ExecutorService executor;
+	/**
+	 *  Handles already existing upnotify requests
+	 */
 	private ExecutorService upnotifyExecutor;
 	
 	private MultiprocessingUtils() {
-		int tps = getThreadPoolSize(Config.getConfig().THREAD_PER_CORE);
-		this.executor = Executors.newFixedThreadPool(tps);
-		this.upnotifyExecutor = Executors.newFixedThreadPool(tps);
+		// tps: thread pool size
+		int tps_update = getThreadPoolSize(Config.getConfig().THREAD_PER_CORE_UPDATE);
+		int tps_upnotify = getThreadPoolSize(Config.getConfig().THREAD_PER_CORE_UPNOTIFY);
+		this.executor = Executors.newFixedThreadPool(tps_update);
+		this.upnotifyExecutor = Executors.newFixedThreadPool(tps_upnotify);
+		
 	}
 	
 	/**

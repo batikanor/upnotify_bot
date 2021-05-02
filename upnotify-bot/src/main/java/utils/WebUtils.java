@@ -37,6 +37,10 @@ interface WebUtilsInterface{
 	 * @return
 	 */
 	public String getHTMLBodyStringFromUrl(String url);
+	
+	
+	// @Todo implement below function
+	//public String getResponseHash(String url);
 }
 
 public class WebUtils implements WebUtilsInterface{
@@ -222,9 +226,7 @@ public class WebUtils implements WebUtilsInterface{
 		return response;
 	}
 	
-	public String getResponseHash(String url) {
-		
-	}
+
 
 //	public void compareSeleniumScreenshots(File f1, File f2) {
 //		FileUtils.getFile()

@@ -36,6 +36,9 @@ public class UpnotifyBot extends TelegramLongPollingBot {
 			System.out.println("Properties file couldn't be loaded");
 			e.printStackTrace();
 		}
+		
+		
+		
 
 	}
 

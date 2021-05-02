@@ -20,7 +20,8 @@ public class Config {
 	
 	// These are all declared as final, so they all MUST be initialized within the constructor.
 	
-	public final int THREAD_PER_CORE;
+	public final int THREAD_PER_CORE_UPNOTIFY;
+	public final int THREAD_PER_CORE_UPDATE;
 	public final int WAIT_UNTIL_MESSAGE_DELETE;
 	public final int WAIT_STATIC_CHECK;
 	public final OS os; 
@@ -60,8 +61,8 @@ public class Config {
 			
 		}
 		
-
-		this.THREAD_PER_CORE = Integer.parseInt(prop.getProperty("THREAD_PER_CORE"));
+		this.THREAD_PER_CORE_UPDATE = Integer.parseInt(prop.getProperty("THREAD_PER_CORE_UPDATE"));
+		this.THREAD_PER_CORE_UPNOTIFY = Integer.parseInt(prop.getProperty("THREAD_PER_CORE_UPNOTIFY"));
 		this.WAIT_UNTIL_MESSAGE_DELETE = Integer.parseInt(prop.getProperty("WAIT_UNTIL_MESSAGE_DELETE"));
 		this.WAIT_STATIC_CHECK = Integer.parseInt(prop.getProperty("WAIT_STATIC_CHECK"));
 		System.out.println();

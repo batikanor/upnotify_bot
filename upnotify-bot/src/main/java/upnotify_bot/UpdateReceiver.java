@@ -34,7 +34,7 @@ public class UpdateReceiver implements Runnable{
 	 */
 	public void run() {
 		String threadId = Long.toString(Thread.currentThread().getId());
-
+		
 		//System.out.println(update);
 		
 		if (update.hasMessage()) {
