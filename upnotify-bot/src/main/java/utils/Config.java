@@ -24,6 +24,18 @@ public class Config {
 	public final int THREAD_PER_CORE_UPDATE;
 	public final int WAIT_UNTIL_MESSAGE_DELETE;
 	public final int WAIT_STATIC_CHECK;
+	
+	public final int DEFAULT_LEVEL;
+	public final int LEVEL_0_MIN_WAIT;
+	public final int LEVEL_1_MIN_WAIT;
+	public final int LEVEL_2_MIN_WAIT;
+	public final int LEVEL_3_MIN_WAIT;
+	public final int LEVEL_4_MIN_WAIT;
+	public final int LEVEL_5_MIN_WAIT;
+
+	
+	
+	
 	public final OS os; 
 	
 	private static Config single_instance = null;
@@ -65,6 +77,13 @@ public class Config {
 		this.THREAD_PER_CORE_UPNOTIFY = Integer.parseInt(prop.getProperty("THREAD_PER_CORE_UPNOTIFY"));
 		this.WAIT_UNTIL_MESSAGE_DELETE = Integer.parseInt(prop.getProperty("WAIT_UNTIL_MESSAGE_DELETE"));
 		this.WAIT_STATIC_CHECK = Integer.parseInt(prop.getProperty("WAIT_STATIC_CHECK"));
+		this.DEFAULT_LEVEL = Integer.parseInt(prop.getProperty("DEFAULT_LEVEL"));
+		this.LEVEL_0_MIN_WAIT = Integer.parseInt(prop.getProperty("LEVEL_0_MIN_WAIT"));
+		this.LEVEL_1_MIN_WAIT = Integer.parseInt(prop.getProperty("LEVEL_1_MIN_WAIT"));
+		this.LEVEL_2_MIN_WAIT = Integer.parseInt(prop.getProperty("LEVEL_2_MIN_WAIT"));
+		this.LEVEL_3_MIN_WAIT = Integer.parseInt(prop.getProperty("LEVEL_3_MIN_WAIT"));
+		this.LEVEL_4_MIN_WAIT = Integer.parseInt(prop.getProperty("LEVEL_4_MIN_WAIT"));
+		this.LEVEL_5_MIN_WAIT = Integer.parseInt(prop.getProperty("LEVEL_5_MIN_WAIT"));
 		System.out.println();
 		//this.os = prop.getProperty("OS").toLowerCase().contentEquals("linux") ? OS.LINUX : OS.WIN;
 		String osNameProp = prop.getProperty("OS").toLowerCase();

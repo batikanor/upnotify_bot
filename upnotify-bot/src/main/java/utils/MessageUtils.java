@@ -1,11 +1,16 @@
 package utils;
 
 
+import java.io.File;
+import java.io.FileInputStream;
 import java.net.HttpURLConnection;
 import java.net.URL;
 
 import org.telegram.telegrambots.meta.api.methods.send.SendMessage;
+import org.telegram.telegrambots.meta.api.methods.send.SendPhoto;
 import org.telegram.telegrambots.meta.api.methods.updatingmessages.DeleteMessage;
+
+import org.telegram.telegrambots.meta.api.objects.InputFile;
 import org.telegram.telegrambots.meta.api.objects.Message;
 import org.telegram.telegrambots.meta.api.objects.Update;
 import org.telegram.telegrambots.meta.exceptions.TelegramApiException;
@@ -137,9 +142,22 @@ public class MessageUtils {
 		
 		
 	}
-	
-	public boolean insertRequest() {
-		
+//	
+//	public boolean insertRequest() {
+//		
+//	}
+	public boolean sendWelcomeMessage(UpnotifyBot ub, String threadId, String chatId, Update update) {
+		SendPhoto sp = new SendPhoto();
+		sp.setChatId(chatId);
+		sp.setPhoto(new InputFile( new File ("src/main/resources/IMAGES/welcome-red-sign-760.png")));
+		try {
+			ub.execute(sp);
+		} catch (TelegramApiException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+			return false;
+		}
+		return true;
 	}
 	
 	
