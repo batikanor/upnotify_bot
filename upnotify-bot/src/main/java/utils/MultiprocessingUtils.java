@@ -5,8 +5,10 @@ import java.util.concurrent.Executors;
 
 import org.telegram.telegrambots.meta.api.objects.Update;
 
+import objects.Request;
 import upnotify_bot.UpdateReceiver;
 import upnotify_bot.UpnotifyBot;
+import upnotify_bot.UpnotifyReceiver;
 
 
 interface MultiprocessingUtilsInterface {
@@ -96,11 +98,14 @@ public class MultiprocessingUtils implements MultiprocessingUtilsInterface {
 	 * 
 	 */
 	public void submitUpdate(UpnotifyBot ub, Update update) {
-		System.out.println("Submtitting the update to the thread pool");
+		System.out.println("Submitting the update to the thread pool");
 		executor.submit(new UpdateReceiver(ub, update));
 	}
 	
 	
-	
+	public void submitUpnotify(Request upnotify) {
+		System.out.println("Submitting the upnotify request to the thread pool");
+		upnotifyExecutor.submit(new UpnotifyReceiver(upnotify));
+	}
 
 }

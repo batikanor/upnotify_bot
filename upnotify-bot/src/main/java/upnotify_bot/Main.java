@@ -1,9 +1,15 @@
 
 package upnotify_bot;
 
+import java.util.ArrayList;
+
 import org.telegram.telegrambots.meta.TelegramBotsApi;
 import org.telegram.telegrambots.meta.exceptions.TelegramApiException;
 import org.telegram.telegrambots.updatesreceivers.DefaultBotSession;
+
+import objects.Request;
+import utils.DatabaseUtils;
+import utils.MultiprocessingUtils;
 
 
 /**
@@ -18,9 +24,8 @@ public class Main {
 	 * @param args input arguments
 	 */
 	public static void main(String[] args) {
-		// Instantiate the TelegramBots API by RubenLagus, then register the bot
-        
 		
+		// Instantiate the TelegramBots API by RubenLagus, then register the bot
 		try {
 			TelegramBotsApi telegramBotsApi = new TelegramBotsApi(DefaultBotSession.class);
 			telegramBotsApi.registerBot(new UpnotifyBot());
@@ -31,14 +36,12 @@ public class Main {
 			e.printStackTrace();
 		}
 		
-//		// Get active upnotify list from db
-//		ArrayList<> upnotifies = DatabaseUtils.getUpnotifies();
-//		for (upnotify : upnotifies) {
-//			MultiprocessingUtils.getMultiProcessingUtils().submitUpnotify(new UpnotifyReceiver(upnotify));
+//		// Get active upnotify request list from db
+//		ArrayList<Request> upnotifies = DatabaseUtils.getRequests();
+//		for (Request upnotify : upnotifies) {
+//			MultiprocessingUtils.getMultiProcessingUtils().submitUpnotify(upnotify);
 //		}
-//		
-//		Thread.sleep(1000);
-//	
+
 		
 
 	}

@@ -1,6 +1,8 @@
 package utils;
 
 
+import objects.Request;
+import objects.Snapshot;
 import objects.User;
 
 import javax.xml.crypto.Data;
@@ -19,11 +21,28 @@ interface DatabaseUtilsInterface {
 	 * 
 	 * Level of user is default level on creation
 	 * 
-	 * @return true iff operation completed without errors
+	 * @return reference to User instance
 	 */
 	public User retrieveUserFromId(long userId, String userName);
 	
-
+	
+	/**
+	 * This function returns the list of all requests from our database.
+	 * 
+	 * Function will be called from Main.java when the code is run for the first time, so that the requests that are already present will be submitted to the UpnotifyReceiver. 
+	 * 
+	 * 
+	 * 
+	 * @return reference to list of Request instances
+	 */
+	public ArrayList<Request> getRequests();	
+	
+	/**
+	 * 
+	 * @param snapshotId
+	 * @return snapshot with resp. Id
+	 */
+	public Snapshot retrieveSnapshotFromId(int snapshotId);
 	
 	
 }
