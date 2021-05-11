@@ -3,6 +3,7 @@ package utils;
 import java.io.File;
 import java.io.IOException;
 import java.net.HttpURLConnection;
+import java.net.MalformedURLException;
 import java.net.URL;
 import java.net.URLConnection;
 import java.nio.file.Paths;
@@ -68,8 +69,18 @@ public class WebUtils implements WebUtilsInterface{
 		if (url.startsWith("http://") || url.startsWith("https://")) {
 			return url;
 		}
-		// TODO check if the site has ssl, if so return https if not return http
-		return "https://" + url; 
+		else {
+			URL site;
+			try {
+				site = new URL("https://" + url);
+				site.openConnection();
+			} 
+			catch (Exception e) {
+				//If it can't connect with https, then it's assumed as a http connection
+				return "http://" + url;
+			}
+			return "https://" + url;
+		}
 		
 	}
 	
