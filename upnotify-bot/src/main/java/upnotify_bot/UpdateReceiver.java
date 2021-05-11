@@ -5,7 +5,10 @@ import java.util.Arrays;
 
 import org.telegram.telegrambots.meta.api.objects.Message;
 import org.telegram.telegrambots.meta.api.objects.Update;
+import org.telegram.telegrambots.meta.api.objects.User;
 
+import utils.Config;
+//import objects.User;
 import utils.MessageUtils;
 
 
@@ -37,10 +40,17 @@ public class UpdateReceiver implements Runnable{
 		
 		//System.out.println(update);
 		
+		
 		if (update.hasMessage()) {
 			msg = update.getMessage();
 			String chatId = msg.getChatId().toString();
 			if (msg.hasText()) {
+				User user = msg.getFrom();
+				// check if user exists
+				// otherwise create
+				// TODO 
+				//retrieveUserFromId(user.getId(), user.getUserName());
+				
 				String msgText = msg.getText();
 				
 				// Now, depending on the text we have, and maybe the current state of the situation of our conversation within the group (group id) or with the person (from id), we will handle the message
@@ -84,6 +94,13 @@ public class UpdateReceiver implements Runnable{
 							break;
 						case "donothing":
 							break;
+					}
+				} else {
+					switch (msgText) {
+					case "hi":
+						while(!MessageUtils.getMessageUtils().sendWelcomeMessage(ub, threadId, chatId, update)) {
+							System.out.println("Error whilst sending the message, trying again...");
+						}
 					}
 				}
 			}

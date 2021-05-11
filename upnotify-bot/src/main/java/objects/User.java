@@ -1,7 +1,7 @@
 package objects;
 
 public class User {
-    public int telegramId;
+    public Long telegramId;
     public int checkLevel;
     public String userName;
 
@@ -9,7 +9,7 @@ public class User {
 
     }
 
-    public User(int telegramId,int checkLevel,String userName){
+    public User(Long telegramId,int checkLevel,String userName){
         this.telegramId = telegramId;
         this.checkLevel = checkLevel;
         this.userName = userName;

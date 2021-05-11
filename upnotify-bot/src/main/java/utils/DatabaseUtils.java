@@ -17,9 +17,11 @@ interface DatabaseUtilsInterface {
 	 * 
 	 * if user not exists, creates it as well.
 	 * 
+	 * Level of user is default level on creation
+	 * 
 	 * @return true iff operation completed without errors
 	 */
-	public User retrieveUserFromId(long userId);
+	public User retrieveUserFromId(long userId, String userName);
 	
 
 	
@@ -41,7 +43,9 @@ public class DatabaseUtils
             single_instance = new DatabaseUtils();
             System.out.println("Instance of 'DatabaseUtils' has been created");
         }
+        
         return single_instance;
+    
     }
 
     private DatabaseUtils(){
