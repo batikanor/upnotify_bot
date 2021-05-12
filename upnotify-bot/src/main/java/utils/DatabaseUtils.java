@@ -188,6 +188,7 @@ public class DatabaseUtils
                             "    snapshotId    int,\n" +
                             "        references SNAPSHOT\n" +
                             "    checkInterval int,\n" +
+                            "   isActive INTEGER, \n"+
                             "    lastCheckUnix int\n" +
                             ");\n" +
                             "\n" +
@@ -228,7 +229,7 @@ public class DatabaseUtils
                 String selectQuery = "SELECT * FROM USER";
                 ResultSet rs = statement.executeQuery(selectQuery);
                 while (rs.next()) {
-                    User selectedUser = new User(rs.getInt("telegramId"),
+                    User selectedUser = new User(rs.getLong("telegramId"),
                             rs.getInt("checkLevel"), rs.getString("userName"));
                     userList.add(selectedUser);
                 }
@@ -252,7 +253,7 @@ public class DatabaseUtils
                         "WHERE USER.telegramId = %d;",telegramId);
                 ResultSet rs = statement.executeQuery(selectFromIdQuery);
 
-                selectedUser.telegramId = rs.getInt("telegramId");
+                selectedUser.telegramId = rs.getLong("telegramId");
                 selectedUser.userName = rs.getString("userName");
                 selectedUser.checkLevel = rs.getInt("checkLevel");
 
