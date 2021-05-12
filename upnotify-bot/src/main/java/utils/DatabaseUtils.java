@@ -50,7 +50,7 @@ interface DatabaseUtilsInterface {
 /**
  * @todo Implement DatabaseUtilsInterface
  */
-public class DatabaseUtils
+public class DatabaseUtils implements DatabaseUtilsInterface
 {
     public Connection connection = null;
     public String url = "jdbc:sqlite:src/main/resources/upnotify.db";
@@ -96,7 +96,7 @@ public class DatabaseUtils
 
 
     //tablo dbde var ise true yok ise false döndüren bir fonksiyon
-    public boolean tableExists(String tableName,Connection conn){
+    private boolean tableExists(String tableName,Connection conn){
         try{
             DatabaseMetaData md = conn.getMetaData();
             ResultSet rs = md.getTables(null, null, tableName, null);
@@ -218,7 +218,7 @@ public class DatabaseUtils
         }
 
         //Select all users from USER table and return a user list
-        public ArrayList<User> selectUsers(){
+        private ArrayList<User> selectUsers(){
 
             ArrayList<User> userList = new ArrayList<User>();
             buildConnection();
@@ -242,7 +242,7 @@ public class DatabaseUtils
         }
 
         //select a user with a specific telegramId
-        public User retrieveUserFromId(int telegramId){
+        private User retrieveUserFromId(Long telegramId){
             User selectedUser = new User();
             buildConnection();
             try{
@@ -266,7 +266,7 @@ public class DatabaseUtils
         }
 
         // insert a user into USER table
-        public void insertUser(int telegramId,int checkLevel, String userName){
+        private void insertUser(Long telegramId,int checkLevel, String userName){
             buildConnection();
             try{
                 Statement statement = connection.createStatement();
@@ -285,7 +285,7 @@ public class DatabaseUtils
 
         }
 
-        public void insertSnapshot(String url, InputStream screenshot, String siteContentHash){
+        private void insertSnapshot(String url, InputStream screenshot, String siteContentHash){
             buildConnection();
             try{
                 String insertSnapshotQ= "INSERT INTO SNAPSHOT(url,screenshot,siteContentHash)" + "VALUES(?,?,?)";
@@ -303,7 +303,7 @@ public class DatabaseUtils
         }
 
 
-        public InputStream retrieveImageInputStreamFromSnapshotId(int SnapshotId){
+        private InputStream retrieveImageInputStreamFromSnapshotId(int SnapshotId){
             buildConnection();
             InputStream is = null;
             try{
@@ -322,7 +322,7 @@ public class DatabaseUtils
         }
 
 
-        public void insertRequest(int telegramId,String userName, int checkInterval,String url,InputStream screenshot,
+        private void insertRequest(Long telegramId,String userName, int checkInterval,String url,InputStream screenshot,
                                   String siteContentHash){
 
             buildConnection();
@@ -356,14 +356,54 @@ public class DatabaseUtils
 
         }
 
+        private boolean checkUserExists(Long telegramId){
+            buildConnection();
+            try{
+                boolean exists;
+                Statement statement = connection.createStatement();
+                String checkquery = String.format("SELECT * FROM" +
+                        " USER WHERE USER.telegramId = %d",telegramId);
+                ResultSet rs = statement.executeQuery(checkquery);
+                if(rs.next()){
+                    exists = true;
+                }
+                else{
+                    exists = false;
+                }
+                closeConnection();
+                return exists;
+
+            }catch(SQLException e){
+                System.err.println(e.getMessage());
+                closeConnection();
+                return false;
+            }
+
+        }
 
 
+    @Override
+    public User retrieveUserFromId(long userId, String userName) {
+        //check if user exists
+        if(!checkUserExists(userId)){
+            //create if not
+            int checkLevel = Config.getConfig().DEFAULT_LEVEL;
+            insertUser(userId,checkLevel,userName);
+        }
 
+        User myUser = retrieveUserFromId(userId);
 
+        //return user
+        return myUser;
+    }
 
+    @Override
+    public ArrayList<Request> getRequests() {
+        return null;
+    }
 
-
-
-
-
+    @Override
+    public Snapshot retrieveSnapshotFromId(int snapshotId) {
+        return null;
+    }
 }
