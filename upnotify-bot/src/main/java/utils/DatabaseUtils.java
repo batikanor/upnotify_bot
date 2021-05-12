@@ -416,12 +416,30 @@ public class DatabaseUtils implements DatabaseUtilsInterface
         }catch(SQLException e){
             System.err.println(e.getMessage());
         }
+        closeConnection();
         return reqList;
 
     }
 
     @Override
     public Snapshot retrieveSnapshotFromId(int snapshotId) {
-        return null;
+        Snapshot mySnapshot = new Snapshot();
+        buildConnection();
+        try{
+            Statement statement = connection.createStatement();
+            String getSnapshotQ = String.format("SELECT * FROM SNAPSHOT" +
+                    " WHERE SNAPSHOT.snapshotId = %d",snapshotId);
+            ResultSet rs = statement.executeQuery(getSnapshotQ);
+            mySnapshot.snapshotId = rs.getInt("snapshotId");
+            mySnapshot.url = rs.getString("url");
+            mySnapshot.screenshot = rs.getBlob("screenshot");
+            mySnapshot.siteContentHash = rs.getString("siteContentHash");
+
+        }catch(SQLException e){
+            System.err.println(e.getMessage());
+        }
+        closeConnection();
+        return mySnapshot;
+
     }
 }
