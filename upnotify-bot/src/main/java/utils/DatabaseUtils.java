@@ -399,7 +399,25 @@ public class DatabaseUtils implements DatabaseUtilsInterface
 
     @Override
     public ArrayList<Request> getRequests() {
-        return null;
+        ArrayList<Request> reqList = new ArrayList<Request>();
+
+        buildConnection();
+        try{
+            Statement statement = connection.createStatement();
+            String selectReqs = "SELECT * FROM REQUEST";
+            ResultSet rs = statement.executeQuery(selectReqs);
+            while(rs.next()){
+                Request myReq = new Request(rs.getInt("requestId"),rs.getLong("telegramId")
+                ,rs.getInt("snapshotId"),rs.getInt("checkInterval"),rs.getLong("lastCheckUnix"),
+                        rs.getBoolean("isActive"));
+                reqList.add(myReq);
+            }
+
+        }catch(SQLException e){
+            System.err.println(e.getMessage());
+        }
+        return reqList;
+
     }
 
     @Override
