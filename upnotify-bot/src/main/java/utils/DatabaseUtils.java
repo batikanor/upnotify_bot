@@ -50,7 +50,7 @@ interface DatabaseUtilsInterface {
 /**
  * @todo Implement DatabaseUtilsInterface
  */
-public class DatabaseUtils
+public class DatabaseUtils implements DatabaseUtilsInterface
 {
     public Connection connection = null;
     public String url = "jdbc:sqlite:src/main/resources/upnotify.db";
@@ -96,7 +96,7 @@ public class DatabaseUtils
 
 
     //tablo dbde var ise true yok ise false döndüren bir fonksiyon
-    public boolean tableExists(String tableName,Connection conn){
+    private boolean tableExists(String tableName,Connection conn){
         try{
             DatabaseMetaData md = conn.getMetaData();
             ResultSet rs = md.getTables(null, null, tableName, null);
@@ -188,6 +188,7 @@ public class DatabaseUtils
                             "    snapshotId    int,\n" +
                             "        references SNAPSHOT\n" +
                             "    checkInterval int,\n" +
+                            "   isActive INTEGER, \n"+
                             "    lastCheckUnix int\n" +
                             ");\n" +
                             "\n" +
@@ -217,7 +218,7 @@ public class DatabaseUtils
         }
 
         //Select all users from USER table and return a user list
-        public ArrayList<User> selectUsers(){
+        private ArrayList<User> selectUsers(){
 
             ArrayList<User> userList = new ArrayList<User>();
             buildConnection();
@@ -228,7 +229,7 @@ public class DatabaseUtils
                 String selectQuery = "SELECT * FROM USER";
                 ResultSet rs = statement.executeQuery(selectQuery);
                 while (rs.next()) {
-                    User selectedUser = new User(rs.getInt("telegramId"),
+                    User selectedUser = new User(rs.getLong("telegramId"),
                             rs.getInt("checkLevel"), rs.getString("userName"));
                     userList.add(selectedUser);
                 }
@@ -241,7 +242,7 @@ public class DatabaseUtils
         }
 
         //select a user with a specific telegramId
-        public User retrieveUserFromId(int telegramId){
+        private User retrieveUserFromId(Long telegramId){
             User selectedUser = new User();
             buildConnection();
             try{
@@ -252,7 +253,7 @@ public class DatabaseUtils
                         "WHERE USER.telegramId = %d;",telegramId);
                 ResultSet rs = statement.executeQuery(selectFromIdQuery);
 
-                selectedUser.telegramId = rs.getInt("telegramId");
+                selectedUser.telegramId = rs.getLong("telegramId");
                 selectedUser.userName = rs.getString("userName");
                 selectedUser.checkLevel = rs.getInt("checkLevel");
 
@@ -265,7 +266,7 @@ public class DatabaseUtils
         }
 
         // insert a user into USER table
-        public void insertUser(int telegramId,int checkLevel, String userName){
+        private void insertUser(Long telegramId,int checkLevel, String userName){
             buildConnection();
             try{
                 Statement statement = connection.createStatement();
@@ -284,7 +285,7 @@ public class DatabaseUtils
 
         }
 
-        public void insertSnapshot(String url, InputStream screenshot, String siteContentHash){
+        private void insertSnapshot(String url, InputStream screenshot, String siteContentHash){
             buildConnection();
             try{
                 String insertSnapshotQ= "INSERT INTO SNAPSHOT(url,screenshot,siteContentHash)" + "VALUES(?,?,?)";
@@ -302,7 +303,7 @@ public class DatabaseUtils
         }
 
 
-        public InputStream retrieveImageInputStreamFromSnapshotId(int SnapshotId){
+        private InputStream retrieveImageInputStreamFromSnapshotId(int SnapshotId){
             buildConnection();
             InputStream is = null;
             try{
@@ -321,7 +322,7 @@ public class DatabaseUtils
         }
 
 
-        public void insertRequest(int telegramId,String userName, int checkInterval,String url,InputStream screenshot,
+        private void insertRequest(Long telegramId,String userName, int checkInterval,String url,InputStream screenshot,
                                   String siteContentHash){
 
             buildConnection();
@@ -355,14 +356,90 @@ public class DatabaseUtils
 
         }
 
+        private boolean checkUserExists(Long telegramId){
+            buildConnection();
+            try{
+                boolean exists;
+                Statement statement = connection.createStatement();
+                String checkquery = String.format("SELECT * FROM" +
+                        " USER WHERE USER.telegramId = %d",telegramId);
+                ResultSet rs = statement.executeQuery(checkquery);
+                if(rs.next()){
+                    exists = true;
+                }
+                else{
+                    exists = false;
+                }
+                closeConnection();
+                return exists;
+
+            }catch(SQLException e){
+                System.err.println(e.getMessage());
+                closeConnection();
+                return false;
+            }
+
+        }
 
 
+    @Override
+    public User retrieveUserFromId(long userId, String userName) {
+        //check if user exists
+        if(!checkUserExists(userId)){
+            //create if not
+            int checkLevel = Config.getConfig().DEFAULT_LEVEL;
+            insertUser(userId,checkLevel,userName);
+        }
 
+        User myUser = retrieveUserFromId(userId);
 
+        //return user
+        return myUser;
+    }
 
+    @Override
+    public ArrayList<Request> getRequests() {
+        ArrayList<Request> reqList = new ArrayList<Request>();
 
+        buildConnection();
+        try{
+            Statement statement = connection.createStatement();
+            String selectReqs = "SELECT * FROM REQUEST";
+            ResultSet rs = statement.executeQuery(selectReqs);
+            while(rs.next()){
+                Request myReq = new Request(rs.getInt("requestId"),rs.getLong("telegramId")
+                ,rs.getInt("snapshotId"),rs.getInt("checkInterval"),rs.getLong("lastCheckUnix"),
+                        rs.getBoolean("isActive"));
+                reqList.add(myReq);
+            }
 
+        }catch(SQLException e){
+            System.err.println(e.getMessage());
+        }
+        closeConnection();
+        return reqList;
 
+    }
 
+    @Override
+    public Snapshot retrieveSnapshotFromId(int snapshotId) {
+        Snapshot mySnapshot = new Snapshot();
+        buildConnection();
+        try{
+            Statement statement = connection.createStatement();
+            String getSnapshotQ = String.format("SELECT * FROM SNAPSHOT" +
+                    " WHERE SNAPSHOT.snapshotId = %d",snapshotId);
+            ResultSet rs = statement.executeQuery(getSnapshotQ);
+            mySnapshot.snapshotId = rs.getInt("snapshotId");
+            mySnapshot.url = rs.getString("url");
+            mySnapshot.screenshot = rs.getBlob("screenshot");
+            mySnapshot.siteContentHash = rs.getString("siteContentHash");
 
+        }catch(SQLException e){
+            System.err.println(e.getMessage());
+        }
+        closeConnection();
+        return mySnapshot;
+
+    }
 }

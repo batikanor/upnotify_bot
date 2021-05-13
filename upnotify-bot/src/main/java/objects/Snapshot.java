@@ -8,4 +8,13 @@ public class Snapshot {
     public Blob screenshot;
     public String siteContentHash;
 
+    public Snapshot(){
+
+    }
+    public Snapshot(int snapshotId,String url,Blob screenshot,String siteContentHash){
+        this.snapshotId = snapshotId;
+        this.url = url;
+        this.screenshot = screenshot;
+        this.siteContentHash = siteContentHash;
+    }
 }
