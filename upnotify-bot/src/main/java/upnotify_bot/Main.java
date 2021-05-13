@@ -3,6 +3,7 @@ package upnotify_bot;
 
 import java.util.ArrayList;
 
+
 import org.telegram.telegrambots.meta.TelegramBotsApi;
 import org.telegram.telegrambots.meta.exceptions.TelegramApiException;
 import org.telegram.telegrambots.updatesreceivers.DefaultBotSession;
@@ -30,18 +31,20 @@ public class Main {
 			TelegramBotsApi telegramBotsApi = new TelegramBotsApi(DefaultBotSession.class);
 			telegramBotsApi.registerBot(new UpnotifyBot());
 			
-			
 		} catch (TelegramApiException e) {
 			// TODO logging
 			e.printStackTrace();
 		}
 		
-//		// Get active upnotify request list from db
-//		ArrayList<Request> upnotifies = DatabaseUtils.getRequests();
-//		for (Request upnotify : upnotifies) {
-//			MultiprocessingUtils.getMultiProcessingUtils().submitUpnotify(upnotify);
-//		}
-
+		// Get active upnotify request list from db
+		System.out.println("Getting upnotify requests from the database");
+		ArrayList<Request> upnotifies = DatabaseUtils.getDatabaseUtils().getRequests();
+		for (Request upnotify : upnotifies) {
+			System.out.println("Processing the request with id: " + upnotify.requestId);
+			MultiprocessingUtils.getMultiProcessingUtils().submitUpnotify(upnotify);
+		}
+		
+	
 		
 
 	}

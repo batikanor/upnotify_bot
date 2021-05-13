@@ -8,6 +8,7 @@ import org.telegram.telegrambots.meta.api.objects.Update;
 import org.telegram.telegrambots.meta.api.objects.User;
 
 import utils.Config;
+import utils.DatabaseUtils;
 //import objects.User;
 import utils.MessageUtils;
 
@@ -46,25 +47,33 @@ public class UpdateReceiver implements Runnable{
 			String chatId = msg.getChatId().toString();
 			if (msg.hasText()) {
 				User user = msg.getFrom();
-				// check if user exists
-				// otherwise create
-				// TODO 
-				//retrieveUserFromId(user.getId(), user.getUserName());
+				
+				// check if user exists, otherwise create
+				objects.User upUser = DatabaseUtils.getDatabaseUtils().retrieveUserFromId(user.getId(), user.getUserName());
+				
+				
 				
 				String msgText = msg.getText();
-				
+		
+				System.out.println("Received text: " + (msgText.length() > 20 ? msgText.subSequence(0, 19)  + "..." : msgText));
 				// Now, depending on the text we have, and maybe the current state of the situation of our conversation within the group (group id) or with the person (from id), we will handle the message
-				
-
+	
 				// Direct text handling, without any importance being given to the conversation stance
 				
 				// Commands
+				/**
+				 * Commands can come in forms such as:
+				 *	/msginfo@upnotify_bot
+				 *	/msginfo
+				 *	/msginfo hey heyyy
+				 */
 				if (msgText.startsWith("/")) {
 					
 					boolean withArgs = msgText.contains(" ");
 					
 	
 					command = withArgs ? msgText.substring(1, msgText.indexOf(" ")).toLowerCase() : msgText.substring(1);					
+					command = command.replace("@" + ub.botUsername, "");
 					System.out.println("Running command: " + command);
 					args = withArgs ? (msgText.substring(2 + command.length()).split(" ")) : null;
 					System.out.println("For args: " + Arrays.toString(args));
@@ -92,8 +101,13 @@ public class UpdateReceiver implements Runnable{
 								MessageUtils.getMessageUtils().checkIfHTMLBodyStatic(ub, chatId, arg);
 							}
 							break;
+						case "help":
+							MessageUtils.getMessageUtils().sendHelpMessage(ub, chatId, update, upUser);
+							break;
+							
 						case "donothing":
 							break;
+							
 					}
 				} else {
 					switch (msgText) {

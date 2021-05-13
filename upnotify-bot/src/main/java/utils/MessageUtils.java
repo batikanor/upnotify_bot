@@ -6,6 +6,7 @@ import java.io.FileInputStream;
 import java.net.HttpURLConnection;
 import java.net.URL;
 
+import org.telegram.telegrambots.meta.api.methods.ParseMode;
 import org.telegram.telegrambots.meta.api.methods.send.SendMessage;
 import org.telegram.telegrambots.meta.api.methods.send.SendPhoto;
 import org.telegram.telegrambots.meta.api.methods.updatingmessages.DeleteMessage;
@@ -158,6 +159,46 @@ public class MessageUtils {
 			return false;
 		}
 		return true;
+	}
+	public void sendHelpMessage(UpnotifyBot ub, String chatId, Update update, objects.User upUser) {
+		// TODO Auto-generated method stub
+		StringBuilder sb = new StringBuilder();
+		sb.append("<b> Your Info </b>");
+		sb.append("\n<i>"
+				+ "Your level is: <b>" + upUser.checkLevel + "</b> and with that, you can "
+				+ "have your upnotify request run once every "
+				+ Config.getConfig().MIN_WAIT_LEVEL[upUser.checkLevel] + " minutes or less often if you request so."
+				+ "</i>");
+		sb.append("\n<b> Bot Info </b>");
+		sb.append("\n<code> System.out.println(\"Hello Telegram!\"); </code>");
+		String helpText = sb.toString();
+		System.out.println(helpText);
+				
+		//		String helpText = "Hi\\!"
+//				+ "# \n\n__YOUR INFO__\n"
+//					+ "Your level is: " + upUser.checkLevel + "and with that, you can"
+//						+ " have your upnotify request run once every "
+//						+ Config.getConfig().MIN_WAIT_LEVEL[upUser.checkLevel] + " minutes or less often if you request.\n"
+//				+ "# \n\n_BOT INFO_\n"
+//					+ "* This bot cares about your privacy. Bot has access to all *private* messages _that you send to it directly_ but in groups, this bot has no access to "
+//					+ "messages that don't start with a '/' (messages that are not commands) + to learn more read following: {INSERT_TELEGRAPH_LINK_HERE} "
+//					+ "\n This bot will notify you for changes in web pages or web page sections in determined intervals."
+//				+ "# \n\n_COMMANDS_"
+//					+ "\n/msginfo foo	->	Sends all the info that the bot receives with any message you send it, so that you can know how much of your information is seen by the bot."
+//					+ "\n ...blabla"
+//				+ "# \n\n_OTHER COMMUNICATION_"
+//					+ "hi	->	Bot will send you a welcome photo";
+		SendMessage sm = new SendMessage(chatId, helpText);
+		sm.setParseMode(ParseMode.HTML);
+		try {
+			ub.execute(sm);
+		} catch (TelegramApiException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+			
+				
+		
 	}
 	
 	
