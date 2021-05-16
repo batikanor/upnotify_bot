@@ -5,7 +5,6 @@ import java.io.InputStream;
 import java.util.Properties;
 import java.util.Scanner;
 
-
 /**
  * This class is constructed only once, and holds variables that correspond to the contents of the Config.properties file.
  * 

@@ -30,7 +30,6 @@ public class Main {
 		try {
 			TelegramBotsApi telegramBotsApi = new TelegramBotsApi(DefaultBotSession.class);
 			telegramBotsApi.registerBot(new UpnotifyBot());
-			
 		} catch (TelegramApiException e) {
 			// TODO logging
 			e.printStackTrace();
@@ -44,9 +43,5 @@ public class Main {
 			MultiprocessingUtils.getMultiProcessingUtils().submitUpnotify(upnotify);
 		}
 		
-	
-		
-
 	}
-
 }
