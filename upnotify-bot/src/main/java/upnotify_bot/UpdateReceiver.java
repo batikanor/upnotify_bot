@@ -1,6 +1,7 @@
 package upnotify_bot;
 
 
+import java.util.ArrayList;
 import java.util.Arrays;
 
 import org.telegram.telegrambots.meta.api.objects.Message;
@@ -25,7 +26,8 @@ public class UpdateReceiver implements Runnable{
 	private Update update;
 	private Message msg;
 	private String command;
-	private String[] args;
+	//private String[] args;
+	private ArrayList<String> args = new ArrayList<String>();
 	
 	public UpdateReceiver(UpnotifyBot ub, Update update) {
 		this.ub = ub;
@@ -46,10 +48,19 @@ public class UpdateReceiver implements Runnable{
 			msg = update.getMessage();
 			String chatId = msg.getChatId().toString();
 			if (msg.hasText()) {
+				
 				User user = msg.getFrom();
+				objects.User upUser;
+				if (msg.getChat().getType().contentEquals("private")) {
+					upUser = DatabaseUtils.getDatabaseUtils().retrieveUserFromId(user.getId(), user.getUserName());
+				} else {
+					upUser =  DatabaseUtils.getDatabaseUtils().retrieveUserFromId(msg.getChatId(), msg.getChat().getTitle());
+				}
+				
+		
 				
 				// check if user exists, otherwise create
-				objects.User upUser = DatabaseUtils.getDatabaseUtils().retrieveUserFromId(user.getId(), user.getUserName());
+				
 				
 				
 				
@@ -75,8 +86,8 @@ public class UpdateReceiver implements Runnable{
 					command = withArgs ? msgText.substring(1, msgText.indexOf(" ")).toLowerCase() : msgText.substring(1);					
 					command = command.replace("@" + ub.botUsername, "");
 					System.out.println("Running command: " + command);
-					args = withArgs ? (msgText.substring(2 + command.length()).split(" ")) : null;
-					System.out.println("For args: " + Arrays.toString(args));
+					args = new ArrayList<String>(Arrays.asList(withArgs ? (msgText.substring(2 + command.length()).split(" ")) : null));
+					System.out.println("For args: " + args.toString());
 					// TODO logging instead of printing
 				
 					
@@ -102,12 +113,23 @@ public class UpdateReceiver implements Runnable{
 							}
 							break;
 						case "help":
+							
 							MessageUtils.getMessageUtils().sendHelpMessage(ub, chatId, update, upUser);
 							break;
 							
 						case "donothing":
 							break;
-							
+						case "addrequest":
+							// /addrequest snapUrl ss sch
+							MessageUtils.getMessageUtils().addRequestAndSendConfirmation(ub, chatId, update, upUser, args);
+							break;
+						case "editrequest":
+							// /editrequest requestId 
+							// sch yaziyorsa sch yi kontrol edip kaydeder db ye, yazmiyorsa oraya null yazar
+							break;
+						case "seerequests":
+							// see requests, fields and request ids
+							break;
 					}
 				} else {
 					switch (msgText) {

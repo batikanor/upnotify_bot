@@ -36,7 +36,7 @@ public class UpnotifyReceiver implements Runnable{
 		while(true) {
 			// work
 			// get snapshot object
-			Snapshot snap = DatabaseUtils.getDatabaseUtils().retrieveSnapshotFromId(upnotify.snapshotId)
+			Snapshot snap = DatabaseUtils.getDatabaseUtils().retrieveSnapshotFromId(upnotify.snapshotId);
 			
 			// check non-null fields in snap again, report any changes
 			

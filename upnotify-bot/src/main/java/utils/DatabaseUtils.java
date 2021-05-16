@@ -6,6 +6,9 @@ import objects.Snapshot;
 import objects.User;
 
 import javax.xml.crypto.Data;
+
+import java.awt.image.BufferedImage;
+import java.io.IOException;
 import java.io.InputStream;
 
 import java.sql.*;
@@ -48,7 +51,8 @@ interface DatabaseUtilsInterface {
 }
 
 /**
- * @todo Implement DatabaseUtilsInterface
+ * @todo Implement DatabaseUtilsInterface'
+ * @todo check multithreading capabilities
  */
 public class DatabaseUtils implements DatabaseUtilsInterface
 {
@@ -71,6 +75,7 @@ public class DatabaseUtils implements DatabaseUtilsInterface
     }
 
     public void buildConnection(){
+    	System.out.println("Connecting to db");
         try {
             connection = DriverManager.getConnection(url);
         }
@@ -78,6 +83,7 @@ public class DatabaseUtils implements DatabaseUtilsInterface
             System.out.println("there is a problem with db connection");
             System.err.println(e.getMessage());
         }
+        
     }
 
     public void closeConnection(){
@@ -289,17 +295,38 @@ public class DatabaseUtils implements DatabaseUtilsInterface
             buildConnection();
             try{
                 String insertSnapshotQ= "INSERT INTO SNAPSHOT(url,screenshot,siteContentHash)" + "VALUES(?,?,?)";
-
+                System.out.println(111);
                 PreparedStatement ps = connection.prepareStatement(insertSnapshotQ);
+                System.out.println(112);
                 ps.setString(1,url);
-                ps.setBinaryStream(2,screenshot);
+                System.out.println(113);
+                
+                if (screenshot == null) {
+                	ps.setNull(2, Types.NULL );
+                	System.out.println(114);
+                } else {
+                	//ps.setBlob(2, screenshot);
+//                	ps.setBinaryStream(2,screenshot);
+                	ps.setBytes(2, screenshot.readAllBytes());
+                	System.out.println(222);
+                }
+                
                 ps.setString(3,siteContentHash);
-                ps.execute();
+                System.out.println(115);
+                ps.executeUpdate();
+                System.out.println(116);
+               
 
             }catch(SQLException e){
+            	System.out.println(117);
                 System.err.println(e.getMessage());
-            }
+            } catch (IOException e) {
+				// TODO Auto-generated catch block
+            	System.out.println(118);
+				e.printStackTrace();
+			}
             closeConnection();
+            System.out.println(119);
         }
 
 
@@ -442,4 +469,38 @@ public class DatabaseUtils implements DatabaseUtilsInterface
         return mySnapshot;
 
     }
+
+	// Requests.telegramId,   Requests.LastCheckUnix, Snapshot.url, Snapshot.screenshot, Snapshot.siteContentHash
+	public boolean addRequest(Long chatId, long epochSecond, String url2, BufferedImage screenshot,
+			String siteContentHash) {
+		buildConnection();
+		
+        try{
+            Statement statement = connection.createStatement();
+            //statement.setQueryTimeout(30);  // set timeout to 30 sec.
+
+
+            // insert snapshot and get the id
+            insertSnapshot(url2,ImageUtils.getImageUtils().convertBufferedImageIntoInputStream(screenshot),siteContentHash);
+            System.out.println("Inserted snapshot");
+            /**
+             * @todo this may not be safe for multithreading, select it normally
+             */
+            int snapshotId = statement.executeQuery("SELECT last_insert_rowid()").getRow();
+            System.out.println("Got snapshot id: " + snapshotId);
+            String insertReqQuery = String.format("INSERT INTO REQUEST" +
+                    "(telegramId,snapshotId,checkInterval,lastCheckUnix) VALUES" +
+                    "(%d,%d,%d,%d)",chatId,snapshotId,Config.getConfig().DEFAULT_LEVEL, epochSecond);
+            statement.executeUpdate(insertReqQuery);
+            System.out.println("Inserted Request");
+
+        }catch(SQLException e){
+            System.err.println(e.getMessage());
+            return false;
+        }
+
+		
+		return true;
+		
+	}
 }

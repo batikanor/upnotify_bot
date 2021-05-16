@@ -1,11 +1,13 @@
 package utils;
 
+import java.awt.image.BufferedImage;
 import java.io.File;
 import java.io.IOException;
 import java.net.HttpURLConnection;
 import java.net.MalformedURLException;
 import java.net.URL;
 import java.net.URLConnection;
+import java.nio.charset.StandardCharsets;
 import java.nio.file.Paths;
 import java.util.ArrayList;
 import java.util.Scanner;
@@ -21,6 +23,8 @@ import org.openqa.selenium.TakesScreenshot;
 import org.openqa.selenium.WebDriver;
 import org.openqa.selenium.chrome.ChromeDriver;
 import org.openqa.selenium.firefox.FirefoxDriver;
+
+import com.google.common.hash.Hashing;
 
 import ru.yandex.qatools.ashot.AShot;
 import ru.yandex.qatools.ashot.Screenshot;
@@ -39,9 +43,6 @@ interface WebUtilsInterface{
 	 */
 	public String getHTMLBodyStringFromUrl(String url);
 	
-	
-	// @Todo implement below function
-	//public String getResponseHash(String url);
 }
 
 public class WebUtils implements WebUtilsInterface{
@@ -187,7 +188,7 @@ public class WebUtils implements WebUtilsInterface{
 		
 	}
 
-	public boolean getScreenshotUsingSelenium(String url, String selectorPath, Integer requestId) throws IOException {
+	public boolean saveScreenshotUsingSelenium(String url, String selectorPath, Integer requestId) throws IOException {
 		// requestId will be sent to this function as a parameter as soon as DB is implemented.
 		// requestId will be fetched from DB.
 		//requests.getSiteId().getAddress();
@@ -245,6 +246,34 @@ public class WebUtils implements WebUtilsInterface{
 
 	public void compareHtmlContent() {
 
+	}
+
+	public String getHTMLBodyStringHash(String url) {
+		
+		String sha256hex = Hashing.sha256()
+				  .hashString(getHTMLBodyStringFromUrlJSoup(url), StandardCharsets.UTF_8)
+				  .toString();
+		System.out.println("For url "+ url + " currently calculated body string hash is: " + sha256hex );
+		return sha256hex;
+		
+		
+	}
+
+	public BufferedImage getScreenshotUsingSelenium(String url) {
+
+		String path = "CHROME_DRIVERS/chromedriver_89_" + (Config.getConfig().os == OS.LINUX ? "linux" : "win.exe");
+		URL chrome_driver_url = getClass().getClassLoader().getResource(path);
+		String chrome_driver_path = chrome_driver_url.getPath();
+		System.setProperty("webdriver.chrome.driver", chrome_driver_path);
+		WebDriver driver = new ChromeDriver();
+		driver.get(fixUrl(url));
+		driver.manage().timeouts().implicitlyWait(30, TimeUnit.SECONDS);
+
+		// automatised full screenshot using AShot plugin with 1.25f scale (in order to take properly scaled) and 1000 ms scroll interval.
+		Screenshot fullScreenshot = new AShot().shootingStrategy(ShootingStrategies.viewportPasting(ShootingStrategies.scaling(1.25f), 1000)).takeScreenshot(driver);
+		
+		System.out.println("Returning BufferedImage via getScreenshotUsingSelenium()");
+		return fullScreenshot.getImage();
 	}
 	
 	

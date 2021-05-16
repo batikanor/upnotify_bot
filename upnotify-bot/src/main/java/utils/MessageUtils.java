@@ -1,10 +1,13 @@
 package utils;
 
 
+import java.awt.image.BufferedImage;
 import java.io.File;
 import java.io.FileInputStream;
 import java.net.HttpURLConnection;
 import java.net.URL;
+import java.time.Instant;
+import java.util.ArrayList;
 
 import org.telegram.telegrambots.meta.api.methods.ParseMode;
 import org.telegram.telegrambots.meta.api.methods.send.SendMessage;
@@ -16,6 +19,7 @@ import org.telegram.telegrambots.meta.api.objects.Message;
 import org.telegram.telegrambots.meta.api.objects.Update;
 import org.telegram.telegrambots.meta.exceptions.TelegramApiException;
 
+import objects.User;
 import upnotify_bot.UpnotifyBot;
 
 
@@ -198,6 +202,47 @@ public class MessageUtils {
 		}
 			
 				
+		
+	}
+	public void addRequestAndSendConfirmation(UpnotifyBot ub, String chatId, Update update, User upUser,
+			ArrayList<String> args) {
+		objects.Snapshot snap = new objects.Snapshot();
+		snap.screenshot = null;
+		snap.siteContentHash = null;
+		snap.url = args.get(0);
+		
+		if (args.contains("ss")) {
+			// get screenshot
+			System.out.println("Request will have a non-null screenshot field!");
+			snap.screenshot = WebUtils.getWebUtils().getScreenshotUsingSelenium(snap.url);
+		
+			
+		}
+		if (args.contains("sch")) {
+			System.out.println("Request will have a non-null siteContentHash field!");
+			snap.siteContentHash = WebUtils.getWebUtils().getHTMLBodyStringHash(snap.url);
+		}
+
+		
+		
+		// Requests.telegramId,   Requests.LastCheckUnix, Snapshot.url, Snapshot.screenshot, Snapshot.siteContentHash
+		
+		boolean success = DatabaseUtils.getDatabaseUtils().addRequest(update.getMessage().getChatId(), Instant.now().getEpochSecond(), snap.url, snap.screenshot, snap.siteContentHash);
+		String txt;
+		if (success) {
+			txt = "Request has been added!";
+		} else {
+			txt = "An error occured, please try again later";
+		}
+		SendMessage sm  = new SendMessage();
+		sm.setChatId(chatId);
+		sm.setText(txt);
+		try {
+			ub.execute(sm);
+		} catch (TelegramApiException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
 		
 	}
 	

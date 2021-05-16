@@ -1,6 +1,12 @@
 package utils;
 
 import java.awt.image.BufferedImage;
+import java.io.ByteArrayInputStream;
+import java.io.ByteArrayOutputStream;
+import java.io.IOException;
+import java.io.InputStream;
+
+import javax.imageio.ImageIO;
 
 import com.github.romankh3.image.comparison.ImageComparison;
 import com.github.romankh3.image.comparison.model.ImageComparisonResult;
@@ -30,5 +36,38 @@ public class ImageUtils {
 		 idd.diffPercentage = imageComparisonResult.getDifferencePercent();
 	
 		 return idd;
+	 }
+	 
+	 public InputStream convertBufferedImageIntoInputStream(BufferedImage im) {
+		 
+		 if (im == null) {
+			 return null;
+		 }
+		 ByteArrayOutputStream os = new ByteArrayOutputStream();
+		 try {
+			ImageIO.write(im, "jpeg", os);
+		} catch (IOException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+			return null;
+		}
+		 InputStream is = new ByteArrayInputStream(os.toByteArray());
+		 //System.out.println("inputstream in string form" + is.readAllBytes().toString());
+		 
+		 return is;
+		 
+	 }
+	 public BufferedImage convertInputStreamIntoBufferedImage(InputStream is) {
+		 try {
+			BufferedImage imBuff = ImageIO.read(is);
+			return imBuff;
+		 } catch (IOException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+			return null;
+		}
+		 
+		 
+
 	 }
 }
