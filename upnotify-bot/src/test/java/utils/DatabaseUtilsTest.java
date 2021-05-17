@@ -14,6 +14,7 @@ import utils.Config;
 import utils.DatabaseUtils;
 
 import javax.validation.constraints.Null;
+import javax.xml.crypto.Data;
 
 public class DatabaseUtilsTest {
 
@@ -21,7 +22,7 @@ public class DatabaseUtilsTest {
     public void createTablesTest(){
         DatabaseUtils.getDatabaseUtils().createTables();
     }
-
+/*
     @Test
     public void selectUsersTest(){
         ArrayList<User> users = DatabaseUtils.getDatabaseUtils().selectUsers();
@@ -30,8 +31,8 @@ public class DatabaseUtilsTest {
                     "%s",u.telegramId,u.checkLevel,u.userName));
             System.out.println("**************************************");
         }
-    }
-
+    } */
+/*
     @Test
     public void insertUserTest(){
         int myTelegramId = 4;
@@ -39,8 +40,17 @@ public class DatabaseUtilsTest {
         String myUserName = "noob";
         DatabaseUtils.getDatabaseUtils().insertUser(myTelegramId,myCheckLevel,myUserName);
         selectUsersTest();
+    } */
+
+    @Test
+    public void retrieveUserTest(){
+        User x= DatabaseUtils.getDatabaseUtils().retrieveUserFromId(7,"john");
+        System.out.println(x.telegramId);
+        System.out.println(x.checkLevel);
+        System.out.println(x.userName);
     }
 
+/*
     @Test
     public void selectUserFromIdTest(){
         int myTelegramId = 33;
@@ -53,6 +63,6 @@ public class DatabaseUtilsTest {
         System.out.println(String.format("telegramId: %d\ncheckLevel: %d\nuserName:" +
                 "%s",selectedUser.telegramId,selectedUser.checkLevel,selectedUser.userName));
     }
-
+*/
 
 }

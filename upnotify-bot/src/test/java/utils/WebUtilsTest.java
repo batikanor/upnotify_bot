@@ -99,13 +99,13 @@ public class WebUtilsTest {
 	}
 
 	@Test
-	public void testGetScreenshotUsingSelenium() {
+	public void testSaveScreenshotUsingSelenium() {
 		boolean checkIfExists = false;
 		String url = "http://www.batikanor.com";
 		Integer requestId = 10;
 		String selectorPath = "#gatsby-focus-wrapper > div > div.layout-module--container--2TGku > div > span"; // "4 Comments"
 		try {
-			checkIfExists = WebUtils.getWebUtils().getScreenshotUsingSelenium(url, selectorPath, requestId);
+			checkIfExists = WebUtils.getWebUtils().saveScreenshotUsingSelenium(url, selectorPath, requestId);
 		} catch (IOException e) {
 			e.printStackTrace();
 		}
