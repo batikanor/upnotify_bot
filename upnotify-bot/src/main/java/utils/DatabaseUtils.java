@@ -5,6 +5,7 @@ import objects.Request;
 import objects.Snapshot;
 import objects.User;
 
+import javax.imageio.ImageIO;
 import javax.xml.crypto.Data;
 
 import java.awt.image.BufferedImage;
@@ -459,7 +460,12 @@ public class DatabaseUtils implements DatabaseUtilsInterface
             ResultSet rs = statement.executeQuery(getSnapshotQ);
             mySnapshot.snapshotId = rs.getInt("snapshotId");
             mySnapshot.url = rs.getString("url");
-            mySnapshot.screenshot = rs.getBlob("screenshot");
+            Blob blob = rs.getBlob("screenshot");
+            try {
+                mySnapshot.screenshot = ImageIO.read(blob.getBinaryStream());
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
             mySnapshot.siteContentHash = rs.getString("siteContentHash");
 
         }catch(SQLException e){
@@ -486,11 +492,19 @@ public class DatabaseUtils implements DatabaseUtilsInterface
             /**
              * @todo this may not be safe for multithreading, select it normally
              */
-            int snapshotId = statement.executeQuery("SELECT last_insert_rowid()").getRow();
+
+            // Select newly inserted snapshot with siteContentHash and get its id
+            // costly but probably "multithread safe"
+            String selectSnapshotIdQ = "SELECT snapshotId FROM SNAPSHOT WHERE SNAPSHOT.siteContentHash ="+siteContentHash;
+            ResultSet rs = statement.executeQuery(selectSnapshotIdQ);
+            int snapshotId = rs.getInt("snapshotId");
+
+            boolean isActive = true;
+
             System.out.println("Got snapshot id: " + snapshotId);
             String insertReqQuery = String.format("INSERT INTO REQUEST" +
                     "(telegramId,snapshotId,checkInterval,lastCheckUnix) VALUES" +
-                    "(%d,%d,%d,%d)",chatId,snapshotId,Config.getConfig().DEFAULT_LEVEL, epochSecond);
+                    "(%d,%d,%d,%d,%d)",chatId,snapshotId,Config.getConfig().DEFAULT_LEVEL, epochSecond,isActive);
             statement.executeUpdate(insertReqQuery);
             System.out.println("Inserted Request");
 
