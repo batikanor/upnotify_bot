@@ -485,7 +485,6 @@ public class DatabaseUtils implements DatabaseUtilsInterface
             Statement statement = connection.createStatement();
             //statement.setQueryTimeout(30);  // set timeout to 30 sec.
 
-
             // insert snapshot and get the id
             insertSnapshot(url2,ImageUtils.getImageUtils().convertBufferedImageIntoInputStream(screenshot),siteContentHash);
             System.out.println("Inserted snapshot");
@@ -495,25 +494,27 @@ public class DatabaseUtils implements DatabaseUtilsInterface
 
             // Select newly inserted snapshot with siteContentHash and get its id
             // costly but probably "multithread safe"
-            String selectSnapshotIdQ = "SELECT snapshotId FROM SNAPSHOT WHERE SNAPSHOT.siteContentHash ="+siteContentHash;
+            String selectSnapshotIdQ = "SELECT snapshotId FROM SNAPSHOT WHERE SNAPSHOT.siteContentHash ='"+siteContentHash+"'";
             ResultSet rs = statement.executeQuery(selectSnapshotIdQ);
             int snapshotId = rs.getInt("snapshotId");
 
             boolean isActive = true;
+            int isActiveInt = (isActive)? 1 : 0;
 
             System.out.println("Got snapshot id: " + snapshotId);
+
             String insertReqQuery = String.format("INSERT INTO REQUEST" +
-                    "(telegramId,snapshotId,checkInterval,lastCheckUnix) VALUES" +
-                    "(%d,%d,%d,%d,%d)",chatId,snapshotId,Config.getConfig().DEFAULT_LEVEL, epochSecond,isActive);
-            statement.executeUpdate(insertReqQuery);
+                    "(telegramId,snapshotId,checkInterval,lastCheckUnix,isActive) VALUES" +
+                    "(%d,%d,%d,%d,%d)",chatId,snapshotId,Config.getConfig().DEFAULT_LEVEL, epochSecond,isActiveInt);
+            statement.executeQuery(insertReqQuery);
             System.out.println("Inserted Request");
 
         }catch(SQLException e){
             System.err.println(e.getMessage());
+            closeConnection();
             return false;
         }
-
-		
+		closeConnection();
 		return true;
 		
 	}
