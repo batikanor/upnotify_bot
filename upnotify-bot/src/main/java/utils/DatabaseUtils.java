@@ -5,12 +5,11 @@ import objects.Request;
 import objects.Snapshot;
 import objects.User;
 
-import javax.imageio.ImageIO;
-import javax.xml.crypto.Data;
+// import javax.imageio.ImageIO;
+// import javax.xml.crypto.Data;
 
-import java.awt.*;
+// import java.awt.*;
 import java.awt.image.BufferedImage;
-import java.io.IOException;
 import java.io.InputStream;
 
 import java.sql.*;
@@ -59,7 +58,7 @@ interface DatabaseUtilsInterface {
 public class DatabaseUtils implements DatabaseUtilsInterface
 {
     public Connection connection = null;
-    public String url = "jdbc:sqlite:src/main/resources/upnotify.db";
+    public String url = "jdbc:sqlite:upnotify-bot/src/main/resources/upnotify.db";
 
     private static DatabaseUtils single_instance = null;
 

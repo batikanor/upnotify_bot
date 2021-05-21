@@ -2,7 +2,7 @@ package upnotify_bot;
 
 import objects.Request;
 import objects.Snapshot;
-import utils.Config;
+
 import utils.DatabaseUtils;
 
 public class UpnotifyReceiver implements Runnable{

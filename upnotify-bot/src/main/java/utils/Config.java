@@ -1,6 +1,5 @@
 package utils;
 
-import java.io.IOException;
 import java.io.InputStream;
 import java.util.Properties;
 import java.util.Scanner;
@@ -23,7 +22,8 @@ public class Config {
 	public final int THREAD_PER_CORE_UPDATE;
 	public final int WAIT_UNTIL_MESSAGE_DELETE;
 	public final int WAIT_STATIC_CHECK;
-	
+	public final int WAIT_UNTIL_ERR_MESSAGE_RESEND;
+
 	public final int DEFAULT_LEVEL;
 	public final int[] MIN_WAIT_LEVEL;
 
@@ -72,6 +72,8 @@ public class Config {
 		this.THREAD_PER_CORE_UPNOTIFY = Integer.parseInt(prop.getProperty("THREAD_PER_CORE_UPNOTIFY"));
 		this.WAIT_UNTIL_MESSAGE_DELETE = Integer.parseInt(prop.getProperty("WAIT_UNTIL_MESSAGE_DELETE"));
 		this.WAIT_STATIC_CHECK = Integer.parseInt(prop.getProperty("WAIT_STATIC_CHECK"));
+		this.WAIT_UNTIL_ERR_MESSAGE_RESEND = Integer.parseInt(prop.getProperty("WAIT_UNTIL_ERR_MESSAGE_RESEND"));
+		
 		this.DEFAULT_LEVEL = Integer.parseInt(prop.getProperty("DEFAULT_LEVEL"));
 		this.MIN_WAIT_LEVEL = new int[]{
 				Integer.parseInt(prop.getProperty("MIN_WAIT_LEVEL_0")),
@@ -101,6 +103,7 @@ public class Config {
 		
 			Scanner sc = new Scanner(System.in);
 			chosenOs = sc.nextLine().startsWith("p") ? osNameProp : osNameJava;
+			sc.close();
 		}
 		this.os = chosenOs.startsWith("lin") ? OS.LINUX : OS.WIN;
 		
