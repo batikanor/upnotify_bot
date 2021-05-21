@@ -11,6 +11,7 @@ import java.nio.charset.StandardCharsets;
 import java.nio.file.Paths;
 import java.util.ArrayList;
 import java.util.Scanner;
+import java.util.Set;
 import java.util.concurrent.TimeUnit;
 
 import org.apache.commons.io.FileUtils;
@@ -18,14 +19,19 @@ import org.jsoup.Jsoup;
 import org.jsoup.nodes.Document;
 import org.jsoup.nodes.Element;
 import org.jsoup.select.Elements;
+import org.openqa.selenium.Cookie;
 import org.openqa.selenium.OutputType;
 import org.openqa.selenium.TakesScreenshot;
 import org.openqa.selenium.WebDriver;
 import org.openqa.selenium.chrome.ChromeDriver;
+import org.openqa.selenium.WebDriver.Options;
+import org.openqa.selenium.chrome.ChromeOptions;
 import org.openqa.selenium.firefox.FirefoxDriver;
 
 import com.google.common.hash.Hashing;
 
+import org.openqa.selenium.logging.Logs;
+import org.openqa.selenium.remote.DesiredCapabilities;
 import ru.yandex.qatools.ashot.AShot;
 import ru.yandex.qatools.ashot.Screenshot;
 import ru.yandex.qatools.ashot.shooting.ShootingStrategies;
@@ -177,7 +183,8 @@ public class WebUtils implements WebUtilsInterface{
 //		System.out.println("driver path: " + chrome_driver_path);
 		//String chrome_driver_path = "src/main/resources/CHROME_DRIVERS/chromedriver_89_" + (Config.getConfig().os == OS.LINUX ? "linux" : "win.exe");
 		System.setProperty("webdriver.chrome.driver", chrome_driver_path);
-		WebDriver driver = new ChromeDriver();
+		//WebDriver driver = new ChromeDriver();
+		WebDriver driver = loadUBlockOriginToSeleniumWebDriver();
 		driver.get(fixUrl(url));
 		driver.manage().timeouts().implicitlyWait(30, TimeUnit.SECONDS);
 
@@ -196,7 +203,7 @@ public class WebUtils implements WebUtilsInterface{
 		URL chrome_driver_url = getClass().getClassLoader().getResource(path);
 		String chrome_driver_path = chrome_driver_url.getPath();
 		System.setProperty("webdriver.chrome.driver", chrome_driver_path);
-		WebDriver driver = new ChromeDriver();
+		WebDriver driver = loadUBlockOriginToSeleniumWebDriver();
 		driver.get(fixUrl(url));
 		driver.manage().timeouts().implicitlyWait(30, TimeUnit.SECONDS);
 
@@ -265,7 +272,7 @@ public class WebUtils implements WebUtilsInterface{
 		URL chrome_driver_url = getClass().getClassLoader().getResource(path);
 		String chrome_driver_path = chrome_driver_url.getPath();
 		System.setProperty("webdriver.chrome.driver", chrome_driver_path);
-		WebDriver driver = new ChromeDriver();
+		WebDriver driver = loadUBlockOriginToSeleniumWebDriver();
 		driver.get(fixUrl(url));
 		driver.manage().timeouts().implicitlyWait(30, TimeUnit.SECONDS);
 
@@ -275,10 +282,27 @@ public class WebUtils implements WebUtilsInterface{
 		System.out.println("Returning BufferedImage via getScreenshotUsingSelenium()");
 		return fullScreenshot.getImage();
 	}
-	
-	
-	
 
-	
-	
+	//Function that adds UBlock Origin extension into Selenium Chrome Web Driver
+	public WebDriver loadUBlockOriginToSeleniumWebDriver() {
+		String pathToExtension = "CHROME_DRIVERS/uBlockOrigin_1.35.2.0.crx";
+		URL urlPathToExtension = getClass().getClassLoader().getResource(pathToExtension);
+		ChromeOptions options = new ChromeOptions();
+		options.addExtensions(new File(urlPathToExtension.getPath()));
+
+		DesiredCapabilities capabilities = new DesiredCapabilities();
+		capabilities.setCapability(ChromeOptions.CAPABILITY, options);
+		WebDriver driver = new ChromeDriver(capabilities);
+		System.out.println("Opening extension");
+		driver.get("chrome-extension://**cjpalhdlnbpafiamejdnhcphjbkeiagm**/dhc.html");
+		driver.navigate().refresh();
+
+		return driver;
+	}
+
+
+
+
+
+
 }

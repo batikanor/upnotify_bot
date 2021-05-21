@@ -97,7 +97,6 @@ public class WebUtilsTest {
 		System.out.println("Result: " + res);
 		Assert.assertTrue(res.endsWith("Comments"));
 	}
-
 	@Test
 	public void testSaveScreenshotUsingSelenium() {
 		boolean checkIfExists = false;
