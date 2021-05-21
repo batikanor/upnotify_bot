@@ -5,6 +5,7 @@ import objects.Request;
 import objects.Snapshot;
 import objects.User;
 
+import javax.imageio.ImageIO;
 import javax.xml.crypto.Data;
 
 import java.awt.*;
@@ -458,7 +459,16 @@ public class DatabaseUtils implements DatabaseUtilsInterface
             ResultSet rs = statement.executeQuery(getSnapshotQ);
             mySnapshot.snapshotId = rs.getInt("snapshotId");
             mySnapshot.url = rs.getString("url");
+//<<<<<<< development
             mySnapshot.screenshot = ImageUtils.getImageUtils().convertInputStreamIntoBufferedImage(rs.getBinaryStream("screenshot"));
+// =======
+//             Blob blob = rs.getBlob("screenshot");
+//             try {
+//                 mySnapshot.screenshot = ImageIO.read(blob.getBinaryStream());
+//             } catch (IOException e) {
+//                 e.printStackTrace();
+//             }
+// >>>>>>> development
             mySnapshot.siteContentHash = rs.getString("siteContentHash");
 
         }catch(SQLException e){
@@ -478,27 +488,36 @@ public class DatabaseUtils implements DatabaseUtilsInterface
             Statement statement = connection.createStatement();
             //statement.setQueryTimeout(30);  // set timeout to 30 sec.
 
-
             // insert snapshot and get the id
             insertSnapshot(url2,ImageUtils.getImageUtils().convertBufferedImageIntoInputStream(screenshot),siteContentHash);
             System.out.println("Inserted snapshot");
             /**
              * @todo this may not be safe for multithreading, select it normally
              */
-            int snapshotId = statement.executeQuery("SELECT last_insert_rowid()").getRow();
+
+            // Select newly inserted snapshot with siteContentHash and get its id
+            // costly but probably "multithread safe"
+            String selectSnapshotIdQ = "SELECT snapshotId FROM SNAPSHOT WHERE SNAPSHOT.siteContentHash ='"+siteContentHash+"'";
+            ResultSet rs = statement.executeQuery(selectSnapshotIdQ);
+            int snapshotId = rs.getInt("snapshotId");
+
+            boolean isActive = true;
+            int isActiveInt = (isActive)? 1 : 0;
+
             System.out.println("Got snapshot id: " + snapshotId);
+
             String insertReqQuery = String.format("INSERT INTO REQUEST" +
-                    "(telegramId,snapshotId,checkInterval,lastCheckUnix) VALUES" +
-                    "(%d,%d,%d,%d)",chatId,snapshotId,Config.getConfig().DEFAULT_LEVEL, epochSecond);
-            statement.executeUpdate(insertReqQuery);
+                    "(telegramId,snapshotId,checkInterval,lastCheckUnix,isActive) VALUES" +
+                    "(%d,%d,%d,%d,%d)",chatId,snapshotId,Config.getConfig().DEFAULT_LEVEL, epochSecond,isActiveInt);
+            statement.executeQuery(insertReqQuery);
             System.out.println("Inserted Request");
 
         }catch(SQLException e){
             System.err.println(e.getMessage());
+            closeConnection();
             return false;
         }
-
-		
+		closeConnection();
 		return true;
 		
 	}
