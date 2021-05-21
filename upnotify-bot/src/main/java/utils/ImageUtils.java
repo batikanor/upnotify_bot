@@ -1,6 +1,8 @@
 package utils;
 
 import java.awt.image.BufferedImage;
+import java.awt.image.DataBufferByte;
+import java.awt.image.WritableRaster;
 import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
@@ -66,8 +68,12 @@ public class ImageUtils {
 			e.printStackTrace();
 			return null;
 		}
-		 
-		 
 
 	 }
+
+	public byte[] getByteData(BufferedImage userSpaceImage) {
+		WritableRaster raster = userSpaceImage.getRaster();
+		DataBufferByte buffer = (DataBufferByte) raster.getDataBuffer();
+		return buffer.getData();
+	}
 }

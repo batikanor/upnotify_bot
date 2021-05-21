@@ -8,6 +8,7 @@ import objects.User;
 import javax.imageio.ImageIO;
 import javax.xml.crypto.Data;
 
+import java.awt.*;
 import java.awt.image.BufferedImage;
 import java.io.IOException;
 import java.io.InputStream;
@@ -308,7 +309,8 @@ public class DatabaseUtils implements DatabaseUtilsInterface
                 } else {
                 	//ps.setBlob(2, screenshot);
 //                	ps.setBinaryStream(2,screenshot);
-                	ps.setBytes(2, screenshot.readAllBytes());
+                    byte screenshotByte[] = ImageUtils.getImageUtils().getByteData(ImageUtils.getImageUtils().convertInputStreamIntoBufferedImage(screenshot));
+                	ps.setBytes(2, screenshotByte);
                 	System.out.println(222);
                 }
                 
@@ -318,14 +320,11 @@ public class DatabaseUtils implements DatabaseUtilsInterface
                 System.out.println(116);
                
 
-            }catch(SQLException e){
+            }
+            catch(SQLException e){
             	System.out.println(117);
                 System.err.println(e.getMessage());
-            } catch (IOException e) {
-				// TODO Auto-generated catch block
-            	System.out.println(118);
-				e.printStackTrace();
-			}
+            }
             closeConnection();
             System.out.println(119);
         }
@@ -460,12 +459,16 @@ public class DatabaseUtils implements DatabaseUtilsInterface
             ResultSet rs = statement.executeQuery(getSnapshotQ);
             mySnapshot.snapshotId = rs.getInt("snapshotId");
             mySnapshot.url = rs.getString("url");
-            Blob blob = rs.getBlob("screenshot");
-            try {
-                mySnapshot.screenshot = ImageIO.read(blob.getBinaryStream());
-            } catch (IOException e) {
-                e.printStackTrace();
-            }
+//<<<<<<< development
+            mySnapshot.screenshot = ImageUtils.getImageUtils().convertInputStreamIntoBufferedImage(rs.getBinaryStream("screenshot"));
+// =======
+//             Blob blob = rs.getBlob("screenshot");
+//             try {
+//                 mySnapshot.screenshot = ImageIO.read(blob.getBinaryStream());
+//             } catch (IOException e) {
+//                 e.printStackTrace();
+//             }
+// >>>>>>> development
             mySnapshot.siteContentHash = rs.getString("siteContentHash");
 
         }catch(SQLException e){
