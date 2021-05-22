@@ -57,6 +57,12 @@ public class DatabaseUtilsTest {
         Assert.assertNotEquals(null, ss.screenshot);
     }
 
+    @Test
+    public void addRequest(){
+        DatabaseUtils.getDatabaseUtils().addRequest((long) 1000,200,"urll",
+                null,"hash100");
+
+    }
 /*
     @Test
     public void selectUserFromIdTest(){
