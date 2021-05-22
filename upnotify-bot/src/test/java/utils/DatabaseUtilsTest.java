@@ -5,6 +5,7 @@ import java.util.Arrays;
 import java.util.List;
 
 
+import objects.Snapshot;
 import objects.User;
 import org.apache.commons.lang3.StringUtils;
 import org.junit.Assert;
@@ -48,6 +49,12 @@ public class DatabaseUtilsTest {
         System.out.println(x.telegramId);
         System.out.println(x.checkLevel);
         System.out.println(x.userName);
+    }
+
+    @Test
+    public void retrieveSnapshotFromIdTest() {
+        objects.Snapshot ss = DatabaseUtils.getDatabaseUtils().retrieveSnapshotFromId(13);
+        Assert.assertNotEquals(null, ss.screenshot);
     }
 
 /*

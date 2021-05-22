@@ -4,13 +4,16 @@ package utils;
 import objects.Request;
 import objects.Snapshot;
 import objects.User;
+import org.openqa.selenium.devtools.database.Database;
 
 // import javax.imageio.ImageIO;
 // import javax.xml.crypto.Data;
 
 // import java.awt.*;
+import javax.imageio.ImageIO;
 import java.awt.image.BufferedImage;
 import java.io.ByteArrayInputStream;
+import java.io.IOException;
 import java.io.InputStream;
 
 import java.sql.*;
@@ -59,7 +62,7 @@ interface DatabaseUtilsInterface {
 public class DatabaseUtils implements DatabaseUtilsInterface
 {
     public Connection connection = null;
-    public String url = "jdbc:sqlite:upnotify-bot/src/main/resources/upnotify.db";
+    public String url = "jdbc:sqlite:src/main/resources/upnotify.db";
 
     private static DatabaseUtils single_instance = null;
 
@@ -67,6 +70,7 @@ public class DatabaseUtils implements DatabaseUtilsInterface
         if (single_instance == null) {
             single_instance = new DatabaseUtils();
             System.out.println("Instance of 'DatabaseUtils' has been created");
+            DatabaseUtils.getDatabaseUtils().createTables();
         }
         
         return single_instance;
@@ -144,7 +148,7 @@ public class DatabaseUtils implements DatabaseUtilsInterface
                             "\n" ;
 
                     try {
-                        statement.executeQuery(create_user_table);
+                        statement.executeUpdate(create_user_table);
                         System.out.print("USER table has created");
                     } catch (SQLException e){
                         System.err.println(e.getMessage());
@@ -172,7 +176,7 @@ public class DatabaseUtils implements DatabaseUtilsInterface
                             "\ton SNAPSHOT (snapshotId);\n";
 
                     try {
-                        statement.executeQuery(create_webpages_table);
+                        statement.executeUpdate(create_webpages_table);
                         System.out.print("SNAPSHOT table has created");
                     } catch (SQLException e){
                         System.err.println(e.getMessage());
@@ -206,7 +210,7 @@ public class DatabaseUtils implements DatabaseUtilsInterface
 
 
                     try {
-                        statement.executeQuery(create_requests_table);
+                        statement.executeUpdate(create_requests_table);
                         System.out.print("REQUEST table has created");
                     } catch (SQLException e){
                         System.err.println(e.getMessage());
@@ -265,10 +269,16 @@ public class DatabaseUtils implements DatabaseUtilsInterface
                 selectedUser.userName = rs.getString("userName");
                 selectedUser.checkLevel = rs.getInt("checkLevel");
 
+                rs.close();
+                statement.close();
+
             }catch(SQLException e){
                 System.err.println(e.getMessage());
             }
-            closeConnection();
+            finally {
+                closeConnection();
+            }
+
             return selectedUser;
 
         }
@@ -285,11 +295,15 @@ public class DatabaseUtils implements DatabaseUtilsInterface
                         "VALUES(%d,%d,'%s');",telegramId,checkLevel,userName);
 
                 statement.executeQuery(insertQuery);
+                statement.close();
 
             }catch(SQLException e){
                 System.err.println(e.getMessage());
             }
-            closeConnection();
+            finally {
+                closeConnection();
+            }
+
 
         }
 
@@ -308,9 +322,9 @@ public class DatabaseUtils implements DatabaseUtilsInterface
                 	System.out.println(114);
                 } else {
                 	//ps.setBlob(2, screenshot);
-//                	ps.setBinaryStream(2,screenshot);
-                    byte screenshotByte[] = ImageUtils.getImageUtils().getByteData(ImageUtils.getImageUtils().convertInputStreamIntoBufferedImage(screenshot));
-                	ps.setBytes(2, screenshotByte);
+                	//ps.setBinaryStream(2,screenshot);
+                    //byte screenshotByte[] = ImageUtils.getImageUtils().getByteData(ImageUtils.getImageUtils().convertInputStreamIntoBufferedImage(screenshot));
+                	ps.setBytes(2, screenshot.readAllBytes());
                 	System.out.println(222);
                 }
                 
@@ -318,15 +332,19 @@ public class DatabaseUtils implements DatabaseUtilsInterface
                 System.out.println(115);
                 ps.executeUpdate();
                 System.out.println(116);
+                ps.close();
                
 
             }
-            catch(SQLException e){
+            catch(SQLException | IOException e){
             	System.out.println(117);
-                System.err.println(e.getMessage());
+                e.printStackTrace();
             }
-            closeConnection();
-            System.out.println(119);
+            finally {
+                closeConnection();
+                System.out.println(119);
+            }
+
         }
 
 
@@ -344,7 +362,10 @@ public class DatabaseUtils implements DatabaseUtilsInterface
             }catch(SQLException e){
                 System.err.println(e.getMessage());
             }
-        closeConnection();
+            finally {
+                closeConnection();
+            }
+
         return is;
         }
 
@@ -461,7 +482,8 @@ public class DatabaseUtils implements DatabaseUtilsInterface
             mySnapshot.url = rs.getString("url");
 //<<<<<<< development
             //mySnapshot.screenshot = ImageUtils.getImageUtils().convertInputStreamIntoBufferedImage(rs.getBinaryStream("screenshot"));
-            mySnapshot.screenshot = ImageUtils.getImageUtils().convertInputStreamIntoBufferedImage(rs.getBlob("screenshot").getBinaryStream());
+            //mySnapshot.screenshot = ImageUtils.getImageUtils().convertInputStreamIntoBufferedImage(rs.getBytes("screenshot"));
+            mySnapshot.screenshot = ImageUtils.getImageUtils().convertInputStreamIntoBufferedImage(rs.getBinaryStream("screenshot"));
             System.out.println("width:" + mySnapshot.screenshot.getWidth());
             // =======
 //             Blob blob = rs.getBlob("screenshot");
