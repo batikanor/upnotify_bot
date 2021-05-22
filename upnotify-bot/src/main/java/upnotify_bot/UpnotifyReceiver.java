@@ -2,7 +2,7 @@ package upnotify_bot;
 
 import objects.Request;
 import objects.Snapshot;
-
+import utils.Config;
 import utils.DatabaseUtils;
 
 public class UpnotifyReceiver implements Runnable{
@@ -40,21 +40,22 @@ public class UpnotifyReceiver implements Runnable{
 			
 			// check non-null fields in snap again, report any changes
 			
-					
+			
 			if (snap.screenshot != null) {
 				// take new screenshot, compare with old using ImageUtils
-				System.out.println('Comparing current screenshot with one on database');
+				System.out.println("[Request "+ upnotify.requestId + "]Comparing current screenshot with one on database");
 			}
 			
 			if (snap.siteContentHash != null) {
-				System.out.println('Comparing current site content hash with one on database');
+				System.out.println("[Request "+ upnotify.requestId + "]Comparing current site content hash with one on database");
 				// take new hash
 				
 			}
 			
 			// wait
+			System.out.println("[Request: "+ upnotify.requestId + "]Waiting for: " + Config.getConfig().MIN_WAIT_LEVEL[upnotify.checkInterval]);
 			try {
-				Thread.sleep(upnotify.checkInterval * 60 * 1000);
+				Thread.sleep(Config.getConfig().MIN_WAIT_LEVEL[upnotify.checkInterval] * 60 * 1000);
 			} catch (InterruptedException e) {
 				// TODO Auto-generated catch block
 				e.printStackTrace();

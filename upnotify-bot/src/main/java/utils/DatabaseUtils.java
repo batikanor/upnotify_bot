@@ -10,6 +10,7 @@ import objects.User;
 
 // import java.awt.*;
 import java.awt.image.BufferedImage;
+import java.io.ByteArrayInputStream;
 import java.io.InputStream;
 
 import java.sql.*;
@@ -459,8 +460,10 @@ public class DatabaseUtils implements DatabaseUtilsInterface
             mySnapshot.snapshotId = rs.getInt("snapshotId");
             mySnapshot.url = rs.getString("url");
 //<<<<<<< development
-            mySnapshot.screenshot = ImageUtils.getImageUtils().convertInputStreamIntoBufferedImage(rs.getBinaryStream("screenshot"));
-// =======
+            //mySnapshot.screenshot = ImageUtils.getImageUtils().convertInputStreamIntoBufferedImage(rs.getBinaryStream("screenshot"));
+            mySnapshot.screenshot = ImageUtils.getImageUtils().convertInputStreamIntoBufferedImage(rs.getBlob("screenshot").getBinaryStream());
+            System.out.println("width:" + mySnapshot.screenshot.getWidth());
+            // =======
 //             Blob blob = rs.getBlob("screenshot");
 //             try {
 //                 mySnapshot.screenshot = ImageIO.read(blob.getBinaryStream());
