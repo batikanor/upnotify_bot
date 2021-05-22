@@ -5,10 +5,12 @@ import objects.Request;
 import objects.Snapshot;
 import objects.User;
 
-import javax.xml.crypto.Data;
+// import javax.imageio.ImageIO;
+// import javax.xml.crypto.Data;
 
+// import java.awt.*;
 import java.awt.image.BufferedImage;
-import java.io.IOException;
+import java.io.ByteArrayInputStream;
 import java.io.InputStream;
 
 import java.sql.*;
@@ -57,7 +59,7 @@ interface DatabaseUtilsInterface {
 public class DatabaseUtils implements DatabaseUtilsInterface
 {
     public Connection connection = null;
-    public String url = "jdbc:sqlite:src/main/resources/upnotify.db";
+    public String url = "jdbc:sqlite:upnotify-bot/src/main/resources/upnotify.db";
 
     private static DatabaseUtils single_instance = null;
 
@@ -307,7 +309,8 @@ public class DatabaseUtils implements DatabaseUtilsInterface
                 } else {
                 	//ps.setBlob(2, screenshot);
 //                	ps.setBinaryStream(2,screenshot);
-                	ps.setBytes(2, screenshot.readAllBytes());
+                    byte screenshotByte[] = ImageUtils.getImageUtils().getByteData(ImageUtils.getImageUtils().convertInputStreamIntoBufferedImage(screenshot));
+                	ps.setBytes(2, screenshotByte);
                 	System.out.println(222);
                 }
                 
@@ -317,14 +320,11 @@ public class DatabaseUtils implements DatabaseUtilsInterface
                 System.out.println(116);
                
 
-            }catch(SQLException e){
+            }
+            catch(SQLException e){
             	System.out.println(117);
                 System.err.println(e.getMessage());
-            } catch (IOException e) {
-				// TODO Auto-generated catch block
-            	System.out.println(118);
-				e.printStackTrace();
-			}
+            }
             closeConnection();
             System.out.println(119);
         }
@@ -459,7 +459,18 @@ public class DatabaseUtils implements DatabaseUtilsInterface
             ResultSet rs = statement.executeQuery(getSnapshotQ);
             mySnapshot.snapshotId = rs.getInt("snapshotId");
             mySnapshot.url = rs.getString("url");
-            mySnapshot.screenshot = rs.getBlob("screenshot");
+//<<<<<<< development
+            //mySnapshot.screenshot = ImageUtils.getImageUtils().convertInputStreamIntoBufferedImage(rs.getBinaryStream("screenshot"));
+            mySnapshot.screenshot = ImageUtils.getImageUtils().convertInputStreamIntoBufferedImage(rs.getBlob("screenshot").getBinaryStream());
+            System.out.println("width:" + mySnapshot.screenshot.getWidth());
+            // =======
+//             Blob blob = rs.getBlob("screenshot");
+//             try {
+//                 mySnapshot.screenshot = ImageIO.read(blob.getBinaryStream());
+//             } catch (IOException e) {
+//                 e.printStackTrace();
+//             }
+// >>>>>>> development
             mySnapshot.siteContentHash = rs.getString("siteContentHash");
 
         }catch(SQLException e){
@@ -479,27 +490,36 @@ public class DatabaseUtils implements DatabaseUtilsInterface
             Statement statement = connection.createStatement();
             //statement.setQueryTimeout(30);  // set timeout to 30 sec.
 
-
             // insert snapshot and get the id
             insertSnapshot(url2,ImageUtils.getImageUtils().convertBufferedImageIntoInputStream(screenshot),siteContentHash);
             System.out.println("Inserted snapshot");
             /**
              * @todo this may not be safe for multithreading, select it normally
              */
-            int snapshotId = statement.executeQuery("SELECT last_insert_rowid()").getRow();
+
+            // Select newly inserted snapshot with siteContentHash and get its id
+            // costly but probably "multithread safe"
+            String selectSnapshotIdQ = "SELECT snapshotId FROM SNAPSHOT WHERE SNAPSHOT.siteContentHash ='"+siteContentHash+"'";
+            ResultSet rs = statement.executeQuery(selectSnapshotIdQ);
+            int snapshotId = rs.getInt("snapshotId");
+
+            boolean isActive = true;
+            int isActiveInt = (isActive)? 1 : 0;
+
             System.out.println("Got snapshot id: " + snapshotId);
-            String insertReqQuery = String.format("INSERT INTO REQUEST" +
-                    "(telegramId,snapshotId,checkInterval,lastCheckUnix) VALUES" +
-                    "(%d,%d,%d,%d)",chatId,snapshotId,Config.getConfig().DEFAULT_LEVEL, epochSecond);
-            statement.executeUpdate(insertReqQuery);
+
+            String insertReqUpdate = String.format("INSERT INTO REQUEST" +
+                    "(telegramId,snapshotId,checkInterval,lastCheckUnix,isActive) VALUES" +
+                    "(%d,%d,%d,%d,%d)",chatId,snapshotId,Config.getConfig().DEFAULT_LEVEL, epochSecond,isActiveInt);
+            statement.executeUpdate(insertReqUpdate);
             System.out.println("Inserted Request");
 
         }catch(SQLException e){
             System.err.println(e.getMessage());
+            closeConnection();
             return false;
         }
-
-		
+		closeConnection();
 		return true;
 		
 	}

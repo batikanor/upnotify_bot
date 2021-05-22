@@ -1,8 +1,6 @@
 package utils;
 import java.io.IOException;
-import java.net.URL;
 import java.nio.file.Files;
-import java.nio.file.NoSuchFileException;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.Arrays;
@@ -13,8 +11,6 @@ import org.apache.commons.lang3.StringUtils;
 import org.junit.Assert;
 import org.junit.Test;
 
-import utils.Config;
-import utils.WebUtils;
 
 public class WebUtilsTest {
 
@@ -97,7 +93,6 @@ public class WebUtilsTest {
 		System.out.println("Result: " + res);
 		Assert.assertTrue(res.endsWith("Comments"));
 	}
-
 	@Test
 	public void testSaveScreenshotUsingSelenium() {
 		boolean checkIfExists = false;

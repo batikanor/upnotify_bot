@@ -57,22 +57,14 @@ public class UpdateReceiver implements Runnable{
 					upUser =  DatabaseUtils.getDatabaseUtils().retrieveUserFromId(msg.getChatId(), msg.getChat().getTitle());
 				}
 				
-		
-				
-				// check if user exists, otherwise create
-				
-				
-				
 				
 				String msgText = msg.getText();
-		
 				System.out.println("Received text: " + (msgText.length() > 20 ? msgText.subSequence(0, 19)  + "..." : msgText));
-				// Now, depending on the text we have, and maybe the current state of the situation of our conversation within the group (group id) or with the person (from id), we will handle the message
-	
-				// Direct text handling, without any importance being given to the conversation stance
+
 				
-				// Commands
+
 				/**
+				 * The following block will be entered if the message received is a command.
 				 * Commands can come in forms such as:
 				 *	/msginfo@upnotify_bot
 				 *	/msginfo
@@ -86,9 +78,13 @@ public class UpdateReceiver implements Runnable{
 					command = withArgs ? msgText.substring(1, msgText.indexOf(" ")).toLowerCase() : msgText.substring(1);					
 					command = command.replace("@" + ub.botUsername, "");
 					System.out.println("Running command: " + command);
-					args = new ArrayList<String>(Arrays.asList(withArgs ? (msgText.substring(2 + command.length()).split(" ")) : null));
-					System.out.println("For args: " + args.toString());
-					// TODO logging instead of printing
+					if (withArgs){
+						args.addAll(Arrays.asList(msgText.substring(2 + command.length()).split(" ")));
+						System.out.println("For args: " + args.toString());
+					}
+					
+					//args = new ArrayList<String>(Arrays.asList(withArgs ? (msgText.substring(2 + command.length()).split(" ")) : null));
+					
 				
 					
 					switch (command) {
@@ -97,9 +93,18 @@ public class UpdateReceiver implements Runnable{
 							while (!MessageUtils.getMessageUtils().sendDebugMessage(ub, threadId, chatId, update)) {
 								// Logging is to be done within the MessageUtils class, so here printing out would suffice.
 								System.out.println("Error whilst sending the message, trying again...");
+								try {
+									Thread.sleep(Config.getConfig().WAIT_UNTIL_ERR_MESSAGE_RESEND);
+								} catch (InterruptedException e) {
+									// TODO Auto-generated catch block
+									e.printStackTrace();
+								}
 							}
 							break;
 						case "checksite":
+							if (args.isEmpty()) {
+								MessageUtils.getMessageUtils().sendWarningMessage(ub, threadId, chatId, msg.getMessageId());
+							}
 							for (String arg : args) {
 								System.out.println("Working with argument: " + arg);
 								// Note that a single thread will work with all of them. If we ever want to change this, we could do these controls within OnUpdateReceived function of UpnotifyBot class, or we could have a separate class for these, and the assignment of jobs to threads could be later etc..
@@ -107,6 +112,9 @@ public class UpdateReceiver implements Runnable{
 							}
 							break;
 						case "checkstatic":
+							if (args.isEmpty()) {
+								MessageUtils.getMessageUtils().sendWarningMessage(ub, threadId, chatId, msg.getMessageId());
+							}
 							for (String arg : args) {
 								System.out.println("Working with argument: " + arg);
 								MessageUtils.getMessageUtils().checkIfHTMLBodyStatic(ub, chatId, arg);
@@ -133,9 +141,17 @@ public class UpdateReceiver implements Runnable{
 					}
 				} else {
 					switch (msgText) {
+					// Direct text handling, without any importance being given to the conversation stance
+
 					case "hi":
 						while(!MessageUtils.getMessageUtils().sendWelcomeMessage(ub, threadId, chatId, update)) {
 							System.out.println("Error whilst sending the message, trying again...");
+							try {
+								Thread.sleep(Config.getConfig().WAIT_UNTIL_ERR_MESSAGE_RESEND);
+							} catch (InterruptedException e) {
+								// TODO Auto-generated catch block
+								e.printStackTrace();
+							}
 						}
 					}
 				}

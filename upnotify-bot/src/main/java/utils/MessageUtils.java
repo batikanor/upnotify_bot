@@ -241,6 +241,20 @@ public class MessageUtils {
 		}
 		
 	}
+    public void sendWarningMessage(UpnotifyBot ub, String threadId, String chatId, int messageId) {
+		String txt = "You used that command incorrectly! please refer to '/help'";
+
+		SendMessage sm  = new SendMessage();
+		sm.setChatId(chatId);
+		sm.setText(txt);
+		sm.setReplyToMessageId(messageId);
+		try {
+			ub.execute(sm);
+		} catch (TelegramApiException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+    }
 	
 	
 	

@@ -39,8 +39,11 @@ public class Main {
 		System.out.println("Getting upnotify requests from the database");
 		ArrayList<Request> upnotifies = DatabaseUtils.getDatabaseUtils().getRequests();
 		for (Request upnotify : upnotifies) {
-			System.out.println("Processing the request with id: " + upnotify.requestId);
-			MultiprocessingUtils.getMultiProcessingUtils().submitUpnotify(upnotify);
+			if (upnotify.isActive){
+				System.out.println("Processing the request with id: " + upnotify.requestId);
+				MultiprocessingUtils.getMultiProcessingUtils().submitUpnotify(upnotify);
+			}
+
 		}
 		
 	}
