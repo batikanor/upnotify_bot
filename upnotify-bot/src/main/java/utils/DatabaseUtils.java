@@ -505,10 +505,10 @@ public class DatabaseUtils implements DatabaseUtilsInterface
 
             System.out.println("Got snapshot id: " + snapshotId);
 
-            String insertReqQuery = String.format("INSERT INTO REQUEST" +
+            String insertReqUpdate = String.format("INSERT INTO REQUEST" +
                     "(telegramId,snapshotId,checkInterval,lastCheckUnix,isActive) VALUES" +
                     "(%d,%d,%d,%d,%d)",chatId,snapshotId,Config.getConfig().DEFAULT_LEVEL, epochSecond,isActiveInt);
-            statement.executeQuery(insertReqQuery);
+            statement.executeUpdate(insertReqUpdate);
             System.out.println("Inserted Request");
 
         }catch(SQLException e){

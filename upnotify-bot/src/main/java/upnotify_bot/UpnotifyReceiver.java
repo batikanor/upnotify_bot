@@ -43,9 +43,11 @@ public class UpnotifyReceiver implements Runnable{
 					
 			if (snap.screenshot != null) {
 				// take new screenshot, compare with old using ImageUtils
+				System.out.println('Comparing current screenshot with one on database');
 			}
 			
 			if (snap.siteContentHash != null) {
+				System.out.println('Comparing current site content hash with one on database');
 				// take new hash
 				
 			}
