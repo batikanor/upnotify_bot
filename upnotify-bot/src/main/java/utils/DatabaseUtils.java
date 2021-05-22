@@ -9,8 +9,10 @@ import objects.User;
 // import javax.xml.crypto.Data;
 
 // import java.awt.*;
+import javax.imageio.ImageIO;
 import java.awt.image.BufferedImage;
 import java.io.ByteArrayInputStream;
+import java.io.IOException;
 import java.io.InputStream;
 
 import java.sql.*;
@@ -59,7 +61,7 @@ interface DatabaseUtilsInterface {
 public class DatabaseUtils implements DatabaseUtilsInterface
 {
     public Connection connection = null;
-    public String url = "jdbc:sqlite:upnotify-bot/src/main/resources/upnotify.db";
+    public String url = "jdbc:sqlite:src/main/resources/upnotify.db";
 
     private static DatabaseUtils single_instance = null;
 
@@ -293,12 +295,12 @@ public class DatabaseUtils implements DatabaseUtilsInterface
 
         }
 
-        private void insertSnapshot(String url, InputStream screenshot, String siteContentHash){
+        private int insertSnapshot(String url, InputStream screenshot, String siteContentHash){
             buildConnection();
             try{
                 String insertSnapshotQ= "INSERT INTO SNAPSHOT(url,screenshot,siteContentHash)" + "VALUES(?,?,?)";
                 System.out.println(111);
-                PreparedStatement ps = connection.prepareStatement(insertSnapshotQ);
+                PreparedStatement ps = connection.prepareStatement(insertSnapshotQ,Statement.RETURN_GENERATED_KEYS);
                 System.out.println(112);
                 ps.setString(1,url);
                 System.out.println(113);
@@ -317,16 +319,26 @@ public class DatabaseUtils implements DatabaseUtilsInterface
                 ps.setString(3,siteContentHash);
                 System.out.println(115);
                 ps.executeUpdate();
-                System.out.println(116);
-               
+
+                ResultSet genKeys = ps.getGeneratedKeys();
+                int generatedKey = -1;
+                if ( genKeys.next() ) {
+                     generatedKey= genKeys.getInt( 1 );
+                } else {
+                    System.out.println("there is no generated id");
+                }
+
+                closeConnection();
+                return generatedKey;
 
             }
             catch(SQLException e){
             	System.out.println(117);
                 System.err.println(e.getMessage());
+                closeConnection();
+                return -1;
             }
-            closeConnection();
-            System.out.println(119);
+
         }
 
 
@@ -348,7 +360,7 @@ public class DatabaseUtils implements DatabaseUtilsInterface
         return is;
         }
 
-
+/*
         private void insertRequest(Long telegramId,String userName, int checkInterval,String url,InputStream screenshot,
                                   String siteContentHash){
 
@@ -381,7 +393,7 @@ public class DatabaseUtils implements DatabaseUtilsInterface
                 System.err.println(e.getMessage());
             }
 
-        }
+        } */
 
         private boolean checkUserExists(Long telegramId){
             buildConnection();
@@ -460,16 +472,25 @@ public class DatabaseUtils implements DatabaseUtilsInterface
             mySnapshot.snapshotId = rs.getInt("snapshotId");
             mySnapshot.url = rs.getString("url");
 //<<<<<<< development
-            //mySnapshot.screenshot = ImageUtils.getImageUtils().convertInputStreamIntoBufferedImage(rs.getBinaryStream("screenshot"));
-            mySnapshot.screenshot = ImageUtils.getImageUtils().convertInputStreamIntoBufferedImage(rs.getBlob("screenshot").getBinaryStream());
-            System.out.println("width:" + mySnapshot.screenshot.getWidth());
+      //      mySnapshot.screenshot = ImageUtils.getImageUtils().convertInputStreamIntoBufferedImage(rs.getBinaryStream("screenshot"));
+     //       mySnapshot.screenshot = ImageUtils.getImageUtils().convertInputStreamIntoBufferedImage(rs.getBlob("screenshot").getBinaryStream());
+      //      System.out.println("width:" + mySnapshot.screenshot.getWidth());
             // =======
-//             Blob blob = rs.getBlob("screenshot");
-//             try {
-//                 mySnapshot.screenshot = ImageIO.read(blob.getBinaryStream());
-//             } catch (IOException e) {
-//                 e.printStackTrace();
-//             }
+            byte[] imgByte = rs.getBytes("screenshot");
+            System.out.println("bura çalıştı 0");
+            InputStream is = new ByteArrayInputStream(imgByte);
+            System.out.println("bura çalıştı 1");
+            mySnapshot.screenshot = ImageUtils.getImageUtils().convertInputStreamIntoBufferedImage(is);
+            System.out.println("bura çalıştı 2");
+            System.out.println("width:" + mySnapshot.screenshot.getWidth());
+
+ //            Blob blob = rs.getBlob("screenshot");
+ //            try {
+ //                mySnapshot.screenshot = ImageIO.read(blob.getBinaryStream());
+ //                System.out.println("width:" + mySnapshot.screenshot.getWidth());
+ //            } catch (IOException e) {
+ //                e.printStackTrace();
+ //            }
 // >>>>>>> development
             mySnapshot.siteContentHash = rs.getString("siteContentHash");
 
@@ -491,17 +512,8 @@ public class DatabaseUtils implements DatabaseUtilsInterface
             //statement.setQueryTimeout(30);  // set timeout to 30 sec.
 
             // insert snapshot and get the id
-            insertSnapshot(url2,ImageUtils.getImageUtils().convertBufferedImageIntoInputStream(screenshot),siteContentHash);
+            int snapshotId = insertSnapshot(url2,ImageUtils.getImageUtils().convertBufferedImageIntoInputStream(screenshot),siteContentHash);
             System.out.println("Inserted snapshot");
-            /**
-             * @todo this may not be safe for multithreading, select it normally
-             */
-
-            // Select newly inserted snapshot with siteContentHash and get its id
-            // costly but probably "multithread safe"
-            String selectSnapshotIdQ = "SELECT snapshotId FROM SNAPSHOT WHERE SNAPSHOT.siteContentHash ='"+siteContentHash+"'";
-            ResultSet rs = statement.executeQuery(selectSnapshotIdQ);
-            int snapshotId = rs.getInt("snapshotId");
 
             boolean isActive = true;
             int isActiveInt = (isActive)? 1 : 0;
