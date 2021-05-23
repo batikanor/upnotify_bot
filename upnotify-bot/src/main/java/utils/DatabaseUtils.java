@@ -11,10 +11,13 @@ import objects.User;
 // import java.awt.*;
 import java.awt.image.BufferedImage;
 import java.io.ByteArrayInputStream;
+import java.io.IOException;
 import java.io.InputStream;
 
 import java.sql.*;
 import java.util.ArrayList;
+
+import javax.imageio.ImageIO;
 
 interface DatabaseUtilsInterface {
 	/**
@@ -59,7 +62,7 @@ interface DatabaseUtilsInterface {
 public class DatabaseUtils implements DatabaseUtilsInterface
 {
     public Connection connection = null;
-    public String url = "jdbc:sqlite:upnotify-bot/src/main/resources/upnotify.db";
+    public String url = "jdbc:sqlite:src/main/resources/upnotify.db";
 
     private static DatabaseUtils single_instance = null;
 
@@ -309,6 +312,7 @@ public class DatabaseUtils implements DatabaseUtilsInterface
                 } else {
                 	//ps.setBlob(2, screenshot);
 //                	ps.setBinaryStream(2,screenshot);
+                    
                     byte screenshotByte[] = ImageUtils.getImageUtils().getByteData(ImageUtils.getImageUtils().convertInputStreamIntoBufferedImage(screenshot));
                 	ps.setBytes(2, screenshotByte);
                 	System.out.println(222);
@@ -460,9 +464,10 @@ public class DatabaseUtils implements DatabaseUtilsInterface
             mySnapshot.snapshotId = rs.getInt("snapshotId");
             mySnapshot.url = rs.getString("url");
 //<<<<<<< development
-            //mySnapshot.screenshot = ImageUtils.getImageUtils().convertInputStreamIntoBufferedImage(rs.getBinaryStream("screenshot"));
-            mySnapshot.screenshot = ImageUtils.getImageUtils().convertInputStreamIntoBufferedImage(rs.getBlob("screenshot").getBinaryStream());
-            System.out.println("width:" + mySnapshot.screenshot.getWidth());
+            mySnapshot.screenshot = ImageUtils.getImageUtils().convertInputStreamIntoBufferedImage(rs.getBinaryStream("screenshot"));
+
+            
+            
             // =======
 //             Blob blob = rs.getBlob("screenshot");
 //             try {
@@ -475,6 +480,7 @@ public class DatabaseUtils implements DatabaseUtilsInterface
 
         }catch(SQLException e){
             System.err.println(e.getMessage());
+            e.printStackTrace();
         }
         closeConnection();
         return mySnapshot;
@@ -514,7 +520,7 @@ public class DatabaseUtils implements DatabaseUtilsInterface
             statement.executeUpdate(insertReqUpdate);
             System.out.println("Inserted Request");
 
-        }catch(SQLException e){
+        }catch(Exception e){
             System.err.println(e.getMessage());
             closeConnection();
             return false;
