@@ -16,6 +16,7 @@ import org.telegram.telegrambots.meta.api.objects.Message;
 import org.telegram.telegrambots.meta.api.objects.Update;
 import org.telegram.telegrambots.meta.exceptions.TelegramApiException;
 
+import objects.Request;
 import objects.User;
 import upnotify_bot.UpnotifyBot;
 
@@ -284,6 +285,56 @@ public class MessageUtils {
 
 	}
 	
-	
+public void editRequest(UpnotifyBot ub, String chatId, User upUser, ArrayList<String> args) {
+		
+		Request req = DatabaseUtils.getDatabaseUtils().retrieveRequestFromId(Integer.parseInt(args.get(0)));
+		
+		SendMessage sm = new SendMessage();
+		sm.setChatId(chatId);
+		String reply = "";
+		
+		if(req == null) {
+			reply = "No such request";
+		}
+		else if(req.telegramId != upUser.telegramId) {
+			reply = "This request is not yours";
+		}
+		else {
+			objects.Snapshot snap = new objects.Snapshot();
+			snap.screenshot = null;
+			snap.siteContentHash = null;
+			snap.url = args.get(1);
+			
+			if (args.contains("ss")) {
+				System.out.println("Request will have a non-null screenshot field!");
+				snap.screenshot = WebUtils.getWebUtils().getScreenshotUsingSelenium(snap.url);
+			}
+			
+			if (args.contains("sch")) {
+				System.out.println("Request will have a non-null siteContentHash field!");
+				snap.siteContentHash = WebUtils.getWebUtils().getHTMLBodyStringHash(snap.url);
+			}
+			
+			boolean success = DatabaseUtils.getDatabaseUtils().editRequest(req,snap);
+			
+			if(success) {
+				reply = "Your request has been successfully edited";
+				//Remove the old upnotify and submit the new one
+				MultiprocessingUtils.getMultiProcessingUtils().removeUpnotify(req);
+				MultiprocessingUtils.getMultiProcessingUtils().submitUpnotify(ub, req);
+			}
+			else
+				reply = "Something went wrong while editing your request";
+			
+		}
+		
+		sm.setText(reply);
+		
+		try {
+			ub.execute(sm);
+		} catch (TelegramApiException e) {
+			e.printStackTrace();
+		}
+	}
 	
 }
