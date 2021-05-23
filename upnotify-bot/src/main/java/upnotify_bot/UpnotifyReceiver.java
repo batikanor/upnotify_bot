@@ -32,7 +32,9 @@ public class UpnotifyReceiver implements Runnable{
 		long diff = unixTime - upnotify.lastCheckedUnix;
 		
 		long expectedWait = Config.getConfig().MIN_WAIT_LEVEL[upnotify.checkInterval] * 60;
+		System.out.println("[Request "+ upnotify.requestId + "] ExpectedWait-diff = " + (expectedWait-diff));
 		if (diff < expectedWait) {
+
 			System.out.println("[Request "+ upnotify.requestId + "] waiting for  " + (expectedWait - diff) + " seconds");
 			try {
 				Thread.sleep((expectedWait - diff) * 1000);

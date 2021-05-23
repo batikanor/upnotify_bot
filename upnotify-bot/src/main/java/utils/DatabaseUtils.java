@@ -5,6 +5,7 @@ import objects.Request;
 import objects.Snapshot;
 import objects.User;
 import org.openqa.selenium.devtools.database.Database;
+import upnotify_bot.UpnotifyBot;
 
 // import javax.imageio.ImageIO;
 // import javax.xml.crypto.Data;
@@ -64,7 +65,7 @@ interface DatabaseUtilsInterface {
 public class DatabaseUtils implements DatabaseUtilsInterface
 {
     public Connection connection = null;
-    public String url = "jdbc:sqlite:src/main/resources/upnotify.db";
+    public String url = "jdbc:sqlite:upnotify-bot/src/main/resources/upnotify.db";
 
     private static DatabaseUtils single_instance = null;
 
@@ -88,8 +89,8 @@ public class DatabaseUtils implements DatabaseUtilsInterface
             connection = DriverManager.getConnection(url);
         }
         catch(SQLException e){
-            System.out.println("there is a problem with db connection");
-            System.err.println(e.getMessage());
+            //System.out.println("there is a problem with db connection");
+            e.printStackTrace();
         }
         
     }
@@ -103,7 +104,7 @@ public class DatabaseUtils implements DatabaseUtilsInterface
         catch(SQLException e)
         {
             // connection close failed.
-            System.err.println(e.getMessage());
+            e.printStackTrace();
         }
     }
 
@@ -122,7 +123,7 @@ public class DatabaseUtils implements DatabaseUtilsInterface
                 return false;
             }
         }catch(SQLException e){
-            System.err.println(e.getMessage());
+            e.printStackTrace();
             return true;
         }
     }
@@ -153,7 +154,7 @@ public class DatabaseUtils implements DatabaseUtilsInterface
                         statement.executeUpdate(create_user_table);
                         System.out.print("USER table has created");
                     } catch (SQLException e){
-                        System.err.println(e.getMessage());
+                        e.printStackTrace();
                     }
                 }
                 else{
@@ -181,7 +182,7 @@ public class DatabaseUtils implements DatabaseUtilsInterface
                         statement.executeUpdate(create_webpages_table);
                         System.out.print("SNAPSHOT table has created");
                     } catch (SQLException e){
-                        System.err.println(e.getMessage());
+                        e.printStackTrace();
                     }
                 }else{
 
@@ -215,7 +216,7 @@ public class DatabaseUtils implements DatabaseUtilsInterface
                         statement.executeUpdate(create_requests_table);
                         System.out.print("REQUEST table has created");
                     } catch (SQLException e){
-                        System.err.println(e.getMessage());
+                        e.printStackTrace();
                     }
                 }else{
                     System.out.println("REQUEST table already exists");
@@ -223,7 +224,7 @@ public class DatabaseUtils implements DatabaseUtilsInterface
                 }
 
             }catch (SQLException e){
-                System.err.println(e.getMessage());
+                e.printStackTrace();
             }
 
 
@@ -248,7 +249,7 @@ public class DatabaseUtils implements DatabaseUtilsInterface
                     userList.add(selectedUser);
                 }
             }catch(SQLException e){
-                System.err.println(e.getMessage());
+                e.printStackTrace();
             }
             closeConnection();
             return userList;
@@ -275,7 +276,7 @@ public class DatabaseUtils implements DatabaseUtilsInterface
                 statement.close();
 
             }catch(SQLException e){
-                System.err.println(e.getMessage());
+                e.printStackTrace();
             }
             finally {
                 closeConnection();
@@ -300,7 +301,7 @@ public class DatabaseUtils implements DatabaseUtilsInterface
                 statement.close();
 
             }catch(SQLException e){
-                System.err.println(e.getMessage());
+                e.printStackTrace();
             }
             finally {
                 closeConnection();
@@ -371,7 +372,7 @@ public class DatabaseUtils implements DatabaseUtilsInterface
                 is = ablob.getBinaryStream();
 
             }catch(SQLException e){
-                System.err.println(e.getMessage());
+                e.printStackTrace();
             }
             finally {
                 closeConnection();
@@ -433,7 +434,7 @@ public class DatabaseUtils implements DatabaseUtilsInterface
                 return exists;
 
             }catch(SQLException e){
-                System.err.println(e.getMessage());
+                e.printStackTrace();
                 closeConnection();
                 return false;
             }
@@ -473,7 +474,7 @@ public class DatabaseUtils implements DatabaseUtilsInterface
             }
 
         }catch(SQLException e){
-            System.err.println(e.getMessage());
+            e.printStackTrace();
         }
         closeConnection();
         return reqList;
@@ -508,7 +509,6 @@ public class DatabaseUtils implements DatabaseUtilsInterface
             mySnapshot.siteContentHash = rs.getString("siteContentHash");
 
         }catch(SQLException e){
-            System.err.println(e.getMessage());
             e.printStackTrace();
         }
         closeConnection();
@@ -516,15 +516,34 @@ public class DatabaseUtils implements DatabaseUtilsInterface
 
     }
 
+    public objects.Request retrieveRequestFromId(int requestId) {
+        Request myRequest = new Request();
+        buildConnection();
+        try{
+            Statement statement = connection.createStatement();
+            String getRequestQ = String.format("SELECT * FROM REQUEST" +
+                    " WHERE REQUEST.requestId = %d",requestId);
+            ResultSet rs = statement.executeQuery(getRequestQ);
+            myRequest.requestId = rs.getInt("requestId");
+            myRequest.snapshotId = rs.getInt("snapshotId");
+            myRequest.checkInterval = rs.getInt("checkInterval");
+            myRequest.telegramId = rs.getLong("telegramId");
+            myRequest.isActive = rs.getBoolean("isActive");
+            myRequest.lastCheckedUnix = rs.getLong("lastCheckUnix");
+
+        }catch(SQLException e){
+            e.printStackTrace();
+        }
+        closeConnection();
+        return myRequest;
+    }
+
 	// Requests.telegramId,   Requests.LastCheckUnix, Snapshot.url, Snapshot.screenshot, Snapshot.siteContentHash
 	public boolean addRequest(Long chatId, long epochSecond, String url2, BufferedImage screenshot,
 			String siteContentHash) {
-		buildConnection();
+        int generatedKey = -1;
 		
         try{
-            Statement statement = connection.createStatement();
-            //statement.setQueryTimeout(30);  // set timeout to 30 sec.
-
             // insert snapshot and get the id
             int snapshotId= insertSnapshot(url2,ImageUtils.getImageUtils().convertBufferedImageIntoInputStream(screenshot),siteContentHash);
             System.out.println("Inserted snapshot");
@@ -534,18 +553,37 @@ public class DatabaseUtils implements DatabaseUtilsInterface
 
             System.out.println("Got snapshot id: " + snapshotId);
 
+            //statement.setQueryTimeout(30);  // set timeout to 30 sec.
             String insertReqUpdate = String.format("INSERT INTO REQUEST" +
                     "(telegramId,snapshotId,checkInterval,lastCheckUnix,isActive) VALUES" +
                     "(%d,%d,%d,%d,%d)",chatId,snapshotId,Config.getConfig().DEFAULT_LEVEL, epochSecond,isActiveInt);
-            statement.executeUpdate(insertReqUpdate);
+            buildConnection();
+            PreparedStatement statement = connection.prepareStatement(insertReqUpdate, Statement.RETURN_GENERATED_KEYS);
+
+
+
+            statement.executeUpdate();
             System.out.println("Inserted Request");
 
+
+            ResultSet genKeys = statement.getGeneratedKeys();
+            if ( genKeys.next() ) {
+                generatedKey= genKeys.getInt( 1 );
+            } else {
+                System.out.println("there is no generated id");
+            }
+
+            objects.Request req = retrieveRequestFromId(generatedKey);
+            MultiprocessingUtils.getMultiProcessingUtils().submitUpnotify(UpnotifyBot.getUpnotifyBot(), req);
+
         }catch(Exception e){
-            System.err.println(e.getMessage());
+            e.printStackTrace();
             closeConnection();
             return false;
         }
+
 		closeConnection();
+
 		return true;
 		
 	}
