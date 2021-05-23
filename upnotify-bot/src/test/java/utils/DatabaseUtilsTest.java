@@ -63,7 +63,7 @@ public class DatabaseUtilsTest {
     }
 
     @Test
-    public void retrieveSnapshotFromIdTest() {
+    public void retrieveSnapshotFromIdTest2() {
         objects.Snapshot ss = DatabaseUtils.getDatabaseUtils().retrieveSnapshotFromId(13);
         Assert.assertNotEquals(null, ss.screenshot);
     }
