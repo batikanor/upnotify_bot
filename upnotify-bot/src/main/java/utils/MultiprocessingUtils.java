@@ -1,7 +1,11 @@
 package utils;
 
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.Map;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
+import java.util.concurrent.Future;
 
 import org.telegram.telegrambots.meta.api.objects.Update;
 
@@ -65,6 +69,14 @@ public class MultiprocessingUtils implements MultiprocessingUtilsInterface {
 	 *  Handles already existing upnotify requests
 	 */
 	private ExecutorService upnotifyExecutor;
+	/*
+	 * Stores the current running upnotifies, enabling us to manipulate them
+	 * */
+	private ArrayList<Future<?>> upnotifies = new ArrayList<Future<?>>();
+	/*
+	 * Map to map request ids with tasks, so we can find which request is running on which task
+	 * */
+	private Map<Integer,Integer> upnotifyMap = new HashMap<Integer,Integer>();
 	
 	private MultiprocessingUtils() {
 		// tps: thread pool size
@@ -105,7 +117,21 @@ public class MultiprocessingUtils implements MultiprocessingUtilsInterface {
 	
 	public void submitUpnotify(UpnotifyBot ub, Request upnotify) {
 		System.out.println("Submitting the upnotify request with id " + upnotify.requestId + " to the thread pool");
-		upnotifyExecutor.submit(new UpnotifyReceiver(ub, upnotify));
+		Future<?> task = upnotifyExecutor.submit(new UpnotifyReceiver(ub, upnotify));
+		upnotifies.add(task);
+		int taskIndex = upnotifies.indexOf(task);
+		upnotifyMap.put(upnotify.requestId, taskIndex);
 	}
-
+	
+	public void removeUpnotify(Request upnotify) {
+		int taskIndex = upnotifyMap.get(upnotify.requestId);
+		boolean success = upnotifies.get(taskIndex).cancel(true);
+		upnotifies.remove(taskIndex);
+		
+		if(success)
+			System.out.println("Request has been removed from execution, request id " + upnotify.requestId);
+		else
+			System.out.println("Error removing request from execution, request id " + upnotify.requestId);
+		
+	}
 }
