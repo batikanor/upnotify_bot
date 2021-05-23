@@ -29,22 +29,12 @@ public class Main {
 		// Instantiate the TelegramBots API by RubenLagus, then register the bot
 		try {
 			TelegramBotsApi telegramBotsApi = new TelegramBotsApi(DefaultBotSession.class);
-			telegramBotsApi.registerBot(new UpnotifyBot());
+			telegramBotsApi.registerBot(UpnotifyBot.getUpnotifyBot());
 		} catch (TelegramApiException e) {
 			// TODO logging
 			e.printStackTrace();
 		}
 		
-		// Get active upnotify request list from db
-		System.out.println("Getting upnotify requests from the database");
-		ArrayList<Request> upnotifies = DatabaseUtils.getDatabaseUtils().getRequests();
-		for (Request upnotify : upnotifies) {
-			if (upnotify.isActive){
-				System.out.println("Processing the request with id: " + upnotify.requestId);
-				MultiprocessingUtils.getMultiProcessingUtils().submitUpnotify(upnotify);
-			}
 
-		}
-		
 	}
 }

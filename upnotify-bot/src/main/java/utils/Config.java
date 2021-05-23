@@ -23,6 +23,7 @@ public class Config {
 	public final int WAIT_UNTIL_MESSAGE_DELETE;
 	public final int WAIT_STATIC_CHECK;
 	public final int WAIT_UNTIL_ERR_MESSAGE_RESEND;
+	public final float IMAGE_DIFFERENCE_THRESHOLD;
 
 	public final int DEFAULT_LEVEL;
 	public final int[] MIN_WAIT_LEVEL;
@@ -73,7 +74,8 @@ public class Config {
 		this.WAIT_UNTIL_MESSAGE_DELETE = Integer.parseInt(prop.getProperty("WAIT_UNTIL_MESSAGE_DELETE"));
 		this.WAIT_STATIC_CHECK = Integer.parseInt(prop.getProperty("WAIT_STATIC_CHECK"));
 		this.WAIT_UNTIL_ERR_MESSAGE_RESEND = Integer.parseInt(prop.getProperty("WAIT_UNTIL_ERR_MESSAGE_RESEND"));
-		
+		this.IMAGE_DIFFERENCE_THRESHOLD = Float.parseFloat(prop.getProperty("IMAGE_DIFFERENCE_THRESHOLD"));
+
 		this.DEFAULT_LEVEL = Integer.parseInt(prop.getProperty("DEFAULT_LEVEL"));
 		this.MIN_WAIT_LEVEL = new int[]{
 				Integer.parseInt(prop.getProperty("MIN_WAIT_LEVEL_0")),

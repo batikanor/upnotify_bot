@@ -1,6 +1,7 @@
 package utils;
 
 
+import java.awt.image.BufferedImage;
 import java.io.File;
 import java.time.Instant;
 import java.util.ArrayList;
@@ -151,6 +152,7 @@ public class MessageUtils {
 		SendPhoto sp = new SendPhoto();
 		sp.setChatId(chatId);
 		sp.setPhoto(new InputFile( new File ("src/main/resources/IMAGES/welcome-red-sign-760.png")));
+	
 		try {
 			ub.execute(sp);
 		} catch (TelegramApiException e) {
@@ -255,7 +257,32 @@ public class MessageUtils {
 			e.printStackTrace();
 		}
     }
-	
+    public void sendNotificationMessage(UpnotifyBot ub, Long telegramId, String notificationTxt, BufferedImage notificationIm) {
+		SendMessage sm = new SendMessage();
+		sm.setChatId(telegramId.toString());
+		sm.setText(notificationTxt);
+		
+		try {
+			ub.execute(sm);
+		} catch (TelegramApiException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+
+		if (notificationIm != null) {
+			SendPhoto sp = new SendPhoto();
+			sp.setChatId(telegramId.toString());
+			sp.setPhoto(new InputFile(ImageUtils.getImageUtils().convertBufferedImageIntoInputStream(notificationIm), "Difference Image"));
+			try {
+				ub.execute(sp);
+			} catch (TelegramApiException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			}
+		}
+
+
+	}
 	
 	
 	
