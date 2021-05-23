@@ -587,4 +587,70 @@ public class DatabaseUtils implements DatabaseUtilsInterface
 		return true;
 		
 	}
+	
+	public boolean editSnapshot(Snapshot snap) {
+		buildConnection();
+        
+        try{
+            String editSnapshotQ = "UPDATE SNAPSHOT SET url = ? , "
+            						+ "screenshot = ? , "
+            						+ "siteContentHash = ? "
+            						+ "WHERE snapshotId = ?";
+           
+            PreparedStatement ps = connection.prepareStatement(editSnapshotQ);
+            ps.setString(1, snap.url);
+            
+            if (snap.screenshot == null) {
+            	ps.setNull(2, Types.NULL);
+            } else {
+            	ps.setBytes(2, ImageUtils.getImageUtils().convertBufferedImageIntoInputStream(snap.screenshot).readAllBytes());
+            }
+            ps.setString(3, snap.siteContentHash);
+            ps.setInt(4, snap.snapshotId);
+            ps.executeUpdate();
+            ps.close();
+        }
+        catch(SQLException | IOException e){
+            e.printStackTrace();
+            closeConnection();
+    		return false;
+        }
+        
+		closeConnection();
+		return true;
+	}
+
+	public boolean editRequest(Request req, Snapshot snap) {
+		buildConnection();
+		boolean success = false;
+		try{
+			//I didn't remove try catch blocks since checkInterval can made to be changed in future versions
+			
+            /*Statement statement = connection.createStatement();
+            
+
+            boolean isActive = true;
+            int isActiveInt = (isActive)? 1 : 0;
+             */
+			
+			System.out.println("Snapshot id is being edited: " + snap.snapshotId);
+			success = editSnapshot(snap);
+
+            /*String updateSnapQ = String.format("INSERT INTO REQUEST" +
+                    "(telegramId,snapshotId,checkInterval,lastCheckUnix,isActive) VALUES" +
+                    "(%d,%d,%d,%d,%d)",0,0,0,0);
+            statement.executeUpdate(updateSnapQ);
+            */
+           
+            
+        }catch(Exception e){
+        	System.err.println(e.getMessage());
+            closeConnection();
+            return false;
+        }
+		
+		System.out.println("Edited Request, id " + req.requestId);
+		closeConnection();
+		return success;
+	}
 }
