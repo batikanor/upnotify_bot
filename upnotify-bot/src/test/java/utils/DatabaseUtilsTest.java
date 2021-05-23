@@ -50,9 +50,20 @@ public class DatabaseUtilsTest {
         System.out.println(x.checkLevel);
         System.out.println(x.userName);
     }
-
+    
     @Test
     public void retrieveSnapshotFromIdTest() {
+    	objects.Snapshot snap;
+    	int[] ids = {3, 8, 11};
+    	for (int id : ids) {
+    		snap = DatabaseUtils.getDatabaseUtils().retrieveSnapshotFromId(id);
+    		System.out.println("sch=" + snap.siteContentHash + " ss=" + snap.screenshot.getWidth());
+    	}
+    	
+    }
+
+    @Test
+    public void retrieveSnapshotFromIdTest2() {
         objects.Snapshot ss = DatabaseUtils.getDatabaseUtils().retrieveSnapshotFromId(13);
         Assert.assertNotEquals(null, ss.screenshot);
     }

@@ -2,3 +2,5 @@
 /src/main/resources/SECRET_KEYS/
 /src/main/resources/SECRET_KEYS/Keys.properties
 *.log
+/target\generated-sources\annotations/
+/target\generated-test-sources\test-annotations/
