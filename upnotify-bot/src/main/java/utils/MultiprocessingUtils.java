@@ -103,9 +103,9 @@ public class MultiprocessingUtils implements MultiprocessingUtilsInterface {
 	}
 	
 	
-	public void submitUpnotify(Request upnotify) {
-		System.out.println("Submitting the upnotify request to the thread pool");
-		upnotifyExecutor.submit(new UpnotifyReceiver(upnotify));
+	public void submitUpnotify(UpnotifyBot ub, Request upnotify) {
+		System.out.println("Submitting the upnotify request with id " + upnotify.requestId + " to the thread pool");
+		upnotifyExecutor.submit(new UpnotifyReceiver(ub, upnotify));
 	}
 
 }

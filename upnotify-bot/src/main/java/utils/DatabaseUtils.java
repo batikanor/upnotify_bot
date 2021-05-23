@@ -4,13 +4,16 @@ package utils;
 import objects.Request;
 import objects.Snapshot;
 import objects.User;
+import org.openqa.selenium.devtools.database.Database;
 
 // import javax.imageio.ImageIO;
 // import javax.xml.crypto.Data;
 
 // import java.awt.*;
+import javax.imageio.ImageIO;
 import java.awt.image.BufferedImage;
 import java.io.ByteArrayInputStream;
+import java.io.IOException;
 import java.io.InputStream;
 
 import java.sql.*;
@@ -67,6 +70,7 @@ public class DatabaseUtils implements DatabaseUtilsInterface
         if (single_instance == null) {
             single_instance = new DatabaseUtils();
             System.out.println("Instance of 'DatabaseUtils' has been created");
+            DatabaseUtils.getDatabaseUtils().createTables();
         }
         
         return single_instance;
@@ -144,7 +148,7 @@ public class DatabaseUtils implements DatabaseUtilsInterface
                             "\n" ;
 
                     try {
-                        statement.executeQuery(create_user_table);
+                        statement.executeUpdate(create_user_table);
                         System.out.print("USER table has created");
                     } catch (SQLException e){
                         System.err.println(e.getMessage());
@@ -172,7 +176,7 @@ public class DatabaseUtils implements DatabaseUtilsInterface
                             "\ton SNAPSHOT (snapshotId);\n";
 
                     try {
-                        statement.executeQuery(create_webpages_table);
+                        statement.executeUpdate(create_webpages_table);
                         System.out.print("SNAPSHOT table has created");
                     } catch (SQLException e){
                         System.err.println(e.getMessage());
@@ -206,7 +210,7 @@ public class DatabaseUtils implements DatabaseUtilsInterface
 
 
                     try {
-                        statement.executeQuery(create_requests_table);
+                        statement.executeUpdate(create_requests_table);
                         System.out.print("REQUEST table has created");
                     } catch (SQLException e){
                         System.err.println(e.getMessage());
@@ -265,10 +269,16 @@ public class DatabaseUtils implements DatabaseUtilsInterface
                 selectedUser.userName = rs.getString("userName");
                 selectedUser.checkLevel = rs.getInt("checkLevel");
 
+                rs.close();
+                statement.close();
+
             }catch(SQLException e){
                 System.err.println(e.getMessage());
             }
-            closeConnection();
+            finally {
+                closeConnection();
+            }
+
             return selectedUser;
 
         }
@@ -285,20 +295,25 @@ public class DatabaseUtils implements DatabaseUtilsInterface
                         "VALUES(%d,%d,'%s');",telegramId,checkLevel,userName);
 
                 statement.executeQuery(insertQuery);
+                statement.close();
 
             }catch(SQLException e){
                 System.err.println(e.getMessage());
             }
-            closeConnection();
+            finally {
+                closeConnection();
+            }
+
 
         }
 
-        private void insertSnapshot(String url, InputStream screenshot, String siteContentHash){
+        private int insertSnapshot(String url, InputStream screenshot, String siteContentHash){
             buildConnection();
+            int generatedKey = -1;
             try{
                 String insertSnapshotQ= "INSERT INTO SNAPSHOT(url,screenshot,siteContentHash)" + "VALUES(?,?,?)";
                 System.out.println(111);
-                PreparedStatement ps = connection.prepareStatement(insertSnapshotQ);
+                PreparedStatement ps = connection.prepareStatement(insertSnapshotQ,Statement.RETURN_GENERATED_KEYS);
                 System.out.println(112);
                 ps.setString(1,url);
                 System.out.println(113);
@@ -308,25 +323,37 @@ public class DatabaseUtils implements DatabaseUtilsInterface
                 	System.out.println(114);
                 } else {
                 	//ps.setBlob(2, screenshot);
-//                	ps.setBinaryStream(2,screenshot);
-                    byte screenshotByte[] = ImageUtils.getImageUtils().getByteData(ImageUtils.getImageUtils().convertInputStreamIntoBufferedImage(screenshot));
-                	ps.setBytes(2, screenshotByte);
+                	//ps.setBinaryStream(2,screenshot);
+                    //byte screenshotByte[] = ImageUtils.getImageUtils().getByteData(ImageUtils.getImageUtils().convertInputStreamIntoBufferedImage(screenshot));
+                	ps.setBytes(2, screenshot.readAllBytes());
                 	System.out.println(222);
                 }
-                
                 ps.setString(3,siteContentHash);
                 System.out.println(115);
                 ps.executeUpdate();
                 System.out.println(116);
-               
+
+                ResultSet genKeys = ps.getGeneratedKeys();
+                if ( genKeys.next() ) {
+                    generatedKey= genKeys.getInt( 1 );
+                } else {
+                    System.out.println("there is no generated id");
+                }
+
+                ps.close();
+
 
             }
-            catch(SQLException e){
+            catch(SQLException | IOException e){
             	System.out.println(117);
-                System.err.println(e.getMessage());
+                e.printStackTrace();
             }
-            closeConnection();
-            System.out.println(119);
+            finally {
+                closeConnection();
+                System.out.println(119);
+                return generatedKey;
+            }
+
         }
 
 
@@ -344,11 +371,14 @@ public class DatabaseUtils implements DatabaseUtilsInterface
             }catch(SQLException e){
                 System.err.println(e.getMessage());
             }
-        closeConnection();
+            finally {
+                closeConnection();
+            }
+
         return is;
         }
 
-
+/*
         private void insertRequest(Long telegramId,String userName, int checkInterval,String url,InputStream screenshot,
                                   String siteContentHash){
 
@@ -381,7 +411,7 @@ public class DatabaseUtils implements DatabaseUtilsInterface
                 System.err.println(e.getMessage());
             }
 
-        }
+        } */
 
         private boolean checkUserExists(Long telegramId){
             buildConnection();
@@ -461,7 +491,8 @@ public class DatabaseUtils implements DatabaseUtilsInterface
             mySnapshot.url = rs.getString("url");
 //<<<<<<< development
             //mySnapshot.screenshot = ImageUtils.getImageUtils().convertInputStreamIntoBufferedImage(rs.getBinaryStream("screenshot"));
-            mySnapshot.screenshot = ImageUtils.getImageUtils().convertInputStreamIntoBufferedImage(rs.getBlob("screenshot").getBinaryStream());
+            //mySnapshot.screenshot = ImageUtils.getImageUtils().convertInputStreamIntoBufferedImage(rs.getBytes("screenshot"));
+            mySnapshot.screenshot = ImageUtils.getImageUtils().convertInputStreamIntoBufferedImage(rs.getBinaryStream("screenshot"));
             System.out.println("width:" + mySnapshot.screenshot.getWidth());
             // =======
 //             Blob blob = rs.getBlob("screenshot");
@@ -491,17 +522,8 @@ public class DatabaseUtils implements DatabaseUtilsInterface
             //statement.setQueryTimeout(30);  // set timeout to 30 sec.
 
             // insert snapshot and get the id
-            insertSnapshot(url2,ImageUtils.getImageUtils().convertBufferedImageIntoInputStream(screenshot),siteContentHash);
+            int snapshotId= insertSnapshot(url2,ImageUtils.getImageUtils().convertBufferedImageIntoInputStream(screenshot),siteContentHash);
             System.out.println("Inserted snapshot");
-            /**
-             * @todo this may not be safe for multithreading, select it normally
-             */
-
-            // Select newly inserted snapshot with siteContentHash and get its id
-            // costly but probably "multithread safe"
-            String selectSnapshotIdQ = "SELECT snapshotId FROM SNAPSHOT WHERE SNAPSHOT.siteContentHash ='"+siteContentHash+"'";
-            ResultSet rs = statement.executeQuery(selectSnapshotIdQ);
-            int snapshotId = rs.getInt("snapshotId");
 
             boolean isActive = true;
             int isActiveInt = (isActive)? 1 : 0;

@@ -1,11 +1,14 @@
 package upnotify_bot;
 
 import java.io.InputStream;
+import java.util.ArrayList;
 import java.util.Properties;
 
 import org.telegram.telegrambots.bots.TelegramLongPollingBot;
 import org.telegram.telegrambots.meta.api.objects.Update;
 
+import objects.Request;
+import utils.DatabaseUtils;
 import utils.MultiprocessingUtils;
 
 /**
@@ -16,11 +19,12 @@ import utils.MultiprocessingUtils;
 public class UpnotifyBot extends TelegramLongPollingBot {
 	String botToken;
 	String botUsername;
+	private static UpnotifyBot single_instance = null;
 	
 	/**
 	 * Constructor for the bot class, also handles the private keys file and initializes its variables from it.
 	 */
-	public UpnotifyBot() {
+	private UpnotifyBot() {
 		System.out.println("Constructing the bot...");
 		InputStream ins = ClassLoader.getSystemResourceAsStream("SECRET_KEYS/Keys.properties");
 		Properties prop = new Properties();
@@ -36,10 +40,33 @@ public class UpnotifyBot extends TelegramLongPollingBot {
 			System.out.println("Properties file couldn't be loaded");
 			e.printStackTrace();
 		}
+
+		// Get active upnotify request list from db
+		System.out.println("Getting upnotify requests from the database");
+		ArrayList<Request> upnotifies = DatabaseUtils.getDatabaseUtils().getRequests();
+		for (Request upnotify : upnotifies) {
+			if (upnotify.isActive){
+				System.out.println("Processing the request with id: " + upnotify.requestId);
+				MultiprocessingUtils.getMultiProcessingUtils().submitUpnotify(this, upnotify);
+			}
+
+		}
+				
 		
 		
 		
 
+	}
+	public static UpnotifyBot getUpnotifyBot(){
+		
+		if (single_instance == null) {
+
+			single_instance = new UpnotifyBot();
+			System.out.println("Instance of 'UpnotifyBot' has been created");
+		}
+		
+		return single_instance;
+		
 	}
 
 	/**
