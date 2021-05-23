@@ -132,8 +132,9 @@ public class UpdateReceiver implements Runnable{
 							MessageUtils.getMessageUtils().addRequestAndSendConfirmation(ub, chatId, update, upUser, args);
 							break;
 						case "editrequest":
-							// /editrequest requestId 
+							// /editrequest requestId newURL sch ss
 							// sch yaziyorsa sch yi kontrol edip kaydeder db ye, yazmiyorsa oraya null yazar
+							MessageUtils.getMessageUtils().editRequest(ub, chatId, upUser, args);
 							break;
 						case "seerequests":
 							// see requests, fields and request ids
