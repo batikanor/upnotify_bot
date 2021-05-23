@@ -296,11 +296,14 @@ public void editRequest(UpnotifyBot ub, String chatId, User upUser, ArrayList<St
 		if(req == null) {
 			reply = "No such request";
 		}
-		else if(req.telegramId != upUser.telegramId) {
+		else if(req.telegramId - upUser.telegramId != 0) {
+			System.out.println("Request id " + req.telegramId);
+			System.out.println("In contrary to user id " + upUser.telegramId);
 			reply = "This request is not yours";
 		}
 		else {
 			objects.Snapshot snap = new objects.Snapshot();
+			snap.snapshotId = req.snapshotId;
 			snap.screenshot = null;
 			snap.siteContentHash = null;
 			snap.url = args.get(1);
