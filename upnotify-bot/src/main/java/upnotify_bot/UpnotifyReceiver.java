@@ -65,8 +65,7 @@ public class UpnotifyReceiver implements Runnable{
 				// take new hash
 				String newHash = WebUtils.getWebUtils().getHTMLBodyStringHash(snap.url);
 				
-				if (newHash != snap.siteContentHash){
-					
+				if (!newHash.contentEquals(snap.siteContentHash)){
 					notificationRequired = true;
 					notificationTxt += "\nThe site has been changed! The hash value of the site content was " + snap.siteContentHash + " and now is " + newHash;
 				}

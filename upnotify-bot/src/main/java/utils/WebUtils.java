@@ -215,6 +215,7 @@ public class WebUtils implements WebUtilsInterface{
 		} catch (IOException ioe) {
 			return false;
 		}
+		driver.close();
 		return true;
 		// code below takes only partial screenshot without using ashot plugin. commented for now.
 
@@ -276,10 +277,11 @@ public class WebUtils implements WebUtilsInterface{
 		driver.get(fixUrl(url));
 		driver.manage().timeouts().implicitlyWait(30, TimeUnit.SECONDS);
 
-		// automatised full screenshot using AShot plugin with 1.25f scale (in order to take properly scaled) and 1000 ms scroll interval.
-		Screenshot fullScreenshot = new AShot().shootingStrategy(ShootingStrategies.viewportPasting(ShootingStrategies.scaling(1.25f), 1000)).takeScreenshot(driver);
+		// automatised full screenshot using AShot plugin with 1.25f scale (in order to take properly scaled) and 5000 ms scroll interval.
+		Screenshot fullScreenshot = new AShot().shootingStrategy(ShootingStrategies.viewportPasting(ShootingStrategies.scaling(1.25f), 5000)).takeScreenshot(driver);
 		
 		System.out.println("Returning BufferedImage via getScreenshotUsingSelenium()");
+		driver.close();
 		return fullScreenshot.getImage();
 	}
 
