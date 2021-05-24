@@ -1,6 +1,5 @@
 package utils;
 
-import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.concurrent.ExecutorService;
@@ -70,13 +69,9 @@ public class MultiprocessingUtils implements MultiprocessingUtilsInterface {
 	 */
 	private ExecutorService upnotifyExecutor;
 	/*
-	 * Stores the current running upnotifies, enabling us to manipulate them
+	 * 	Map to map request ids with tasks, so we can find which request is running on which task
 	 * */
-	private ArrayList<Future<?>> upnotifies = new ArrayList<Future<?>>();
-	/*
-	 * Map to map request ids with tasks, so we can find which request is running on which task
-	 * */
-	private Map<Integer,Integer> upnotifyMap = new HashMap<Integer,Integer>();
+	private Map<Integer, Future<?>> upnotifyMap = new HashMap<Integer, Future<?>>();
 	
 	private MultiprocessingUtils() {
 		// tps: thread pool size
@@ -118,16 +113,13 @@ public class MultiprocessingUtils implements MultiprocessingUtilsInterface {
 	public void submitUpnotify(UpnotifyBot ub, Request upnotify) {
 		System.out.println("Submitting the upnotify request with id " + upnotify.requestId + " to the thread pool");
 		Future<?> task = upnotifyExecutor.submit(new UpnotifyReceiver(ub, upnotify));
-		upnotifies.add(task);
-		int taskIndex = upnotifies.indexOf(task);
-		upnotifyMap.put(upnotify.requestId, taskIndex);
+		upnotifyMap.put(upnotify.requestId, task);
 	}
 	
 	public void removeUpnotify(Request upnotify) {
-		int taskIndex = upnotifyMap.get(upnotify.requestId);
-		boolean success = upnotifies.get(taskIndex).cancel(true);
-		upnotifies.remove(taskIndex);
+		boolean success = upnotifyMap.get(upnotify.requestId).cancel(true);
 		
+		//It might throw an exception due to interrupting a thread while sleep
 		if(success)
 			System.out.println("Request has been removed from execution, request id " + upnotify.requestId);
 		else
