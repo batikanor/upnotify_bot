@@ -47,7 +47,7 @@ public class ImageUtils {
 		 }
 		 ByteArrayOutputStream os = new ByteArrayOutputStream();
 		 try {
-			ImageIO.write(im, "jpeg", os);
+			ImageIO.write(im, "png", os);
 		} catch (IOException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
