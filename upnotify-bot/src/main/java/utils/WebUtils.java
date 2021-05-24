@@ -279,7 +279,6 @@ public class WebUtils implements WebUtilsInterface{
 
 		// automatised full screenshot using AShot plugin with 1.25f scale (in order to take properly scaled) and 5000 ms scroll interval.
 		Screenshot fullScreenshot = new AShot().shootingStrategy(ShootingStrategies.viewportPasting(ShootingStrategies.scaling(1.25f), 5000)).takeScreenshot(driver);
-		
 		System.out.println("Returning BufferedImage via getScreenshotUsingSelenium()");
 		driver.close();
 		return fullScreenshot.getImage();
