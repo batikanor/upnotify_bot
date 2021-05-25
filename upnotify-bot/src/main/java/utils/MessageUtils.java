@@ -1,12 +1,14 @@
 package utils;
 
 
+import java.awt.*;
 import java.awt.image.BufferedImage;
 import java.io.File;
 import java.time.Instant;
 import java.util.ArrayList;
 
 import org.telegram.telegrambots.meta.api.methods.ParseMode;
+import org.telegram.telegrambots.meta.api.methods.send.SendDocument;
 import org.telegram.telegrambots.meta.api.methods.send.SendMessage;
 import org.telegram.telegrambots.meta.api.methods.send.SendPhoto;
 import org.telegram.telegrambots.meta.api.methods.updatingmessages.DeleteMessage;
@@ -271,11 +273,11 @@ public class MessageUtils {
 		}
 
 		if (notificationIm != null) {
-			SendPhoto sp = new SendPhoto();
-			sp.setChatId(telegramId.toString());
-			sp.setPhoto(new InputFile(ImageUtils.getImageUtils().convertBufferedImageIntoInputStream(notificationIm), "Difference Image"));
+			SendDocument sd = new SendDocument();
+			sd.setChatId(telegramId.toString());
+			sd.setDocument(new InputFile(ImageUtils.getImageUtils().convertBufferedImageIntoInputStream(notificationIm), "DifferenceImage.jpeg"));
 			try {
-				ub.execute(sp);
+				ub.execute(sd);
 			} catch (TelegramApiException e) {
 				// TODO Auto-generated catch block
 				e.printStackTrace();
