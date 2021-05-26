@@ -649,9 +649,148 @@ public class DatabaseUtils implements DatabaseUtilsInterface
             closeConnection();
             return false;
         }
-		
+
 		System.out.println("Edited Request, id " + req.requestId);
 		closeConnection();
 		return success;
 	}
+
+	public boolean removeRequest(Request req) {
+        buildConnection();
+        try {
+            String removeRequest = "DELETE FROM REQUEST WHERE requestId = ?";
+            PreparedStatement ps = connection.prepareStatement(removeRequest);
+            ps.setInt(1, req.requestId);
+            ps.executeUpdate(removeRequest);
+
+        } catch (SQLException e) {
+            e.printStackTrace();
+            return false;
+        }
+        closeConnection();
+        return true;
+    }
+
+    public boolean removeUser(User user) {
+        buildConnection();
+        try {
+            String removeUser = "DELETE FROM USER WHERE telegramId = ?";
+            PreparedStatement ps = connection.prepareStatement(removeUser);
+            ps.setLong(1, user.telegramId);
+            ps.executeUpdate(removeUser);
+
+        } catch (SQLException e) {
+            e.printStackTrace();
+            return false;
+        }
+        closeConnection();
+        return true;
+    }
+
+    public boolean removeSnapshot(Snapshot ss) {
+        buildConnection();
+        try {
+            String removeSnapshot = "DELETE FROM SNAPSHOT WHERE snapshotId = ?";
+            PreparedStatement ps = connection.prepareStatement(removeSnapshot);
+            ps.setLong(1, ss.snapshotId);
+            ps.executeUpdate(removeSnapshot);
+
+        } catch (SQLException e) {
+            e.printStackTrace();
+            return false;
+        }
+        closeConnection();
+        return true;
+    }
+
+	public boolean removeAllRequests() {
+        buildConnection();
+        try {
+            Statement statement = connection.createStatement();
+
+            String removeRequest = "DELETE FROM REQUEST WHERE 1=1";
+            statement.executeUpdate(removeRequest);
+
+        } catch (SQLException e) {
+            e.printStackTrace();
+            return false;
+        }
+        closeConnection();
+        return true;
+
+    }
+
+    public boolean removeAllUsers() {
+        buildConnection();
+        try {
+            Statement statement = connection.createStatement();
+
+            String removeUser = "DELETE FROM USER WHERE 1=1";
+            statement.executeUpdate(removeUser);
+
+        } catch (SQLException e) {
+            e.printStackTrace();
+            return false;
+        }
+        closeConnection();
+        return true;
+
+    }
+
+    public boolean removeAllSnapshots() {
+        buildConnection();
+        try {
+            Statement statement = connection.createStatement();
+
+            String removeSnapshot = "DELETE FROM SNAPSHOT WHERE 1=1";
+            statement.executeUpdate(removeSnapshot);
+
+        } catch (SQLException e) {
+            e.printStackTrace();
+            return false;
+        }
+        closeConnection();
+        return true;
+    }
+
+    public boolean cleanDatabase() {
+        buildConnection();
+        try {
+            Statement statement = connection.createStatement();
+
+            String removeSnapshot = "DELETE FROM SNAPSHOT WHERE 1=1";
+            String removeUser = "DELETE FROM USER WHERE 1=1";
+            String removeRequest = "DELETE FROM REQUEST WHERE 1=1";
+
+            statement.executeUpdate(removeSnapshot);
+            statement.executeUpdate(removeRequest);
+            statement.executeUpdate(removeUser);
+
+        } catch (SQLException e) {
+            e.printStackTrace();
+            return false;
+        }
+        closeConnection();
+        return true;
+    }
+
+    public boolean dropTables() {
+        buildConnection();
+        try {
+            Statement statement = connection.createStatement();
+
+            String dropUserTable = "DROP TABLE USER";
+            String dropSnapshotTable = "DROP TABLE SNAPSHOT";
+            String dropRequestTable = "DROP TABLE REQUEST";
+            statement.executeUpdate(dropUserTable);
+            statement.executeUpdate(dropSnapshotTable);
+            statement.executeUpdate(dropRequestTable);
+
+        } catch (SQLException e) {
+            e.printStackTrace();
+            return false;
+        }
+        closeConnection();
+        return true;
+    }
 }
