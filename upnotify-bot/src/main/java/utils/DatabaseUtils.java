@@ -708,7 +708,7 @@ public class DatabaseUtils implements DatabaseUtilsInterface
         try {
             Statement statement = connection.createStatement();
 
-            String removeRequest = "DELETE FROM REQUEST WHERE 1=1";
+            String removeRequest = "DELETE FROM REQUEST";
             statement.executeUpdate(removeRequest);
 
         } catch (SQLException e) {
@@ -725,7 +725,7 @@ public class DatabaseUtils implements DatabaseUtilsInterface
         try {
             Statement statement = connection.createStatement();
 
-            String removeUser = "DELETE FROM USER WHERE 1=1";
+            String removeUser = "DELETE FROM USER";
             statement.executeUpdate(removeUser);
 
         } catch (SQLException e) {
@@ -742,7 +742,7 @@ public class DatabaseUtils implements DatabaseUtilsInterface
         try {
             Statement statement = connection.createStatement();
 
-            String removeSnapshot = "DELETE FROM SNAPSHOT WHERE 1=1";
+            String removeSnapshot = "DELETE FROM SNAPSHOT";
             statement.executeUpdate(removeSnapshot);
 
         } catch (SQLException e) {
@@ -758,9 +758,9 @@ public class DatabaseUtils implements DatabaseUtilsInterface
         try {
             Statement statement = connection.createStatement();
 
-            String removeSnapshot = "DELETE FROM SNAPSHOT WHERE 1=1";
-            String removeUser = "DELETE FROM USER WHERE 1=1";
-            String removeRequest = "DELETE FROM REQUEST WHERE 1=1";
+            String removeSnapshot = "DELETE FROM SNAPSHOT";
+            String removeUser = "DELETE FROM USER";
+            String removeRequest = "DELETE FROM REQUEST";
 
             statement.executeUpdate(removeSnapshot);
             statement.executeUpdate(removeRequest);
