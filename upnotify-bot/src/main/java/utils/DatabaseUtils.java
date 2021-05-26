@@ -65,8 +65,9 @@ interface DatabaseUtilsInterface {
 public class DatabaseUtils implements DatabaseUtilsInterface
 {
     public Connection connection = null;
-    public String url = "jdbc:sqlite:upnotify-bot/src/main/resources/upnotify.db";
-
+    //public String url = "jdbc:sqlite:upnotify-bot/src/main/resources/upnotify.db"; // for vscode
+    //public String url = "jdbc:sqlite:src/main/resources/upnotify.db"; // for eclipse
+    public String url = "jdbc:sqlite:" + this.getClass().getResource("/upnotify.db");
     private static DatabaseUtils single_instance = null;
 
     public static DatabaseUtils getDatabaseUtils() {
