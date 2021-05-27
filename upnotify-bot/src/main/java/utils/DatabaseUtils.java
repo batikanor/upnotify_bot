@@ -21,6 +21,7 @@ import java.sql.*;
 import java.util.ArrayList;
 
 import javax.imageio.ImageIO;
+import javax.xml.crypto.Data;
 
 interface DatabaseUtilsInterface {
 	/**
@@ -65,14 +66,31 @@ interface DatabaseUtilsInterface {
 public class DatabaseUtils implements DatabaseUtilsInterface
 {
     public Connection connection = null;
-    public String url = "jdbc:sqlite:upnotify-bot/src/main/resources/upnotify.db";
-
+    public String url = "jdbc:sqlite:upnotify-bot/src/main/resources/upnotify.db"; // for vscode
+    //public String url = "jdbc:sqlite:src/main/resources/upnotify.db"; // for eclipse
+    //public String url = "jdbc:sqlite:" + this.getClass().getResource("/upnotify.db");
     private static DatabaseUtils single_instance = null;
 
     public static DatabaseUtils getDatabaseUtils() {
         if (single_instance == null) {
             single_instance = new DatabaseUtils();
             System.out.println("Instance of 'DatabaseUtils' has been created");
+
+            //below code creates a new .db file if not exists in resources folder
+            if (DatabaseUtils.getDatabaseUtils().url.contentEquals("jdbc:sqlite:null")) {
+                try {
+                    DatabaseUtils.getDatabaseUtils().connection = DriverManager.getConnection("jdbc:sqlite:upnotify-bot/src/main/resources/upnotify.db"); //this can be improved because of different IDE path problems
+                    if (DatabaseUtils.getDatabaseUtils().connection != null) {
+                        DatabaseMetaData meta = DatabaseUtils.getDatabaseUtils().connection.getMetaData();
+                        System.out.println("The driver name is " + meta.getDriverName());
+                        System.out.println("A new database has been created.");
+                        DatabaseUtils.getDatabaseUtils().closeConnection();
+                    }
+                } catch (SQLException e) {
+                    e.printStackTrace();
+                }
+            }
+            System.out.println("url: " + DatabaseUtils.getDatabaseUtils().url);
             DatabaseUtils.getDatabaseUtils().createTables();
         }
         
@@ -198,13 +216,13 @@ public class DatabaseUtils implements DatabaseUtilsInterface
                             "    requestId     INTEGER\n" +
                             "        constraint REQUEST_pk\n" +
                             "            primary key autoincrement,\n" +
-                            "    telegramId    int\n" +
-                            "        references USER,\n" +
-                            "    snapshotId    int,\n" +
-                            "        references SNAPSHOT\n" +
+                            "    telegramId int,\n" +
+                            "    snapshotId int,\n" +
                             "    checkInterval int,\n" +
-                            "   isActive INTEGER, \n"+
-                            "    lastCheckUnix int\n" +
+                            "    isActive int,\n"+
+                            "    lastCheckUnix int,\n" +
+                            "    FOREIGN KEY(telegramId) REFERENCES USER(telegramId),\n" +
+                            "    FOREIGN KEY(snapshotId) REFERENCES SNAPSHOT(snapshotId)\n" +
                             ");\n" +
                             "\n" +
                             "create unique index REQUEST_requestId_uindex\n" +
@@ -648,9 +666,148 @@ public class DatabaseUtils implements DatabaseUtilsInterface
             closeConnection();
             return false;
         }
-		
+
 		System.out.println("Edited Request, id " + req.requestId);
 		closeConnection();
 		return success;
 	}
+
+	public boolean removeRequest(Request req) {
+        buildConnection();
+        try {
+            String removeRequest = "DELETE FROM REQUEST WHERE requestId = ?";
+            PreparedStatement ps = connection.prepareStatement(removeRequest);
+            ps.setInt(1, req.requestId);
+            ps.executeUpdate(removeRequest);
+
+        } catch (SQLException e) {
+            e.printStackTrace();
+            return false;
+        }
+        closeConnection();
+        return true;
+    }
+
+    public boolean removeUser(User user) {
+        buildConnection();
+        try {
+            String removeUser = "DELETE FROM USER WHERE telegramId = ?";
+            PreparedStatement ps = connection.prepareStatement(removeUser);
+            ps.setLong(1, user.telegramId);
+            ps.executeUpdate(removeUser);
+
+        } catch (SQLException e) {
+            e.printStackTrace();
+            return false;
+        }
+        closeConnection();
+        return true;
+    }
+
+    public boolean removeSnapshot(Snapshot ss) {
+        buildConnection();
+        try {
+            String removeSnapshot = "DELETE FROM SNAPSHOT WHERE snapshotId = ?";
+            PreparedStatement ps = connection.prepareStatement(removeSnapshot);
+            ps.setLong(1, ss.snapshotId);
+            ps.executeUpdate(removeSnapshot);
+
+        } catch (SQLException e) {
+            e.printStackTrace();
+            return false;
+        }
+        closeConnection();
+        return true;
+    }
+
+	public boolean removeAllRequests() {
+        buildConnection();
+        try {
+            Statement statement = connection.createStatement();
+
+            String removeRequest = "DELETE FROM REQUEST";
+            statement.executeUpdate(removeRequest);
+
+        } catch (SQLException e) {
+            e.printStackTrace();
+            return false;
+        }
+        closeConnection();
+        return true;
+
+    }
+
+    public boolean removeAllUsers() {
+        buildConnection();
+        try {
+            Statement statement = connection.createStatement();
+
+            String removeUser = "DELETE FROM USER";
+            statement.executeUpdate(removeUser);
+
+        } catch (SQLException e) {
+            e.printStackTrace();
+            return false;
+        }
+        closeConnection();
+        return true;
+
+    }
+
+    public boolean removeAllSnapshots() {
+        buildConnection();
+        try {
+            Statement statement = connection.createStatement();
+
+            String removeSnapshot = "DELETE FROM SNAPSHOT";
+            statement.executeUpdate(removeSnapshot);
+
+        } catch (SQLException e) {
+            e.printStackTrace();
+            return false;
+        }
+        closeConnection();
+        return true;
+    }
+
+    public boolean cleanDatabase() {
+        buildConnection();
+        try {
+            Statement statement = connection.createStatement();
+
+            String removeSnapshot = "DELETE FROM SNAPSHOT";
+            String removeUser = "DELETE FROM USER";
+            String removeRequest = "DELETE FROM REQUEST";
+
+            statement.executeUpdate(removeSnapshot);
+            statement.executeUpdate(removeRequest);
+            statement.executeUpdate(removeUser);
+
+        } catch (SQLException e) {
+            e.printStackTrace();
+            return false;
+        }
+        closeConnection();
+        return true;
+    }
+
+    public boolean dropTables() {
+        buildConnection();
+        try {
+            Statement statement = connection.createStatement();
+
+            String dropUserTable = "DROP TABLE USER";
+            String dropSnapshotTable = "DROP TABLE SNAPSHOT";
+            String dropRequestTable = "DROP TABLE REQUEST";
+            statement.executeUpdate(dropUserTable);
+            statement.executeUpdate(dropSnapshotTable);
+            statement.executeUpdate(dropRequestTable);
+
+        } catch (SQLException e) {
+            e.printStackTrace();
+            return false;
+        }
+        closeConnection();
+        return true;
+    }
 }

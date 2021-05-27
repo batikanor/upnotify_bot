@@ -78,10 +78,10 @@ public class WebUtilsTest {
 	
 	@Test
 	public void testGetHTTPResponseFromUrl() {
-		String url = "www.batikanor.com";
+		String url = "http://www.batikanor.com";
 		String res = WebUtils.getWebUtils().getHTTPResponseFromUrl(url);
 		System.out.println("Res: " + res);
-		Assert.assertEquals(res, "Moved Permanently"); // cuz it should redirect from http to https.
+		Assert.assertEquals("Moved Permanently", res); // cuz it should redirect from http to https.
 		
 	}
 

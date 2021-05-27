@@ -16,6 +16,8 @@ public class UpnotifyReceiver implements Runnable{
 	private boolean notificationRequired;
 	private String notificationTxt;
 	private BufferedImage notificationIm;
+	private objects.ImageDifferenceData imDiff;
+	
 	public UpnotifyReceiver(UpnotifyBot ub, Request upnotify) {
 		this.upnotify = upnotify;
 		this.ub = ub;
@@ -68,7 +70,9 @@ public class UpnotifyReceiver implements Runnable{
 				if (!newHash.contentEquals(snap.siteContentHash)){
 					notificationRequired = true;
 					notificationTxt += "\nThe site has been changed! The hash value of the site content was " + snap.siteContentHash + " and now is " + newHash;
+					snap.siteContentHash = newHash;
 				}
+				
 				
 			}
 
@@ -77,13 +81,14 @@ public class UpnotifyReceiver implements Runnable{
 
 				// take new screenshot, compare with old using ImageUtils
 				BufferedImage newSs = WebUtils.getWebUtils().getScreenshotUsingSelenium(snap.url);
-				objects.ImageDifferenceData imDiff = ImageUtils.getImageUtils().getDifferenceHighlightedResult(snap.screenshot, newSs);
+				imDiff = ImageUtils.getImageUtils().getDifferenceHighlightedResult(snap.screenshot, newSs);
 				
 				if (imDiff.diffPercentage > Config.getConfig().IMAGE_DIFFERENCE_THRESHOLD) {
 
 					notificationRequired = true;
 					notificationTxt += "\nThe site looks different! There has been a  " +  imDiff.diffPercentage + "% change on the look of the site!";
 					notificationIm = imDiff.diffIm;
+					snap.screenshot = imDiff.diffIm;
 				}
 
 
@@ -96,10 +101,17 @@ public class UpnotifyReceiver implements Runnable{
 				// notify users about the changes
 				System.out.println(notificationTxt);
 				MessageUtils.getMessageUtils().sendNotificationMessage(ub, upnotify.telegramId ,notificationTxt, notificationIm);
+				//edit
+				DatabaseUtils.getDatabaseUtils().editRequest(upnotify, snap);
+			} else if  (snap.screenshot != null && imDiff.diffPercentage > 0) {
+				//edit
+				DatabaseUtils.getDatabaseUtils().editRequest(upnotify, snap);
 			}
+			
 
 			
 			// wait
+			//System.out.println("CHECKINTERVALLLLL" + upnotify.checkInterval);
 			int waitMin = Config.getConfig().MIN_WAIT_LEVEL[upnotify.checkInterval];
 			System.out.println("[Request: "+ upnotify.requestId + "]Waiting for: " + waitMin + " minutes");
 			
