@@ -273,11 +273,13 @@ public class MessageUtils {
 		}
 
 		if (notificationIm != null) {
-			SendDocument sd = new SendDocument();
-			sd.setChatId(telegramId.toString());
-			sd.setDocument(new InputFile(ImageUtils.getImageUtils().convertBufferedImageIntoInputStream(notificationIm), "DifferenceImage.jpeg"));
+			SendPhoto sp = new SendPhoto();
+			sp.setChatId(telegramId.toString());
+			//SendDocument sd = new SendDocument();
+			//sd.setChatId(telegramId.toString());
+			sp.setPhoto(new InputFile(ImageUtils.getImageUtils().convertBufferedImageIntoInputStream(notificationIm), "DifferenceImage.jpeg"));
 			try {
-				ub.execute(sd);
+				ub.execute(sp);
 			} catch (TelegramApiException e) {
 				// TODO Auto-generated catch block
 				e.printStackTrace();

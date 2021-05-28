@@ -510,21 +510,16 @@ public class DatabaseUtils implements DatabaseUtilsInterface
             ResultSet rs = statement.executeQuery(getSnapshotQ);
             mySnapshot.snapshotId = rs.getInt("snapshotId");
             mySnapshot.url = rs.getString("url");
-//<<<<<<< development
-            //mySnapshot.screenshot = ImageUtils.getImageUtils().convertInputStreamIntoBufferedImage(rs.getBinaryStream("screenshot"));
-            //mySnapshot.screenshot = ImageUtils.getImageUtils().convertInputStreamIntoBufferedImage(rs.getBytes("screenshot"));
-            mySnapshot.screenshot = ImageUtils.getImageUtils().convertInputStreamIntoBufferedImage(rs.getBinaryStream("screenshot"));
-            
-            
-            // =======
-//             Blob blob = rs.getBlob("screenshot");
-//             try {
-//                 mySnapshot.screenshot = ImageIO.read(blob.getBinaryStream());
-//             } catch (IOException e) {
-//                 e.printStackTrace();
-//             }
-// >>>>>>> development
-            mySnapshot.siteContentHash = rs.getString("siteContentHash");
+            InputStream ss = rs.getBinaryStream("screenshot");
+
+            if (ss != null) {
+                mySnapshot.screenshot = ImageUtils.getImageUtils().convertInputStreamIntoBufferedImage(ss);
+            }
+            String sch = rs.getString("siteContentHash");
+            if (sch != null) {
+                mySnapshot.siteContentHash = sch;
+            }
+
 
         }catch(SQLException e){
             e.printStackTrace();
@@ -574,7 +569,7 @@ public class DatabaseUtils implements DatabaseUtilsInterface
             //statement.setQueryTimeout(30);  // set timeout to 30 sec.
             String insertReqUpdate = String.format("INSERT INTO REQUEST" +
                     "(telegramId,snapshotId,checkInterval,lastCheckUnix,isActive) VALUES" +
-                    "(%d,%d,%d,%d,%d)",chatId,snapshotId,Config.getConfig().DEFAULT_LEVEL, epochSecond,isActiveInt);
+                    "(%d,%d,%d,%d,%d)",chatId,snapshotId,1, epochSecond,isActiveInt);
             buildConnection();
             PreparedStatement statement = connection.prepareStatement(insertReqUpdate, Statement.RETURN_GENERATED_KEYS);
 
