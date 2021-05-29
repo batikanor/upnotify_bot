@@ -16,7 +16,8 @@ import java.awt.image.BufferedImage;
 import java.io.ByteArrayInputStream;
 import java.io.IOException;
 import java.io.InputStream;
-
+import java.nio.file.Path;
+import java.nio.file.Paths;
 import java.sql.*;
 import java.util.ArrayList;
 
@@ -100,11 +101,22 @@ public class DatabaseUtils implements DatabaseUtilsInterface
 
     private DatabaseUtils(){
     }
-
+    
+    //Instead of relative path use absolute path to resolve path conflict between different IDEs
+    //However if it's ever meant to be run from a standalone jar file this path has to be changed, like the same place as the jar file run from
+    private String getDatabasePath() {
+    	Path path = Paths.get("");
+		String s = path.toAbsolutePath().toString();
+		String s0  = s.split("upnotify_bot")[0];
+		s0 += "upnotify_bot\\upnotify-bot\\src\\main\\resources\\upnotify.db";
+		
+		return s0;
+    }
+    
     public void buildConnection(){
     	System.out.println("Connecting to db");
         try {
-            connection = DriverManager.getConnection(url);
+            connection = DriverManager.getConnection("jdbc:sqlite:" + getDatabasePath());
         }
         catch(SQLException e){
             //System.out.println("there is a problem with db connection");
