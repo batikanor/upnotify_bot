@@ -88,7 +88,7 @@ public class UpnotifyReceiver implements Runnable{
 					notificationRequired = true;
 					notificationTxt += "\nThe site looks different! There has been a  " +  imDiff.diffPercentage + "% change on the look of the site!";
 					notificationIm = imDiff.diffIm;
-					snap.screenshot = imDiff.diffIm;
+					snap.screenshot = newSs;
 				}
 
 
