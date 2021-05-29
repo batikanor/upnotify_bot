@@ -32,7 +32,7 @@ public class ImageUtils {
 	
 	
 	 public ImageDifferenceData getDifferenceHighlightedResult(BufferedImage oldIm, BufferedImage newIm) {
-		 ImageComparisonResult imageComparisonResult = new ImageComparison(oldIm, newIm).compareImages();
+		 ImageComparisonResult imageComparisonResult = new ImageComparison(newIm, oldIm).compareImages();
 		 ImageDifferenceData idd = new ImageDifferenceData();
 		 idd.diffIm = imageComparisonResult.getResult();
 		 idd.diffPercentage = imageComparisonResult.getDifferencePercent();

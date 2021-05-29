@@ -261,7 +261,7 @@ public class MessageUtils {
 		}
     }
     public void sendNotificationMessage(UpnotifyBot ub, Long telegramId, String notificationTxt, BufferedImage notificationIm) {
-		SendMessage sm = new SendMessage();
+    	SendMessage sm = new SendMessage();
 		sm.setChatId(telegramId.toString());
 		sm.setText(notificationTxt);
 		
@@ -273,13 +273,11 @@ public class MessageUtils {
 		}
 
 		if (notificationIm != null) {
-			SendPhoto sp = new SendPhoto();
-			sp.setChatId(telegramId.toString());
-			//SendDocument sd = new SendDocument();
-			//sd.setChatId(telegramId.toString());
-			sp.setPhoto(new InputFile(ImageUtils.getImageUtils().convertBufferedImageIntoInputStream(notificationIm), "DifferenceImage.jpeg"));
+			SendDocument sd = new SendDocument();
+			sd.setChatId(telegramId.toString());
+			sd.setDocument(new InputFile(ImageUtils.getImageUtils().convertBufferedImageIntoInputStream(notificationIm), "Difference Image.png"));
 			try {
-				ub.execute(sp);
+				ub.execute(sd);
 			} catch (TelegramApiException e) {
 				// TODO Auto-generated catch block
 				e.printStackTrace();
