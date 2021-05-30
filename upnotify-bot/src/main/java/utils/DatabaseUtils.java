@@ -167,7 +167,7 @@ public class DatabaseUtils implements DatabaseUtilsInterface
                 
                 // yok ise USERS tablosunu oluştur
                 if(!tableExists("USER",connection)){
-                    String create_user_table = "create table USER\n" +
+                    String create_user_table = "create table if not exists USER\n" +
                             "(\n" +
                             "\ttelegramId INTEGER\n" +
                             "\t\tconstraint USER_pk\n" +
@@ -182,7 +182,7 @@ public class DatabaseUtils implements DatabaseUtilsInterface
 
                     try {
                         statement.executeUpdate(create_user_table);
-                        System.out.print("USER table has created");
+                        System.out.println("USER table has been created");
                     } catch (SQLException e){
                         e.printStackTrace();
                     }
@@ -195,7 +195,7 @@ public class DatabaseUtils implements DatabaseUtilsInterface
                 }
                 // yok ise WEB_PAGES tablosunu oluştur
                 if(!tableExists("SNAPSHOT",connection)){
-                    String create_webpages_table = "create table SNAPSHOT\n" +
+                    String create_webpages_table = "create table if not exists SNAPSHOT\n" +
                             "(\n" +
                             "\tsnapshotId INTEGER not null\n" +
                             "\t\tconstraint SNAPSHOT_pk\n" +
@@ -210,7 +210,7 @@ public class DatabaseUtils implements DatabaseUtilsInterface
 
                     try {
                         statement.executeUpdate(create_webpages_table);
-                        System.out.print("SNAPSHOT table has created");
+                        System.out.println("SNAPSHOT table has been created");
                     } catch (SQLException e){
                         e.printStackTrace();
                     }
@@ -223,13 +223,13 @@ public class DatabaseUtils implements DatabaseUtilsInterface
 
                 // yok ise WEB_PAGES tablosunu oluştur
                 if(!tableExists("REQUEST",connection)){
-                    String create_requests_table = "create table REQUEST\n" +
+                    String create_requests_table = "create table if not exists REQUEST\n" +
                             "(\n" +
                             "    requestId     INTEGER\n" +
                             "        constraint REQUEST_pk\n" +
                             "            primary key autoincrement,\n" +
-                            "    telegramId int,\n" +
-                            "    snapshotId int,\n" +
+                            "    telegramId INTEGER,\n" +
+                            "    snapshotId INTEGER,\n" +
                             "    checkInterval int,\n" +
                             "    isActive int,\n"+
                             "    lastCheckUnix int,\n" +
@@ -244,7 +244,7 @@ public class DatabaseUtils implements DatabaseUtilsInterface
 
                     try {
                         statement.executeUpdate(create_requests_table);
-                        System.out.print("REQUEST table has created");
+                        System.out.println("REQUEST table has been created");
                     } catch (SQLException e){
                         e.printStackTrace();
                     }
@@ -327,7 +327,7 @@ public class DatabaseUtils implements DatabaseUtilsInterface
                         "telegramId,checkLevel,userName)\n"+
                         "VALUES(%d,%d,'%s');",telegramId,checkLevel,userName);
 
-                statement.executeQuery(insertQuery);
+                statement.executeUpdate(insertQuery);
                 statement.close();
 
             }catch(SQLException e){
@@ -384,9 +384,9 @@ public class DatabaseUtils implements DatabaseUtilsInterface
             finally {
                 closeConnection();
                 System.out.println(119);
-                return generatedKey;
+                
             }
-
+            return generatedKey;
         }
 
 
