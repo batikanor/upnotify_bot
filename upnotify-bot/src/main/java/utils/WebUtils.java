@@ -173,7 +173,7 @@ public class WebUtils implements WebUtilsInterface{
 		//System.out.println("URL:" + driverURL);
 		
 
-		String path = "CHROME_DRIVERS/chromedriver_89_" + (Config.getConfig().os == OS.LINUX ? "linux" : "win.exe");
+		String path = "CHROME_DRIVERS/chromedriver_" + Config.getConfig().CHROME_DRIVER_VER  + "_" + (Config.getConfig().os == OS.LINUX ? "linux" : "win.exe");
 //		System.out.println("path: " + path);
 		
 		URL chrome_driver_url = getClass().getClassLoader().getResource(path);
@@ -181,7 +181,7 @@ public class WebUtils implements WebUtilsInterface{
 		System.out.println(chrome_driver_url);
 		String chrome_driver_path = chrome_driver_url.getPath();
 //		System.out.println("driver path: " + chrome_driver_path);
-		//String chrome_driver_path = "src/main/resources/CHROME_DRIVERS/chromedriver_89_" + (Config.getConfig().os == OS.LINUX ? "linux" : "win.exe");
+		//String chrome_driver_path = "src/main/resources/CHROME_DRIVERS/chromedriver_" + Config.getConfig().CHROME_DRIVER_VER  + "_" + (Config.getConfig().os == OS.LINUX ? "linux" : "win.exe");
 		System.setProperty("webdriver.chrome.driver", chrome_driver_path);
 		//WebDriver driver = new ChromeDriver();
 		WebDriver driver = loadUBlockOriginToSeleniumWebDriver();
@@ -199,7 +199,7 @@ public class WebUtils implements WebUtilsInterface{
 		// requestId will be sent to this function as a parameter as soon as DB is implemented.
 		// requestId will be fetched from DB.
 		//requests.getSiteId().getAddress();
-		String path = "CHROME_DRIVERS/chromedriver_89_" + (Config.getConfig().os == OS.LINUX ? "linux" : "win.exe");
+		String path = "CHROME_DRIVERS/chromedriver_" + Config.getConfig().CHROME_DRIVER_VER  + "_" + (Config.getConfig().os == OS.LINUX ? "linux" : "win.exe");
 		URL chrome_driver_url = getClass().getClassLoader().getResource(path);
 		String chrome_driver_path = chrome_driver_url.getPath();
 		System.setProperty("webdriver.chrome.driver", chrome_driver_path);
@@ -269,7 +269,8 @@ public class WebUtils implements WebUtilsInterface{
 
 	public BufferedImage getScreenshotUsingSelenium(String url) {
 
-		String path = "CHROME_DRIVERS/chromedriver_89_" + (Config.getConfig().os == OS.LINUX ? "linux" : "win.exe");
+		String path = "CHROME_DRIVERS/chromedriver_" + Config.getConfig().CHROME_DRIVER_VER + "_" + (Config.getConfig().os == OS.LINUX ? "linux" : "win.exe");
+		System.out.println(path);
 		URL chrome_driver_url = getClass().getClassLoader().getResource(path);
 		String chrome_driver_path = chrome_driver_url.getPath();
 		System.setProperty("webdriver.chrome.driver", chrome_driver_path);
@@ -289,15 +290,21 @@ public class WebUtils implements WebUtilsInterface{
 		String pathToExtension = "CHROME_DRIVERS/uBlockOrigin_1.35.2.0.crx";
 		URL urlPathToExtension = getClass().getClassLoader().getResource(pathToExtension);
 		ChromeOptions options = new ChromeOptions();
-		options.setHeadless(true);
+		// options.setHeadless(false);
+		// System.out.println(options.getBrowserVersion());
+		// System.out.println(options.getCapabilityNames());
+		// System.out.println(options.getVersion());
+		
 		options.addExtensions(new File(urlPathToExtension.getPath()));
 		options.addArguments("--window-size=1200x600", "--log-level=3");
-		DesiredCapabilities capabilities = new DesiredCapabilities();
-		capabilities.setCapability(ChromeOptions.CAPABILITY, options);
-//		WebDriver driver = new ChromeDriver(options);
-		WebDriver driver = new ChromeDriver(capabilities);
+		// DesiredCapabilities capabilities = new DesiredCapabilities();
+		// capabilities.setCapability(ChromeOptions.CAPABILITY, options);
+		
+		WebDriver driver = new ChromeDriver(options);
+		
+		// WebDriver driver = new ChromeDriver(capabilities);
 		System.out.println("Opening extension");
-		driver.get("chrome-extension://**cjpalhdlnbpafiamejdnhcphjbkeiagm**/dhc.html");
+		driver.get("chrome-extension://**" + Config.getConfig().PUBLIC_UBLOCK_KEY  + "**/dhc.html");
 		driver.navigate().refresh();
 
 		return driver;

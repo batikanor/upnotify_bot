@@ -4,7 +4,7 @@ package utils;
 import objects.Request;
 import objects.Snapshot;
 import objects.User;
-import org.openqa.selenium.devtools.database.Database;
+//import org.openqa.selenium.devtools.database.Database;
 import upnotify_bot.UpnotifyBot;
 
 // import javax.imageio.ImageIO;
@@ -67,9 +67,9 @@ interface DatabaseUtilsInterface {
 public class DatabaseUtils implements DatabaseUtilsInterface
 {
     public Connection connection = null;
-    public String url = "jdbc:sqlite:upnotify-bot/src/main/resources/upnotify.db"; // for vscode
+    //public String url = "jdbc:sqlite:upnotify-bot/src/main/resources/upnotify.db"; // for vscode
     //public String url = "jdbc:sqlite:src/main/resources/upnotify.db"; // for eclipse
-    //public String url = "jdbc:sqlite:" + this.getClass().getResource("/upnotify.db");
+    public String url = "jdbc:sqlite:" + this.getClass().getResource("/upnotify.db");
     private static DatabaseUtils single_instance = null;
 
     public static DatabaseUtils getDatabaseUtils() {
@@ -100,6 +100,7 @@ public class DatabaseUtils implements DatabaseUtilsInterface
     }
 
     private DatabaseUtils(){
+
     }
     
     //Instead of relative path use absolute path to resolve path conflict between different IDEs
@@ -114,7 +115,7 @@ public class DatabaseUtils implements DatabaseUtilsInterface
     }
     
     public void buildConnection(){
-    	System.out.println("Connecting to db");
+    	System.out.println("Building the db connection");
         try {
             connection = DriverManager.getConnection("jdbc:sqlite:" + getDatabasePath());
         }
@@ -126,6 +127,7 @@ public class DatabaseUtils implements DatabaseUtilsInterface
     }
 
     public void closeConnection(){
+        System.out.println("Closing the db connection");
         try
         {
             if(connection != null)
