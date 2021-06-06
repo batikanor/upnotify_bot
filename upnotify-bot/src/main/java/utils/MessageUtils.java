@@ -289,7 +289,7 @@ public class MessageUtils {
 
 	}
 	
-public void editRequest(UpnotifyBot ub, String chatId, User upUser, ArrayList<String> args) {
+    public void editRequest(UpnotifyBot ub, String chatId, User upUser, ArrayList<String> args) {
 		
 		Request req = DatabaseUtils.getDatabaseUtils().retrieveRequestFromId(Integer.parseInt(args.get(0)));
 		
@@ -327,7 +327,7 @@ public void editRequest(UpnotifyBot ub, String chatId, User upUser, ArrayList<St
 			if(success) {
 				reply = "Your request has been successfully edited";
 				//Remove the old upnotify and submit the new one
-				MultiprocessingUtils.getMultiProcessingUtils().removeUpnotify(req);
+				MultiprocessingUtils.getMultiProcessingUtils().removeUpnotify(req.requestId);
 				MultiprocessingUtils.getMultiProcessingUtils().submitUpnotify(ub, req);
 			}
 			else
@@ -343,5 +343,69 @@ public void editRequest(UpnotifyBot ub, String chatId, User upUser, ArrayList<St
 			e.printStackTrace();
 		}
 	}
+    public void seeRequests(UpnotifyBot ub, String chatId, User upUser, Integer msgIdToReply) {
+		SendMessage sm = new SendMessage();
+		sm.setChatId(chatId);
+		sm.setReplyToMessageId(msgIdToReply);
+		String txt = "Below is a list of your requests: \n";
+		System.out.println(upUser.telegramId);
+		
+		ArrayList<Request> requests = DatabaseUtils.getDatabaseUtils().getRequestsFromTelegramId(upUser.telegramId);
+		
+		for (Request req : requests) {
+			System.out.println(req.toString());
+			txt += "\n" + req.toString();
+			
+		}
+		if (requests.isEmpty()) {
+			txt += "You don't have any requests";
+		}
+		sm.setText(txt);
+		try {
+			ub.execute(sm);
+		} catch (TelegramApiException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+		
+		
+	}
+	public boolean removeRequest(UpnotifyBot ub, String chatId, User upUser, Integer msgIdToReply, String arg) {
+		// TODO Auto-generated method stub
+		SendMessage sm = new SendMessage();
+		sm.setChatId(chatId);
+		sm.setReplyToMessageId(msgIdToReply);
+		String msgText;
+		boolean isNum = false;
+		int num = -1;
+		try{
+			  num = Integer.parseInt(arg);
+			  isNum = true;
+		} catch (NumberFormatException e) {
+			  isNum = false;
+		}
 	
+		if (isNum) {
+			if (DatabaseUtils.getDatabaseUtils().removeRequestFromId(num)) {
+				msgText = "Your request with ID=" + arg + " has been succesfully removed!";
+			} else {
+				msgText = "There has been an error, your request couldn't be removed. Maybe it doesn't exist at all.. Please try '/seerequests' "; 
+			}
+				
+		} else {
+			msgText = "The arguments have to be numeric for this command! Please try again";
+		}
+		sm.setText(msgText);
+		
+		try {
+			ub.execute(sm);
+		} catch (TelegramApiException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+			return false;
+		}
+		return true;
+	
+		
+	}
 }

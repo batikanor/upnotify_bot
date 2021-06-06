@@ -289,10 +289,12 @@ public class WebUtils implements WebUtilsInterface{
 		String pathToExtension = "CHROME_DRIVERS/uBlockOrigin_1.35.2.0.crx";
 		URL urlPathToExtension = getClass().getClassLoader().getResource(pathToExtension);
 		ChromeOptions options = new ChromeOptions();
+		options.setHeadless(true);
 		options.addExtensions(new File(urlPathToExtension.getPath()));
-
+		options.addArguments("--window-size=1200x600", "--log-level=3");
 		DesiredCapabilities capabilities = new DesiredCapabilities();
 		capabilities.setCapability(ChromeOptions.CAPABILITY, options);
+//		WebDriver driver = new ChromeDriver(options);
 		WebDriver driver = new ChromeDriver(capabilities);
 		System.out.println("Opening extension");
 		driver.get("chrome-extension://**cjpalhdlnbpafiamejdnhcphjbkeiagm**/dhc.html");

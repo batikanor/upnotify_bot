@@ -137,8 +137,15 @@ public class UpdateReceiver implements Runnable{
 							MessageUtils.getMessageUtils().editRequest(ub, chatId, upUser, args);
 							break;
 						case "seerequests":
+							MessageUtils.getMessageUtils().seeRequests(ub, chatId, upUser, msg.getMessageId());
 							// see requests, fields and request ids
 							break;
+						case "removerequest":
+							for (String arg : args) {
+								System.out.println("Working with argument: " + arg);
+								MessageUtils.getMessageUtils().removeRequest(ub, chatId, upUser, msg.getMessageId(), arg);
+							}
+							
 					}
 				} else {
 					switch (msgText) {

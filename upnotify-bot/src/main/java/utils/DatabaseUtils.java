@@ -542,19 +542,30 @@ public class DatabaseUtils implements DatabaseUtilsInterface
     }
 
     public objects.Request retrieveRequestFromId(int requestId) {
-        Request myRequest = new Request();
+        
         buildConnection();
+        Request myRequest = null;
         try{
             Statement statement = connection.createStatement();
             String getRequestQ = String.format("SELECT * FROM REQUEST" +
                     " WHERE REQUEST.requestId = %d",requestId);
             ResultSet rs = statement.executeQuery(getRequestQ);
-            myRequest.requestId = rs.getInt("requestId");
-            myRequest.snapshotId = rs.getInt("snapshotId");
-            myRequest.checkInterval = rs.getInt("checkInterval");
-            myRequest.telegramId = rs.getLong("telegramId");
-            myRequest.isActive = rs.getBoolean("isActive");
-            myRequest.lastCheckedUnix = rs.getLong("lastCheckUnix");
+            
+            myRequest = new Request(rs.getInt("requestId"),
+	            		rs.getLong("telegramId"),
+	            		rs.getInt("snapshotId"),
+	            		rs.getInt("checkInterval"),
+	            		rs.getLong("lastCheckUnix"),
+	            		rs.getBoolean("isActive")
+            		);
+            
+            
+//            myRequest.requestId = rs.getInt("requestId");
+//            myRequest.snapshotId = rs.getInt("snapshotId");
+//            myRequest.checkInterval = rs.getInt("checkInterval");
+//            myRequest.telegramId = rs.getLong("telegramId");
+//            myRequest.isActive = rs.getBoolean("isActive");
+//            myRequest.lastCheckedUnix = rs.getLong("lastCheckUnix");
 
         }catch(SQLException e){
             e.printStackTrace();
@@ -581,7 +592,7 @@ public class DatabaseUtils implements DatabaseUtilsInterface
             //statement.setQueryTimeout(30);  // set timeout to 30 sec.
             String insertReqUpdate = String.format("INSERT INTO REQUEST" +
                     "(telegramId,snapshotId,checkInterval,lastCheckUnix,isActive) VALUES" +
-                    "(%d,%d,%d,%d,%d)",chatId,snapshotId,1, epochSecond,isActiveInt);
+                    "(%d,%d,%d,%d,%d)",chatId,snapshotId,Config.getConfig().DEFAULT_LEVEL, epochSecond,isActiveInt);
             buildConnection();
             PreparedStatement statement = connection.prepareStatement(insertReqUpdate, Statement.RETURN_GENERATED_KEYS);
 
@@ -685,7 +696,7 @@ public class DatabaseUtils implements DatabaseUtilsInterface
             String removeRequest = "DELETE FROM REQUEST WHERE requestId = ?";
             PreparedStatement ps = connection.prepareStatement(removeRequest);
             ps.setInt(1, req.requestId);
-            ps.executeUpdate(removeRequest);
+            ps.executeUpdate();
 
         } catch (SQLException e) {
             e.printStackTrace();
@@ -817,4 +828,52 @@ public class DatabaseUtils implements DatabaseUtilsInterface
         closeConnection();
         return true;
     }
+
+	public ArrayList<Request> getRequestsFromTelegramId(Long telegramId) {
+		// TODO Auto-generated method stub
+        ArrayList<Request> reqList = new ArrayList<Request>();
+
+        buildConnection();
+        try{
+    
+            String selectReqs = "SELECT * FROM REQUEST WHERE telegramId = ?";
+            PreparedStatement ps = connection.prepareStatement(selectReqs);
+            ps.setLong(1, telegramId);
+            
+            
+            ResultSet rs = ps.executeQuery();
+            while(rs.next()){
+                Request myReq = new Request(rs.getInt("requestId"),rs.getLong("telegramId")
+                ,rs.getInt("snapshotId"),rs.getInt("checkInterval"),rs.getLong("lastCheckUnix"),
+                        rs.getBoolean("isActive"));
+                reqList.add(myReq);
+                System.out.println(myReq.toString());
+            }
+            
+        }catch(SQLException e){
+            e.printStackTrace();
+        }
+        closeConnection();
+        return reqList;
+	}
+	public boolean removeRequestFromId(int requestId) {
+        buildConnection();
+        try {
+            String removeRequest = "DELETE FROM REQUEST WHERE requestId = ?";
+            PreparedStatement ps = connection.prepareStatement(removeRequest);
+            ps.setInt(1, requestId);
+            ps.executeUpdate();
+            
+            // remove req from thread pool if it was active
+            
+            MultiprocessingUtils.getMultiProcessingUtils().removeUpnotify(requestId);
+
+        } catch (SQLException e) {
+            e.printStackTrace();
+            return false;
+        }
+        closeConnection();
+        return true;
+       
+	}
 }
