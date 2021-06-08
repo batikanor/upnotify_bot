@@ -29,6 +29,8 @@ public class Config {
 	public final int DEFAULT_LEVEL;
 	public final int[] MIN_WAIT_LEVEL;
 
+	public final String DATABASE_ENGINE;
+
 	
 	
 	
@@ -78,7 +80,7 @@ public class Config {
 		this.IMAGE_DIFFERENCE_THRESHOLD = Float.parseFloat(prop.getProperty("IMAGE_DIFFERENCE_THRESHOLD"));
 		this.PUBLIC_UBLOCK_KEY = prop.getProperty("PUBLIC_UBLOCK_KEY");
 		this.CHROME_DRIVER_VER = Integer.parseInt(prop.getProperty("CHROME_DRIVER_VER"));
-
+		this.DATABASE_ENGINE = prop.getProperty("DATABASE_ENGINE");
 		this.DEFAULT_LEVEL = Integer.parseInt(prop.getProperty("DEFAULT_LEVEL"));
 		this.MIN_WAIT_LEVEL = new int[]{
 				Integer.parseInt(prop.getProperty("MIN_WAIT_LEVEL_0")),

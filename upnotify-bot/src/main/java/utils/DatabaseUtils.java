@@ -66,10 +66,13 @@ interface DatabaseUtilsInterface {
  */
 public class DatabaseUtils implements DatabaseUtilsInterface
 {
+
+
+
     public Connection connection = null;
-    //public String url = "jdbc:sqlite:upnotify-bot/src/main/resources/upnotify.db"; // for vscode
-    //public String url = "jdbc:sqlite:src/main/resources/upnotify.db"; // for eclipse
-    public String url = "jdbc:sqlite:" + this.getClass().getResource("/upnotify.db");
+    //public String url = "jdbc:" + Config.getConfig().DATABASE_ENGINE + ":upnotify-bot/src/main/resources/upnotify.db"; // for vscode
+    //public String url = "jdbc:" + Config.getConfig().DATABASE_ENGINE + ":src/main/resources/upnotify.db"; // for eclipse
+    public String url = "jdbc:" + Config.getConfig().DATABASE_ENGINE + ":" + this.getClass().getResource("/upnotify.db");
     private static DatabaseUtils single_instance = null;
 
     public static DatabaseUtils getDatabaseUtils() {
@@ -78,9 +81,9 @@ public class DatabaseUtils implements DatabaseUtilsInterface
             System.out.println("Instance of 'DatabaseUtils' has been created");
 
             //below code creates a new .db file if not exists in resources folder
-            if (DatabaseUtils.getDatabaseUtils().url.contentEquals("jdbc:sqlite:null")) {
+            if (DatabaseUtils.getDatabaseUtils().url.contentEquals("jdbc:" + Config.getConfig().DATABASE_ENGINE + ":null")) {
                 try {
-                    DatabaseUtils.getDatabaseUtils().connection = DriverManager.getConnection("jdbc:sqlite:upnotify-bot/src/main/resources/upnotify.db"); //this can be improved because of different IDE path problems
+                    DatabaseUtils.getDatabaseUtils().connection = DriverManager.getConnection("jdbc:" + Config.getConfig().DATABASE_ENGINE + ":upnotify-bot/src/main/resources/upnotify.db"); //this can be improved because of different IDE path problems
                     if (DatabaseUtils.getDatabaseUtils().connection != null) {
                         DatabaseMetaData meta = DatabaseUtils.getDatabaseUtils().connection.getMetaData();
                         System.out.println("The driver name is " + meta.getDriverName());
@@ -100,6 +103,7 @@ public class DatabaseUtils implements DatabaseUtilsInterface
     }
 
     private DatabaseUtils(){
+        
 
     }
     
@@ -117,7 +121,7 @@ public class DatabaseUtils implements DatabaseUtilsInterface
     public void buildConnection(){
     	System.out.println("Building the db connection");
         try {
-            connection = DriverManager.getConnection("jdbc:sqlite:" + getDatabasePath());
+            connection = DriverManager.getConnection("jdbc:" + Config.getConfig().DATABASE_ENGINE + ":" + getDatabasePath());
         }
         catch(SQLException e){
             //System.out.println("there is a problem with db connection");
@@ -262,6 +266,9 @@ public class DatabaseUtils implements DatabaseUtilsInterface
 
             closeConnection();
 
+            if (Config.getConfig().DATABASE_ENGINE.toLowerCase().startsWith("sqlite")){
+                fixPragmaWAL();
+            }
         }
 
         //Select all users from USER table and return a user list
@@ -878,4 +885,17 @@ public class DatabaseUtils implements DatabaseUtilsInterface
         return true;
        
 	}
+    private boolean fixPragmaWAL(){
+        buildConnection();
+        try {
+            Statement stmt = connection.createStatement();
+            stmt.execute("pragma journal_mode=WAL;");
+        } catch (SQLException e) {
+            // TODO Auto-generated catch block
+            e.printStackTrace();
+            return false;
+        }
+        closeConnection();
+        return true;
+    }
 }
