@@ -24,9 +24,12 @@ public class Config {
 	public final int WAIT_STATIC_CHECK;
 	public final int WAIT_UNTIL_ERR_MESSAGE_RESEND;
 	public final float IMAGE_DIFFERENCE_THRESHOLD;
-
+	public final String PUBLIC_UBLOCK_KEY;
+	public final int CHROME_DRIVER_VER;
 	public final int DEFAULT_LEVEL;
 	public final int[] MIN_WAIT_LEVEL;
+
+	public final String DATABASE_ENGINE;
 
 	
 	
@@ -75,7 +78,9 @@ public class Config {
 		this.WAIT_STATIC_CHECK = Integer.parseInt(prop.getProperty("WAIT_STATIC_CHECK"));
 		this.WAIT_UNTIL_ERR_MESSAGE_RESEND = Integer.parseInt(prop.getProperty("WAIT_UNTIL_ERR_MESSAGE_RESEND"));
 		this.IMAGE_DIFFERENCE_THRESHOLD = Float.parseFloat(prop.getProperty("IMAGE_DIFFERENCE_THRESHOLD"));
-
+		this.PUBLIC_UBLOCK_KEY = prop.getProperty("PUBLIC_UBLOCK_KEY");
+		this.CHROME_DRIVER_VER = Integer.parseInt(prop.getProperty("CHROME_DRIVER_VER"));
+		this.DATABASE_ENGINE = prop.getProperty("DATABASE_ENGINE");
 		this.DEFAULT_LEVEL = Integer.parseInt(prop.getProperty("DEFAULT_LEVEL"));
 		this.MIN_WAIT_LEVEL = new int[]{
 				Integer.parseInt(prop.getProperty("MIN_WAIT_LEVEL_0")),

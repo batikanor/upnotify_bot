@@ -116,14 +116,14 @@ public class MultiprocessingUtils implements MultiprocessingUtilsInterface {
 		upnotifyMap.put(upnotify.requestId, task);
 	}
 	
-	public void removeUpnotify(Request upnotify) {
-		boolean success = upnotifyMap.get(upnotify.requestId).cancel(true);
+	public void removeUpnotify(int requestId) {
+		boolean success = upnotifyMap.get(requestId).cancel(true);
 		
 		//It might throw an exception due to interrupting a thread while sleep
 		if(success)
-			System.out.println("Request has been removed from execution, request id " + upnotify.requestId);
+			System.out.println("Request has been removed from execution, request id " + requestId);
 		else
-			System.out.println("Error removing request from execution, request id " + upnotify.requestId);
+			System.out.println("Error removing request from execution, request id " + requestId);
 		
 	}
 }

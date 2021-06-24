@@ -1,5 +1,7 @@
 package objects;
 
+import utils.DatabaseUtils;
+
 public class Request {
     public int requestId;
     public Long telegramId;
@@ -8,16 +10,30 @@ public class Request {
     public Long lastCheckedUnix; // ÖNEMLİ NOT: 2038'de değiştirmemiz gerekcek.
     public boolean isActive;
 
-    public Request(){
-    }
-
+//    public Request() {
+//		
+//    	
+//    }
     public Request(int requestId,Long telegramId,int snapshotId,int checkInterval,Long lastCheckedUnix
                     ,boolean isActive){
-        this.requestId = requestId;
+        this.isActive = isActive;
+		this.requestId = requestId;
         this.telegramId = telegramId;
         this.snapshotId = snapshotId;
         this.checkInterval = checkInterval;
         this.lastCheckedUnix = lastCheckedUnix;
         this.isActive = isActive;
+    }
+    
+    @Override
+    public String toString() {
+    	
+    	Snapshot snap = DatabaseUtils.getDatabaseUtils().retrieveSnapshotFromId(snapshotId);
+    	System.out.println(String.format("Turning request with id %d to string...", this.requestId));
+    	String txt = "Request No: " + requestId + " ~~~ "
+    + "Url:  " + snap.url + ", check interval: " + checkInterval
+    + " {This request is " + (isActive ? "ACTIVE" : "PASSIVE") + "} ";
+		return txt;
+    	
     }
 }
