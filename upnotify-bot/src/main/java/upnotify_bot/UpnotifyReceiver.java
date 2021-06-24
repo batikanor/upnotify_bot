@@ -17,6 +17,7 @@ public class UpnotifyReceiver implements Runnable{
 	private String notificationTxt;
 	private BufferedImage notificationIm;
 	private objects.ImageDifferenceData imDiff;
+	private volatile boolean shutdown = false;
 	
 	public UpnotifyReceiver(UpnotifyBot ub, Request upnotify) {
 		this.upnotify = upnotify;
@@ -48,7 +49,7 @@ public class UpnotifyReceiver implements Runnable{
 		
 		
 		// TODO add a field isActive to Request object, so that it can be the controller of this while loop
-		while(true) {
+		while(!shutdown) {
 			// work
 			// get snapshot object
 			System.out.println("[Request "+ upnotify.requestId + "] Retrieving snapshot from db");
@@ -125,6 +126,10 @@ public class UpnotifyReceiver implements Runnable{
 		}
 
 		
+	}
+	
+	public void shutdown() {
+		shutdown = true;
 	}
 
 }
