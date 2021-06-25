@@ -69,9 +69,9 @@ public class MultiprocessingUtils implements MultiprocessingUtilsInterface {
 	 */
 	private ExecutorService upnotifyExecutor;
 	/*
-	 * 	Map to map request ids with tasks, so we can find which request is running on which task
+	 * 	Map to map request ids with threads, so we can find which request is running on which thread
 	 * */
-	private Map<Integer, Future<?>> upnotifyMap = new HashMap<Integer, Future<?>>();
+	private Map<Integer, UpnotifyReceiver> upnotifyMap = new HashMap<Integer, UpnotifyReceiver>();
 	
 	private MultiprocessingUtils() {
 		// tps: thread pool size
@@ -112,18 +112,15 @@ public class MultiprocessingUtils implements MultiprocessingUtilsInterface {
 	
 	public void submitUpnotify(UpnotifyBot ub, Request upnotify) {
 		System.out.println("Submitting the upnotify request with id " + upnotify.requestId + " to the thread pool");
-		Future<?> task = upnotifyExecutor.submit(new UpnotifyReceiver(ub, upnotify));
-		upnotifyMap.put(upnotify.requestId, task);
+		UpnotifyReceiver rc = new UpnotifyReceiver(ub, upnotify);
+		upnotifyMap.put(upnotify.requestId, rc);
+		upnotifyExecutor.submit(rc);
 	}
 	
 	public void removeUpnotify(int requestId) {
-		boolean success = upnotifyMap.get(requestId).cancel(true);
-		
-		//It might throw an exception due to interrupting a thread while sleep
-		if(success)
-			System.out.println("Request has been removed from execution, request id " + requestId);
-		else
-			System.out.println("Error removing request from execution, request id " + requestId);
-		
+		//shutdown will not effect immediately
+		upnotifyMap.get(requestId).shutdown();
+		upnotifyMap.remove(requestId);
+		System.out.println("Upnotify Request with requestId " + requestId + " is removed");
 	}
 }

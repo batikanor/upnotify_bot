@@ -145,6 +145,7 @@ public class UpdateReceiver implements Runnable{
 								System.out.println("Working with argument: " + arg);
 								MessageUtils.getMessageUtils().removeRequest(ub, chatId, upUser, msg.getMessageId(), arg);
 							}
+							break;
 							
 					}
 				} else {
