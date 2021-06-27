@@ -118,9 +118,13 @@ public class MultiprocessingUtils implements MultiprocessingUtilsInterface {
 	}
 	
 	public void removeUpnotify(int requestId) {
-		//shutdown will not effect immediately
-		upnotifyMap.get(requestId).shutdown();
-		upnotifyMap.remove(requestId);
+
+		// if doesn't contain, probably inactive
+		if (upnotifyMap.containsKey(requestId)){
+		//	shutdown will not effect immediately
+			upnotifyMap.get(requestId).shutdown();
+			upnotifyMap.remove(requestId);
+		}
 		System.out.println("Upnotify Request with requestId " + requestId + " is removed");
 	}
 }

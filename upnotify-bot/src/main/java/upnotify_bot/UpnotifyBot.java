@@ -2,7 +2,9 @@ package upnotify_bot;
 
 import java.io.InputStream;
 import java.util.ArrayList;
+import java.util.HashSet;
 import java.util.Properties;
+import java.util.Set;
 
 import org.telegram.telegrambots.bots.TelegramLongPollingBot;
 import org.telegram.telegrambots.meta.api.objects.Update;
@@ -51,6 +53,31 @@ public class UpnotifyBot extends TelegramLongPollingBot {
 			}
 
 		}
+		
+		// Remove unbounded snapshots that haven't been removed although their resp. request has been removed
+		
+		ArrayList<Integer> reqSnapIds = new ArrayList<Integer>();
+		for (Request upnotify : upnotifies) {
+			reqSnapIds.add(upnotify.snapshotId);
+		}
+
+
+		ArrayList<Integer> snapIds = DatabaseUtils.getDatabaseUtils().getSnapshotIds();
+
+		Set reqSnapIdsSet = new HashSet<Integer>(reqSnapIds);
+		Set snapIdsSet = new HashSet<Integer>(snapIds);
+
+		//relative complement of setA in setB
+		Set<Integer> differenceSet = new HashSet<Integer>(snapIdsSet);
+		differenceSet.removeAll(reqSnapIdsSet);
+		System.out.println("difference"  + differenceSet);
+		for (int snapId : differenceSet) {
+			DatabaseUtils.getDatabaseUtils().removeSnapshotFromId(snapId);
+		}
+
+
+
+
 				
 		
 		
@@ -64,9 +91,7 @@ public class UpnotifyBot extends TelegramLongPollingBot {
 			single_instance = new UpnotifyBot();
 			System.out.println("Instance of 'UpnotifyBot' has been created");
 		}
-		
 		return single_instance;
-		
 	}
 
 	/**

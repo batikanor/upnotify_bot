@@ -300,12 +300,13 @@ public class DatabaseUtils implements DatabaseUtilsInterface
             User selectedUser = new User();
             buildConnection();
             try{
-                Statement statement = connection.createStatement();
-                statement.setQueryTimeout(30);  // set timeout to 30 sec.
 
                 String selectFromIdQuery = String.format("SELECT * FROM USER\n" +
                         "WHERE USER.telegramId = %d;",telegramId);
-                ResultSet rs = statement.executeQuery(selectFromIdQuery);
+                PreparedStatement statement = connection.prepareStatement(selectFromIdQuery);
+                statement.setQueryTimeout(30);  // set timeout to 30 sec.
+
+                ResultSet rs = statement.executeQuery();
 
                 selectedUser.telegramId = rs.getLong("telegramId");
                 selectedUser.userName = rs.getString("userName");
@@ -329,14 +330,14 @@ public class DatabaseUtils implements DatabaseUtilsInterface
         private void insertUser(Long telegramId,int checkLevel, String userName){
             buildConnection();
             try{
-                Statement statement = connection.createStatement();
-                statement.setQueryTimeout(30);  // set timeout to 30 sec.
 
                 String insertQuery = String.format("INSERT INTO USER(" +
                         "telegramId,checkLevel,userName)\n"+
                         "VALUES(%d,%d,'%s');",telegramId,checkLevel,userName);
+                PreparedStatement statement = connection.prepareStatement(insertQuery);
+                statement.setQueryTimeout(30);  // set timeout to 30 sec.
 
-                statement.executeUpdate(insertQuery);
+                statement.executeUpdate();
                 statement.close();
 
             }catch(SQLException e){
@@ -403,10 +404,11 @@ public class DatabaseUtils implements DatabaseUtilsInterface
             buildConnection();
             InputStream is = null;
             try{
-                Statement statement = connection.createStatement();
                 String retrieveSnapshot = String.format("SELECT screenshot FROM SNAPSHOT" +
                         "WHERE SnapshotId = %d",SnapshotId);
-                ResultSet rs = statement.executeQuery(retrieveSnapshot);
+                PreparedStatement statement = connection.prepareStatement(retrieveSnapshot);
+
+                ResultSet rs = statement.executeQuery();
                 Blob ablob = rs.getBlob("screenshot");
                 is = ablob.getBinaryStream();
 
@@ -459,10 +461,11 @@ public class DatabaseUtils implements DatabaseUtilsInterface
             buildConnection();
             try{
                 boolean exists;
-                Statement statement = connection.createStatement();
                 String checkquery = String.format("SELECT * FROM" +
                         " USER WHERE USER.telegramId = %d",telegramId);
-                ResultSet rs = statement.executeQuery(checkquery);
+                PreparedStatement statement = connection.prepareStatement(checkquery);
+
+                ResultSet rs = statement.executeQuery();
                 if(rs.next()){
                     exists = true;
                 }
@@ -525,10 +528,11 @@ public class DatabaseUtils implements DatabaseUtilsInterface
         Snapshot mySnapshot = new Snapshot();
         buildConnection();
         try{
-            Statement statement = connection.createStatement();
+            
             String getSnapshotQ = String.format("SELECT * FROM SNAPSHOT" +
                     " WHERE SNAPSHOT.snapshotId = %d",snapshotId);
-            ResultSet rs = statement.executeQuery(getSnapshotQ);
+            PreparedStatement ps = connection.prepareStatement(getSnapshotQ);
+            ResultSet rs = ps.executeQuery();
             mySnapshot.snapshotId = rs.getInt("snapshotId");
             mySnapshot.url = rs.getString("url");
             InputStream ss = rs.getBinaryStream("screenshot");
@@ -555,10 +559,11 @@ public class DatabaseUtils implements DatabaseUtilsInterface
         buildConnection();
         Request myRequest = null;
         try{
-            Statement statement = connection.createStatement();
             String getRequestQ = String.format("SELECT * FROM REQUEST" +
                     " WHERE REQUEST.requestId = %d",requestId);
-            ResultSet rs = statement.executeQuery(getRequestQ);
+            PreparedStatement ps = connection.prepareStatement(getRequestQ);
+
+            ResultSet rs = ps.executeQuery();
             
             myRequest = new Request(rs.getInt("requestId"),
 	            		rs.getLong("telegramId"),
@@ -721,7 +726,7 @@ public class DatabaseUtils implements DatabaseUtilsInterface
             String removeUser = "DELETE FROM USER WHERE telegramId = ?";
             PreparedStatement ps = connection.prepareStatement(removeUser);
             ps.setLong(1, user.telegramId);
-            ps.executeUpdate(removeUser);
+            ps.executeUpdate();
 
         } catch (SQLException e) {
             e.printStackTrace();
@@ -731,13 +736,13 @@ public class DatabaseUtils implements DatabaseUtilsInterface
         return true;
     }
 
-    public boolean removeSnapshot(Snapshot ss) {
+    public boolean removeSnapshotFromId(int ssId) {
         buildConnection();
         try {
             String removeSnapshot = "DELETE FROM SNAPSHOT WHERE snapshotId = ?";
             PreparedStatement ps = connection.prepareStatement(removeSnapshot);
-            ps.setLong(1, ss.snapshotId);
-            ps.executeUpdate(removeSnapshot);
+            ps.setInt(1, ssId);
+            ps.executeUpdate();
 
         } catch (SQLException e) {
             e.printStackTrace();
@@ -865,20 +870,37 @@ public class DatabaseUtils implements DatabaseUtilsInterface
         closeConnection();
         return reqList;
 	}
-	public boolean removeRequestFromId(int requestId) {
+	public boolean removeRequestFromId(int requestId, Long telegramId) {
         buildConnection();
         try {
-            String removeRequest = "DELETE FROM REQUEST WHERE requestId = ?";
+            // String query = "SELECT FROM REQUEST WHERE telegramId = ?";
+            // PreparedStatement ps = connection.prepareStatement(query);
+            // ps.setLong(1, telegramId);
+            // if (telegramId)
+            // System.out.println("rrfi1");
+            String removeRequest = "DELETE FROM REQUEST WHERE requestId = ? AND telegramId = ?";
+            // System.out.println("rrfi2");
             PreparedStatement ps = connection.prepareStatement(removeRequest);
+            // System.out.println("rrfi3");
             ps.setInt(1, requestId);
-            ps.executeUpdate();
-            
+            // System.out.println("rrfi4");
+            ps.setLong(2, telegramId);
+            // System.out.println("rrfi5");
+            int aa = ps.executeUpdate(); // if db is updated 1, if not 0
+            // System.out.println("rrfi6");
+            System.out.println("heyho" + aa);
+            if (aa < 1) {
+                closeConnection();
+                return false;
+            }
             // remove req from thread pool if it was active
             
             MultiprocessingUtils.getMultiProcessingUtils().removeUpnotify(requestId);
+            
 
         } catch (SQLException e) {
             e.printStackTrace();
+            closeConnection();
             return false;
         }
         closeConnection();
@@ -898,4 +920,94 @@ public class DatabaseUtils implements DatabaseUtilsInterface
         closeConnection();
         return true;
     }
+    
+    public boolean getRequestActiveFromId(int id) {
+        buildConnection();
+        boolean ret = false;
+        try{
+            String select = "SELECT isActive FROM REQUEST WHERE requestId = ? ";
+            PreparedStatement ps = connection.prepareStatement(select);
+            ps.setInt(1, id);
+            ResultSet rs = ps.executeQuery();
+            
+
+
+            while(rs.next()){
+                ret = rs.getBoolean("isActive");
+            }
+
+        }catch(SQLException e){
+            e.printStackTrace();
+        }
+
+
+        closeConnection();
+        return ret;
+
+
+
+    }
+    /**
+     * 
+     * @param num id of request
+     * @param telegramId
+     * @return
+     */
+	public boolean toggleRequestFromId(int num, Long telegramId) {
+        boolean h = getRequestActiveFromId(num);
+        buildConnection();
+        try {
+
+            
+
+            String toggleRequest = "UPDATE REQUEST SET isActive = ? WHERE requestId = ? AND telegramId = ?";
+
+            PreparedStatement ps = connection.prepareStatement(toggleRequest);
+            ps.setInt(1, h ? 0 : 1);
+
+            ps.setInt(2, num);
+            ps.setLong(3, telegramId);
+            int aa = ps.executeUpdate();
+            System.out.println("aa="+ aa);
+            
+            if (aa < 1) {
+                closeConnection();
+                return false;
+            }
+            
+
+        } catch (SQLException e) {
+            e.printStackTrace();
+            return false;
+        }
+        closeConnection();
+        if (h) {
+            // request was active and now is passive, so remove from mapee
+            MultiprocessingUtils.getMultiProcessingUtils().removeUpnotify(num);
+        } else {
+            MultiprocessingUtils.getMultiProcessingUtils().submitUpnotify(UpnotifyBot.getUpnotifyBot(), retrieveRequestFromId(num) );
+
+        }
+        return true;
+        
+	}
+
+	public ArrayList<Integer> getSnapshotIds() {
+        ArrayList<Integer> ids = new ArrayList<Integer>();
+
+        buildConnection();
+        try{
+            Statement statement = connection.createStatement();
+            String select = "SELECT snapshotId FROM SNAPSHOT";
+            ResultSet rs = statement.executeQuery(select);
+            while(rs.next()){
+                ids.add(rs.getInt("snapshotId"));
+            }
+
+        }catch(SQLException e){
+            e.printStackTrace();
+        }
+        closeConnection();
+        return ids;
+	}
 }

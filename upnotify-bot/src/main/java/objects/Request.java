@@ -32,7 +32,9 @@ public class Request {
     	System.out.println(String.format("Turning request with id %d to string...", this.requestId));
     	String txt = "Request No: " + requestId + " ~~~ "
     + "Url:  " + snap.url + ", check interval: " + checkInterval
-    + " {This request is " + (isActive ? "ACTIVE" : "PASSIVE") + "} ";
+    + ", checking screenshot (ss) = " + Boolean.toString(snap.screenshot != null)
+    + ", checking site content hash (sch) = " + Boolean.toString(snap.siteContentHash != null)
+    + "\n{This request is " + (isActive ? "ACTIVE" : "PASSIVE") + "} ";
 		return txt;
     	
     }

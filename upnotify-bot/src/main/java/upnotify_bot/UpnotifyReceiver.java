@@ -48,8 +48,12 @@ public class UpnotifyReceiver implements Runnable{
 		}
 		
 		
-		// TODO add a field isActive to Request object, so that it can be the controller of this while loop
-		while(!shutdown) {
+		/**
+		 * note that the upnotify instance in this may not be up to date. 
+		 * 	option 1: check the db at every iteration and actualize
+		 * 	option 2(chosen): just shut thread down when toggling activity, and add it back on later on
+		 */
+		while(!shutdown && upnotify.isActive) {
 			// work
 			// get snapshot object
 			System.out.println("[Request "+ upnotify.requestId + "] Retrieving snapshot from db");
@@ -73,8 +77,7 @@ public class UpnotifyReceiver implements Runnable{
 					notificationTxt += "\nThe site has been changed! The hash value of the site content was " + snap.siteContentHash + " and now is " + newHash;
 					snap.siteContentHash = newHash;
 				}
-				
-				
+							
 			}
 
 			if (snap.screenshot != null) {
@@ -92,11 +95,9 @@ public class UpnotifyReceiver implements Runnable{
 					snap.screenshot = newSs;
 				}
 
-
 			}
 
 			
-
 			
 			if (notificationRequired){
 				// notify users about the changes
@@ -109,8 +110,7 @@ public class UpnotifyReceiver implements Runnable{
 				DatabaseUtils.getDatabaseUtils().editRequest(upnotify, snap);
 			}
 			
-
-			
+	
 			// wait
 			//System.out.println("CHECKINTERVALLLLL" + upnotify.checkInterval);
 			int waitMin = Config.getConfig().MIN_WAIT_LEVEL[upnotify.checkInterval];

@@ -165,8 +165,16 @@ public class MessageUtils {
 		}
 		return true;
 	}
+	/**
+	 * only some html tags are available, take a look at https://core.telegram.org/bots/api ctrl+f HTML ()
+	 * @param ub
+	 * @param chatId
+	 * @param update
+	 * @param upUser
+	 */
 	public void sendHelpMessage(UpnotifyBot ub, String chatId, Update update, objects.User upUser) {
 		// TODO Auto-generated method stub
+		
 		StringBuilder sb = new StringBuilder();
 		sb.append("<b> Your Info </b>");
 		sb.append("\n<i>"
@@ -174,8 +182,25 @@ public class MessageUtils {
 				+ "have your upnotify request run once every "
 				+ Config.getConfig().MIN_WAIT_LEVEL[upUser.checkLevel] + " minutes or less often if you request so."
 				+ "</i>");
-		sb.append("\n<b> Bot Info </b>");
-		sb.append("\n<code> System.out.println(\"Hello Telegram!\"); </code>");
+		sb.append("\n\n");
+		sb.append("\n<b>Bot Info </b>");
+		sb.append("\n<u>Commands and resp. Functionalities</u>");
+		sb.append("\n<i>(Replace the strings starting with '$' with your own inputs.)</i>");
+		sb.append("\n");
+		sb.append("\n<code>/help</code> -> <i>Shows help message</i>");
+		sb.append("\n<code>/addrequest $url ss sch</code> -> <i>Adds snapshot with given URL </i>");
+		sb.append("\n<i>ss = parameter to check for updates by comparing screenshots of given URL  </i>");
+		sb.append("\n<i>sch = checks for updates by comparing site content hash of given URL </i>");
+		sb.append("\n<code>/addrequest $url ss sch</code> -> <i>Adds snapshot with given URL </i>");
+		sb.append("\n<code>/editrequest requestId $url ss sch</code> -> <i>Edits request with given requestId</i> ");
+		sb.append("\n<code>/removerequest requestId</code> -> <i>Removes request with given requestId</i> ");
+		sb.append("\n<code>/togglerequest requestId</code> -> <i>Toggles activity status of request with given requestId</i> ");
+		sb.append("\n<code>/seerequests</code> -> <i>Lists current requests </i> ");
+		sb.append("\n<code>/checksite $url</code> -> <i>Checks if a site is reachable or not</i> ");
+		sb.append("\n<code>/checkstatic $url</code> -> <i>Checks if a site is static or not</i> ");
+		sb.append("\n\n");
+		sb.append("\n<u>Latest Updates</u>");
+		sb.append("\n<code>Addded '/togglerequest'</code> -> <i>27.06.2021</i> ");
 		String helpText = sb.toString();
 		System.out.println(helpText);
 				
@@ -368,14 +393,58 @@ public class MessageUtils {
 			e.printStackTrace();
 		}
 		
-		
 	}
 	public boolean removeRequest(UpnotifyBot ub, String chatId, User upUser, Integer msgIdToReply, String arg) {
 		// TODO Auto-generated method stub
 		SendMessage sm = new SendMessage();
 		sm.setChatId(chatId);
 		sm.setReplyToMessageId(msgIdToReply);
+		String msgText = "";
+		boolean isNum = false;
+		int num = -1;
+		try{
+			  num = Integer.parseInt(arg);
+			  isNum = true;
+		} catch (NumberFormatException e) {
+			  isNum = false;
+		}
+
+		if(isNum) {
+			// if (DatabaseUtils.getDatabaseUtils().retrieveRequestFromId(num).telegramId == upUser.telegramId) {
+				if (DatabaseUtils.getDatabaseUtils().removeRequestFromId(num, upUser.telegramId)) {
+					msgText += "Your request with ID=" + arg + " has been succesfully removed!";
+				} else {
+					msgText += "There has been an error, your request couldn't be removed. Maybe it doesn't exist at all.. Please try '/seerequests' "; 
+				}
+				
+			// } else {
+				// msgText += "This Request is not yours.";
+				
+			// }
+		}else{
+			msgText += "The arguments have to be numeric for this command! Please try again";
+		}
+		
+		sm.setText(msgText);
+		
+		try {
+			ub.execute(sm);
+		} catch (TelegramApiException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+			return false;
+		}
+		return true;
+	
+		
+	}
+	public boolean toggleRequest(UpnotifyBot ub, String chatId, User upUser, Integer msgIdToReply, String arg) {
+		
+		SendMessage sm = new SendMessage();
+		sm.setChatId(chatId);
+		sm.setReplyToMessageId(msgIdToReply);
 		String msgText;
+
 		boolean isNum = false;
 		int num = -1;
 		try{
@@ -386,10 +455,10 @@ public class MessageUtils {
 		}
 	
 		if (isNum) {
-			if (DatabaseUtils.getDatabaseUtils().removeRequestFromId(num)) {
-				msgText = "Your request with ID=" + arg + " has been succesfully removed!";
+			if (DatabaseUtils.getDatabaseUtils().toggleRequestFromId(num, upUser.telegramId)){
+				msgText = "The activity status of your request with ID=" + arg + " has been succesfully toggled! Use '/seerequests' to see the current stance.";
 			} else {
-				msgText = "There has been an error, your request couldn't be removed. Maybe it doesn't exist at all.. Please try '/seerequests' "; 
+				msgText = "There has been an error, your request couldn't be toggled. Maybe it doesn't exist at all.. Please try '/seerequests' "; 
 			}
 				
 		} else {
@@ -406,6 +475,7 @@ public class MessageUtils {
 		}
 		return true;
 	
+
 		
 	}
 }

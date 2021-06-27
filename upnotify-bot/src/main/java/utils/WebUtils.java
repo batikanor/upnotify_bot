@@ -216,6 +216,7 @@ public class WebUtils implements WebUtilsInterface{
 			return false;
 		}
 		driver.close();
+		driver.quit();
 		return true;
 		// code below takes only partial screenshot without using ashot plugin. commented for now.
 

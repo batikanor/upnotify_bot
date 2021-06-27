@@ -146,6 +146,11 @@ public class UpdateReceiver implements Runnable{
 								MessageUtils.getMessageUtils().removeRequest(ub, chatId, upUser, msg.getMessageId(), arg);
 							}
 							break;
+						case "togglerequest":
+							for (String arg : args) {
+								System.out.println("Working with argument: " + arg);
+								MessageUtils.getMessageUtils().toggleRequest(ub, chatId, upUser, msg.getMessageId(), arg);
+							}
 							
 					}
 				} else {
