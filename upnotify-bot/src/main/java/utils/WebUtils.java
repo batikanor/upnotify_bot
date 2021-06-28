@@ -205,11 +205,14 @@ public class WebUtils implements WebUtilsInterface{
 		System.setProperty("webdriver.chrome.driver", chrome_driver_path);
 		WebDriver driver = loadUBlockOriginToSeleniumWebDriver();
 		driver.get(fixUrl(url));
-		driver.manage().timeouts().implicitlyWait(30, TimeUnit.SECONDS);
+		driver.manage().timeouts().implicitlyWait(15, TimeUnit.SECONDS);
 
 		// automatised full screenshot using AShot plugin with 1.25f scale (in order to take properly scaled) and 1000 ms scroll interval.
 
-		Screenshot fullScreenshot = new AShot().shootingStrategy(ShootingStrategies.viewportPasting(ShootingStrategies.scaling(1.25f), 1000)).takeScreenshot(driver);
+		//Screenshot fullScreenshot = new AShot().shootingStrategy(ShootingStrategies.viewportPasting(ShootingStrategies.scaling(1.25f), 1000)).takeScreenshot(driver);
+		Screenshot fullScreenshot = new AShot().shootingStrategy(ShootingStrategies.viewportPasting(ShootingStrategies.scaling(1), 1)).takeScreenshot(driver));
+
+
 		try {
 			ImageIO.write(fullScreenshot.getImage(),"PNG",new File("src/main/resources/SELENIUM_SCREENSHOTS/" + requestId + ".png"));
 		} catch (IOException ioe) {
@@ -278,6 +281,7 @@ public class WebUtils implements WebUtilsInterface{
 		WebDriver driver = loadUBlockOriginToSeleniumWebDriver();
 		driver.get(fixUrl(url));
 		driver.manage().timeouts().implicitlyWait(30, TimeUnit.SECONDS);
+		
 
 		// automatised full screenshot using AShot plugin with 1.25f scale (in order to take properly scaled) and 5000 ms scroll interval.
 		Screenshot fullScreenshot = new AShot().shootingStrategy(ShootingStrategies.viewportPasting(ShootingStrategies.scaling(1.25f), 5000)).takeScreenshot(driver);
@@ -291,13 +295,14 @@ public class WebUtils implements WebUtilsInterface{
 		String pathToExtension = "CHROME_DRIVERS/uBlockOrigin_1.35.2.0.crx";
 		URL urlPathToExtension = getClass().getClassLoader().getResource(pathToExtension);
 		ChromeOptions options = new ChromeOptions();
-		// options.setHeadless(false);
+		options.setHeadless(false);
 		// System.out.println(options.getBrowserVersion());
 		// System.out.println(options.getCapabilityNames());
 		// System.out.println(options.getVersion());
 		
 		options.addExtensions(new File(urlPathToExtension.getPath()));
-		options.addArguments("--window-size=1200x600", "--log-level=3");
+		options.addArguments("--window-size=1200x600", "--log-level=3", "--window-position=-32000,-32000");
+
 		// DesiredCapabilities capabilities = new DesiredCapabilities();
 		// capabilities.setCapability(ChromeOptions.CAPABILITY, options);
 		
@@ -306,6 +311,7 @@ public class WebUtils implements WebUtilsInterface{
 		// WebDriver driver = new ChromeDriver(capabilities);
 		System.out.println("Opening extension");
 		driver.get("chrome-extension://**" + Config.getConfig().PUBLIC_UBLOCK_KEY  + "**/dhc.html");
+		// driver.manage().window().maximize();
 		driver.navigate().refresh();
 
 		return driver;

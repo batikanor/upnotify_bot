@@ -129,9 +129,16 @@ public class UpdateReceiver implements Runnable{
 							break;
 						case "addrequest":
 							// /addrequest snapUrl ss sch
+							if (args.isEmpty()) {
+								MessageUtils.getMessageUtils().sendWarningMessage(ub, threadId, chatId, msg.getMessageId());
+							}
+
 							MessageUtils.getMessageUtils().addRequestAndSendConfirmation(ub, chatId, update, upUser, args);
 							break;
 						case "editrequest":
+						if (args.isEmpty()) {
+							MessageUtils.getMessageUtils().sendWarningMessage(ub, threadId, chatId, msg.getMessageId());
+						}
 							// /editrequest requestId newURL sch ss
 							// sch yaziyorsa sch yi kontrol edip kaydeder db ye, yazmiyorsa oraya null yazar
 							MessageUtils.getMessageUtils().editRequest(ub, chatId, upUser, args);
@@ -141,12 +148,18 @@ public class UpdateReceiver implements Runnable{
 							// see requests, fields and request ids
 							break;
 						case "removerequest":
+						if (args.isEmpty()) {
+							MessageUtils.getMessageUtils().sendWarningMessage(ub, threadId, chatId, msg.getMessageId());
+						}
 							for (String arg : args) {
 								System.out.println("Working with argument: " + arg);
 								MessageUtils.getMessageUtils().removeRequest(ub, chatId, upUser, msg.getMessageId(), arg);
 							}
 							break;
 						case "togglerequest":
+						if (args.isEmpty()) {
+							MessageUtils.getMessageUtils().sendWarningMessage(ub, threadId, chatId, msg.getMessageId());
+						}
 							for (String arg : args) {
 								System.out.println("Working with argument: " + arg);
 								MessageUtils.getMessageUtils().toggleRequest(ub, chatId, upUser, msg.getMessageId(), arg);

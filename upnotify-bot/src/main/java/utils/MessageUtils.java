@@ -4,6 +4,8 @@ package utils;
 import java.awt.*;
 import java.awt.image.BufferedImage;
 import java.io.File;
+import java.net.URISyntaxException;
+import java.net.URL;
 import java.time.Instant;
 import java.util.ArrayList;
 
@@ -154,16 +156,25 @@ public class MessageUtils {
 	public boolean sendWelcomeMessage(UpnotifyBot ub, String threadId, String chatId, Update update) {
 		SendPhoto sp = new SendPhoto();
 		sp.setChatId(chatId);
-		sp.setPhoto(new InputFile( new File ("src/main/resources/IMAGES/welcome-red-sign-760.png")));
-	
+		File file;
+		URL url = this.getClass().getClassLoader().getResource("IMAGES/welcome-red-sign-760.png");
 		try {
-			ub.execute(sp);
-		} catch (TelegramApiException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-			return false;
+			file = new File(url.toURI());
+			sp.setPhoto(new InputFile(file));
+		} catch (URISyntaxException e) {
+			file = new File(url.getPath());
+		} finally {
+			//sp.setPhoto(new InputFile( new File ("src/main/resources/IMAGES/welcome-red-sign-760.png")));
+			try {
+				ub.execute(sp);
+			} catch (TelegramApiException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+				return false;
+			}
 		}
 		return true;
+
 	}
 	/**
 	 * only some html tags are available, take a look at https://core.telegram.org/bots/api ctrl+f HTML ()
