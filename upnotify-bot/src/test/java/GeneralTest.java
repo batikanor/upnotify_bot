@@ -1,10 +1,6 @@
-import java.io.ObjectInputFilter.Config;
 
 import org.junit.Assert;
 import org.junit.Test;
-
-import objects.User;
-import utils.DatabaseUtils;
 
 public class GeneralTest {
     @Test

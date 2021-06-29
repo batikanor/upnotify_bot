@@ -64,8 +64,8 @@ public class UpnotifyBot extends TelegramLongPollingBot {
 
 		ArrayList<Integer> snapIds = DatabaseUtils.getDatabaseUtils().getSnapshotIds();
 
-		Set reqSnapIdsSet = new HashSet<Integer>(reqSnapIds);
-		Set snapIdsSet = new HashSet<Integer>(snapIds);
+		Set<Integer> reqSnapIdsSet = new HashSet<Integer>(reqSnapIds);
+		Set<Integer> snapIdsSet = new HashSet<Integer>(snapIds);
 
 		//relative complement of setA in setB
 		Set<Integer> differenceSet = new HashSet<Integer>(snapIdsSet);

@@ -1,21 +1,8 @@
 package utils;
 
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.List;
-
-
-import objects.Snapshot;
 import objects.User;
-import org.apache.commons.lang3.StringUtils;
 import org.junit.Assert;
 import org.junit.Test;
-
-import utils.Config;
-import utils.DatabaseUtils;
-
-import javax.validation.constraints.Null;
-import javax.xml.crypto.Data;
 
 public class DatabaseUtilsTest {
 

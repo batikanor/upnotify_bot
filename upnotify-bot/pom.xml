@@ -2,7 +2,7 @@
   <modelVersion>4.0.0</modelVersion>
   <groupId>com.batikanor.upnotify.bot</groupId>
   <artifactId>upnotify-bot</artifactId>
-  <version>0.0.1-SNAPSHOT</version>
+  <version>1.0.0</version>
 	<build>
 		<plugins>
 			<plugin>
@@ -22,6 +22,27 @@
 						<target>9</target>
 					</configuration>
 			</plugin> 
+			<!-- <plugin>
+				<groupId>org.apache.maven.plugins</groupId>
+				<artifactId>maven-javadoc-plugin</artifactId>
+				<executions>
+					<execution>
+						<id>attach-javadocs</id>
+						<goals>
+							<goal>jar</goal>
+						</goals>
+					</execution>
+				</executions>
+			</plugin> -->
+			<plugin>
+				<groupId>org.apache.maven.plugins</groupId>
+				<artifactId>maven-javadoc-plugin</artifactId>
+				<version>3.3.0</version>
+				<configuration>
+				<show>private</show>
+				<nohelp>true</nohelp>
+				</configuration>
+			</plugin>	
 				
 		</plugins>
 	</build>
@@ -113,7 +134,7 @@
 	</dependency> -->
 	  
 	  <!-- https://mvnrepository.com/artifact/org.apache.maven.plugins/maven-assembly-plugin -->
-	<dependency>
+	<!-- <dependency>
 	    <groupId>org.apache.maven.plugins</groupId>
 	    <artifactId>maven-assembly-plugin</artifactId>
         <executions>
@@ -137,7 +158,7 @@
 	        </execution>
 	    </executions>
 	    <version>3.3.0</version>
-	</dependency>
+	</dependency> -->
 
   </dependencies>
 

@@ -11,9 +11,7 @@ import upnotify_bot.UpnotifyBot;
 // import javax.xml.crypto.Data;
 
 // import java.awt.*;
-import javax.imageio.ImageIO;
 import java.awt.image.BufferedImage;
-import java.io.ByteArrayInputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.nio.file.Path;
@@ -21,8 +19,6 @@ import java.nio.file.Paths;
 import java.sql.*;
 import java.util.ArrayList;
 
-import javax.imageio.ImageIO;
-import javax.xml.crypto.Data;
 
 interface DatabaseUtilsInterface {
 	/**
