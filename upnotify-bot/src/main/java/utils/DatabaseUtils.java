@@ -348,7 +348,7 @@ public class DatabaseUtils implements DatabaseUtilsInterface
 
             return selectedUser;
 
-        }
+    }
 
         // insert a user into USER table
 
@@ -359,28 +359,28 @@ public class DatabaseUtils implements DatabaseUtilsInterface
      *                   that bot looks for changes
      * @param userName   Name of the user
      */
-        private void insertUser(Long telegramId,int checkLevel, String userName){
-            buildConnection();
-            try{
+    private void insertUser(Long telegramId,int checkLevel, String userName){
+        buildConnection();
+        try{
 
-                String insertQuery = String.format("INSERT INTO USER(" +
-                        "telegramId,checkLevel,userName)\n"+
-                        "VALUES(%d,%d,'%s');",telegramId,checkLevel,userName);
-                PreparedStatement statement = connection.prepareStatement(insertQuery);
-                statement.setQueryTimeout(30);  // set timeout to 30 sec.
+            String insertQuery = String.format("INSERT INTO USER(" +
+                    "telegramId,checkLevel,userName)\n"+
+                    "VALUES(%d,%d,'%s');",telegramId,checkLevel,userName);
+            PreparedStatement statement = connection.prepareStatement(insertQuery);
+            statement.setQueryTimeout(30);  // set timeout to 30 sec.
 
-                statement.executeUpdate();
-                statement.close();
+            statement.executeUpdate();
+            statement.close();
 
-            }catch(SQLException e){
-                e.printStackTrace();
-            }
-            finally {
-                closeConnection();
-            }
-
-
+        }catch(SQLException e){
+            e.printStackTrace();
         }
+        finally {
+            closeConnection();
+        }
+
+
+    }
 
     /**
      * This function inserts a snapshot into database
@@ -390,77 +390,81 @@ public class DatabaseUtils implements DatabaseUtilsInterface
      * @return Id of the inserted snapshot
      */
 
-        private int insertSnapshot(String url, InputStream screenshot, String siteContentHash){
-            buildConnection();
-            int generatedKey = -1;
-            try{
-                String insertSnapshotQ= "INSERT INTO SNAPSHOT(url,screenshot,siteContentHash)" + "VALUES(?,?,?)";
-                System.out.println(111);
-                PreparedStatement ps = connection.prepareStatement(insertSnapshotQ,Statement.RETURN_GENERATED_KEYS);
-                System.out.println(112);
-                ps.setString(1,url);
-                System.out.println(113);
-                
-                if (screenshot == null) {
-                	ps.setNull(2, Types.NULL );
-                	System.out.println(114);
-                } else {
-                	//ps.setBlob(2, screenshot);
-                	//ps.setBinaryStream(2,screenshot);
-                    //byte screenshotByte[] = ImageUtils.getImageUtils().getByteData(ImageUtils.getImageUtils().convertInputStreamIntoBufferedImage(screenshot));
-                	ps.setBytes(2, screenshot.readAllBytes());
-                	System.out.println(222);
-                }
-                ps.setString(3,siteContentHash);
-                System.out.println(115);
-                ps.executeUpdate();
-                System.out.println(116);
-
-                ResultSet genKeys = ps.getGeneratedKeys();
-                if ( genKeys.next() ) {
-                    generatedKey= genKeys.getInt( 1 );
-                } else {
-                    System.out.println("there is no generated id");
-                }
-
-                ps.close();
-
-
+    private int insertSnapshot(String url, InputStream screenshot, String siteContentHash){
+        buildConnection();
+        int generatedKey = -1;
+        try{
+            String insertSnapshotQ= "INSERT INTO SNAPSHOT(url,screenshot,siteContentHash)" + "VALUES(?,?,?)";
+            System.out.println(111);
+            PreparedStatement ps = connection.prepareStatement(insertSnapshotQ,Statement.RETURN_GENERATED_KEYS);
+            System.out.println(112);
+            ps.setString(1,url);
+            System.out.println(113);
+            
+            if (screenshot == null) {
+                ps.setNull(2, Types.NULL );
+                System.out.println(114);
+            } else {
+                //ps.setBlob(2, screenshot);
+                //ps.setBinaryStream(2,screenshot);
+                //byte screenshotByte[] = ImageUtils.getImageUtils().getByteData(ImageUtils.getImageUtils().convertInputStreamIntoBufferedImage(screenshot));
+                ps.setBytes(2, screenshot.readAllBytes());
+                System.out.println(222);
             }
-            catch(SQLException | IOException e){
-            	System.out.println(117);
-                e.printStackTrace();
+            ps.setString(3,siteContentHash);
+            System.out.println(115);
+            ps.executeUpdate();
+            System.out.println(116);
+
+            ResultSet genKeys = ps.getGeneratedKeys();
+            if ( genKeys.next() ) {
+                generatedKey= genKeys.getInt( 1 );
+            } else {
+                System.out.println("there is no generated id");
             }
-            finally {
-                closeConnection();
-                System.out.println(119);
-                
-            }
-            return generatedKey;
+
+            ps.close();
+
+
+        }
+        catch(SQLException | IOException e){
+            System.out.println(117);
+            e.printStackTrace();
+        }
+        finally {
+            closeConnection();
+            System.out.println(119);
+            
+        }
+        return generatedKey;
+    }
+
+    /**
+     * Retrieves image input stream from resp. snapshot id
+     * @param SnapshotId id of said snapshot
+     * @return screenshot in binary stream form
+     */
+    private InputStream retrieveImageInputStreamFromSnapshotId(int SnapshotId){
+        buildConnection();
+        InputStream is = null;
+        try{
+            String retrieveSnapshot = String.format("SELECT screenshot FROM SNAPSHOT" +
+                    "WHERE SnapshotId = %d",SnapshotId);
+            PreparedStatement statement = connection.prepareStatement(retrieveSnapshot);
+
+            ResultSet rs = statement.executeQuery();
+            Blob ablob = rs.getBlob("screenshot");
+            is = ablob.getBinaryStream();
+
+        }catch(SQLException e){
+            e.printStackTrace();
+        }
+        finally {
+            closeConnection();
         }
 
-
-        private InputStream retrieveImageInputStreamFromSnapshotId(int SnapshotId){
-            buildConnection();
-            InputStream is = null;
-            try{
-                String retrieveSnapshot = String.format("SELECT screenshot FROM SNAPSHOT" +
-                        "WHERE SnapshotId = %d",SnapshotId);
-                PreparedStatement statement = connection.prepareStatement(retrieveSnapshot);
-
-                ResultSet rs = statement.executeQuery();
-                Blob ablob = rs.getBlob("screenshot");
-                is = ablob.getBinaryStream();
-
-            }catch(SQLException e){
-                e.printStackTrace();
-            }
-            finally {
-                closeConnection();
-            }
-
-        return is;
-        }
+    return is;
+    }
 
 /*
         private void insertRequest(Long telegramId,String userName, int checkInterval,String url,InputStream screenshot,
