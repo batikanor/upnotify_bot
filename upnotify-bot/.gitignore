@@ -1,5 +1,5 @@
-!/target/site/*
-!/target/javadoc-bundle-options/*
+!/target/classes/site/*
+!/target/classes/javadoc-bundle-options/*
 /target/
 /src/main/resources/SECRET_KEYS/
 /src/main/resources/SECRET_KEYS/Keys.properties
