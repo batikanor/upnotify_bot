@@ -61,7 +61,7 @@ interface DatabaseUtilsInterface {
 }
 
 /**
- * @todo Implement DatabaseUtilsInterface'
+ *
  * @todo check multithreading capabilities
  */
 public class DatabaseUtils implements DatabaseUtilsInterface
@@ -117,7 +117,10 @@ public class DatabaseUtils implements DatabaseUtilsInterface
 		
 		return s0;
     }
-    
+
+    /**
+     * This function builds the database connection
+     */
     public void buildConnection(){
     	System.out.println("Building the db connection");
         try {
@@ -129,6 +132,9 @@ public class DatabaseUtils implements DatabaseUtilsInterface
         }
         
     }
+    /**
+     * This function closes the database connection
+     */
 
     public void closeConnection(){
         System.out.println("Closing the db connection");
@@ -146,7 +152,12 @@ public class DatabaseUtils implements DatabaseUtilsInterface
 
 
 
-    //tablo dbde var ise true yok ise false döndüren bir fonksiyon
+    /**
+     * This is a helper function to check if a table exists in database
+     * @param tableName Name of the table we want to check
+     * @param conn      A connection object for the database
+     * @return true if the table exists in database, false otherwise
+     */
     private boolean tableExists(String tableName,Connection conn){
         try{
             DatabaseMetaData md = conn.getMetaData();
@@ -164,6 +175,10 @@ public class DatabaseUtils implements DatabaseUtilsInterface
         }
     }
 
+    /**
+     * This is a function that creates the tables at the program start, if they do not exist
+     * in database
+     */
     public void createTables(){
             buildConnection();
             try{
@@ -171,7 +186,7 @@ public class DatabaseUtils implements DatabaseUtilsInterface
                 statement.setQueryTimeout(30);  // set timeout to 30 sec.
                 
                 
-                // yok ise USERS tablosunu oluştur
+                // create USERS table if not exists
                 if(!tableExists("USER",connection)){
                     String create_user_table = "create table if not exists USER\n" +
                             "(\n" +
@@ -196,10 +211,10 @@ public class DatabaseUtils implements DatabaseUtilsInterface
                 else{
 
                     System.out.println("USER table already exists");
-                    //USERS table allready exists
+                    //USERS table already exists
 
                 }
-                // yok ise WEB_PAGES tablosunu oluştur
+                // create SNAPSHOT table if not exists
                 if(!tableExists("SNAPSHOT",connection)){
                     String create_webpages_table = "create table if not exists SNAPSHOT\n" +
                             "(\n" +
@@ -223,11 +238,11 @@ public class DatabaseUtils implements DatabaseUtilsInterface
                 }else{
 
                     System.out.println("SNAPSHOT table already exists");
-                    //WEB_PAGES table allready exists
+                    //WEB_PAGES table already exists
 
                 }
 
-                // yok ise WEB_PAGES tablosunu oluştur
+                // // create REQUEST table if not exists
                 if(!tableExists("REQUEST",connection)){
                     String create_requests_table = "create table if not exists REQUEST\n" +
                             "(\n" +
@@ -256,7 +271,7 @@ public class DatabaseUtils implements DatabaseUtilsInterface
                     }
                 }else{
                     System.out.println("REQUEST table already exists");
-                    //WEB_PAGES table allready exists
+                    //WEB_PAGES table already exists
                 }
 
             }catch (SQLException e){
@@ -271,8 +286,11 @@ public class DatabaseUtils implements DatabaseUtilsInterface
             }
         }
 
-        //Select all users from USER table and return a user list
-        private ArrayList<User> selectUsers(){
+    /**
+     * This function retrieves all users from USER table
+     * @return A list of the users
+     */
+    private ArrayList<User> selectUsers(){
 
             ArrayList<User> userList = new ArrayList<User>();
             buildConnection();
@@ -296,7 +314,13 @@ public class DatabaseUtils implements DatabaseUtilsInterface
         }
 
         //select a user with a specific telegramId
-        private User retrieveUserFromId(Long telegramId){
+
+    /**
+     * This function retrieves a user with a specific telegram ID
+     * @param telegramId Id of telegram User
+     * @return the user with the same telegram Id
+     */
+    private User retrieveUserFromId(Long telegramId){
             User selectedUser = new User();
             buildConnection();
             try{
@@ -327,6 +351,14 @@ public class DatabaseUtils implements DatabaseUtilsInterface
         }
 
         // insert a user into USER table
+
+    /**
+     * This function inserts a user into USER table
+     * @param telegramId Id of the telegram user
+     * @param checkLevel The level of the user which determines the minimum time interval
+     *                   that bot looks for changes
+     * @param userName   Name of the user
+     */
         private void insertUser(Long telegramId,int checkLevel, String userName){
             buildConnection();
             try{
@@ -349,6 +381,14 @@ public class DatabaseUtils implements DatabaseUtilsInterface
 
 
         }
+
+    /**
+     * This function inserts a snapshot into database
+     * @param url
+     * @param screenshot
+     * @param siteContentHash
+     * @return Id of the inserted snapshot
+     */
 
         private int insertSnapshot(String url, InputStream screenshot, String siteContentHash){
             buildConnection();
@@ -457,7 +497,12 @@ public class DatabaseUtils implements DatabaseUtilsInterface
 
         } */
 
-        private boolean checkUserExists(Long telegramId){
+    /**
+     * This function checks if a user exist in database
+     * @param telegramId Id of the user
+     * @return True if user exists, false otherwise
+     */
+    private boolean checkUserExists(Long telegramId){
             buildConnection();
             try{
                 boolean exists;
@@ -483,7 +528,12 @@ public class DatabaseUtils implements DatabaseUtilsInterface
 
         }
 
-
+    /**
+     * This function retrieves a user with a specific Id from database
+     * @param userId    Telegram Id of the user
+     * @param userName  Name of the user
+     * @return  User with the same Id
+     */
     @Override
     public User retrieveUserFromId(long userId, String userName) {
         //check if user exists
@@ -499,6 +549,10 @@ public class DatabaseUtils implements DatabaseUtilsInterface
         return myUser;
     }
 
+    /**
+     * This function retrieves the requests from database
+     * @return A list of existing requests
+     */
     @Override
     public ArrayList<Request> getRequests() {
         ArrayList<Request> reqList = new ArrayList<Request>();
@@ -523,6 +577,11 @@ public class DatabaseUtils implements DatabaseUtilsInterface
 
     }
 
+    /**
+     * This function retrieves a snapshot with a specific Id
+     * @param snapshotId Id of the snapshot we are searching for
+     * @return The snapshot with the same Id
+     */
     @Override
     public Snapshot retrieveSnapshotFromId(int snapshotId) {
         Snapshot mySnapshot = new Snapshot();
@@ -554,6 +613,11 @@ public class DatabaseUtils implements DatabaseUtilsInterface
 
     }
 
+    /**
+     * This function retrieves a request with a specific Id
+     * @param requestId Id of the request we are searching for
+     * @return The request with the same Id
+     */
     public objects.Request retrieveRequestFromId(int requestId) {
         
         buildConnection();
@@ -589,6 +653,16 @@ public class DatabaseUtils implements DatabaseUtilsInterface
     }
 
 	// Requests.telegramId,   Requests.LastCheckUnix, Snapshot.url, Snapshot.screenshot, Snapshot.siteContentHash
+
+    /**
+     * This function inserts a request into database
+     * @param chatId        Telegram Id of the user who made the request
+     * @param epochSecond   Unix timestamp of the moment request created
+     * @param url2          Address of the webpage user wants to check
+     * @param screenshot    Screenshot of the webpage
+     * @param siteContentHash   Content hash of the webpage
+     * @return  True if Request has been added successfully, false otherwise
+     */
 	public boolean addRequest(Long chatId, long epochSecond, String url2, BufferedImage screenshot,
 			String siteContentHash) {
         int generatedKey = -1;
@@ -637,7 +711,12 @@ public class DatabaseUtils implements DatabaseUtilsInterface
 		return true;
 		
 	}
-	
+
+    /**
+     * This function is for updating a snapshot from database
+     * @param snap Updated version of the Snapshot
+     * @return  True if Snapsot has been updated successfully, false otherwise
+     */
 	public boolean editSnapshot(Snapshot snap) {
 		buildConnection();
         
@@ -670,6 +749,12 @@ public class DatabaseUtils implements DatabaseUtilsInterface
 		return true;
 	}
 
+    /**
+     * This function is for updating a request from database
+     * @param req   Updated version of the request
+     * @param snap  Updated version of the snap
+     * @return True if Request has been updated successfully, false otherwise
+     */
 	public boolean editRequest(Request req, Snapshot snap) {
 		buildConnection();
 		boolean success = false;
@@ -704,6 +789,11 @@ public class DatabaseUtils implements DatabaseUtilsInterface
 		return success;
 	}
 
+    /**
+     * This function deletes a Request from database
+     * @param req   Request we want to delete
+     * @return  True if Request has been deleted successfully, false otherwise
+     */
 	public boolean removeRequest(Request req) {
         buildConnection();
         try {
@@ -720,6 +810,11 @@ public class DatabaseUtils implements DatabaseUtilsInterface
         return true;
     }
 
+    /**
+     * This function deletes a user from database
+     * @param user  The User we want to delete
+     * @return  True if User has been deleted successfully, false otherwise
+     */
     public boolean removeUser(User user) {
         buildConnection();
         try {
@@ -736,6 +831,11 @@ public class DatabaseUtils implements DatabaseUtilsInterface
         return true;
     }
 
+    /**
+     * This function deletes a Snapshot from database
+     * @param ssId  Id of the Snapshot we want to delete
+     * @return  True if Snapshot has been deleted successfully, false otherwise
+     */
     public boolean removeSnapshotFromId(int ssId) {
         buildConnection();
         try {
@@ -752,6 +852,10 @@ public class DatabaseUtils implements DatabaseUtilsInterface
         return true;
     }
 
+    /**
+     * This function deletes all the requests from database
+     * @return True if Requests has been deleted successfully, false otherwise
+     */
 	public boolean removeAllRequests() {
         buildConnection();
         try {
@@ -769,6 +873,10 @@ public class DatabaseUtils implements DatabaseUtilsInterface
 
     }
 
+    /**
+     * This function deletes all Users from database
+     * @return True if Users has been deleted successfully, false otherwise
+     */
     public boolean removeAllUsers() {
         buildConnection();
         try {
@@ -786,6 +894,10 @@ public class DatabaseUtils implements DatabaseUtilsInterface
 
     }
 
+    /**
+     * This function deletes all Snapshots from database
+     * @return  True if Snapshots has been deleted successfully, false otherwise
+     */
     public boolean removeAllSnapshots() {
         buildConnection();
         try {
@@ -802,6 +914,10 @@ public class DatabaseUtils implements DatabaseUtilsInterface
         return true;
     }
 
+    /**
+     * This function deletes all the entries from all tables
+     * @return True if deletion has been successfull, false otherwise
+     */
     public boolean cleanDatabase() {
         buildConnection();
         try {
@@ -823,6 +939,10 @@ public class DatabaseUtils implements DatabaseUtilsInterface
         return true;
     }
 
+    /**
+     * This function deletes all the tables from database
+     * @return  True if deletion has been successfull, false otherwise
+     */
     public boolean dropTables() {
         buildConnection();
         try {
@@ -843,6 +963,11 @@ public class DatabaseUtils implements DatabaseUtilsInterface
         return true;
     }
 
+    /**
+     * This function returns all requests of a specific User
+     * @param telegramId Telegram Id of the User
+     * @return  A list of requests that belongs to the User
+     */
 	public ArrayList<Request> getRequestsFromTelegramId(Long telegramId) {
 		// TODO Auto-generated method stub
         ArrayList<Request> reqList = new ArrayList<Request>();
@@ -870,6 +995,13 @@ public class DatabaseUtils implements DatabaseUtilsInterface
         closeConnection();
         return reqList;
 	}
+
+    /**
+     * This function removes a request if the Request belongs the User with given Telegram Id
+     * @param requestId Id of the Request we want to remove
+     * @param telegramId    Id of the User
+     * @return  True if deletion is successfull, false otherwise
+     */
 	public boolean removeRequestFromId(int requestId, Long telegramId) {
         buildConnection();
         try {
@@ -907,6 +1039,7 @@ public class DatabaseUtils implements DatabaseUtilsInterface
         return true;
        
 	}
+
     private boolean fixPragmaWAL(){
         buildConnection();
         try {
@@ -920,6 +1053,12 @@ public class DatabaseUtils implements DatabaseUtilsInterface
         closeConnection();
         return true;
     }
+
+    /**
+     * This function checks if a Request is currently active
+     * @param id    Id of the Request
+     * @return      True if the Request is active, false otherwise
+     */
     
     public boolean getRequestActiveFromId(int id) {
         buildConnection();
@@ -992,6 +1131,10 @@ public class DatabaseUtils implements DatabaseUtilsInterface
         
 	}
 
+    /**
+     * This function retrieves IDs of the Snapshots from database
+     * @return A list containing Ids of the Snapshots
+     */
 	public ArrayList<Integer> getSnapshotIds() {
         ArrayList<Integer> ids = new ArrayList<Integer>();
 
