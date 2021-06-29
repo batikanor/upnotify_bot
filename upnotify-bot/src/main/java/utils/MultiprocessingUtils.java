@@ -13,7 +13,9 @@ import upnotify_bot.UpdateReceiver;
 import upnotify_bot.UpnotifyBot;
 import upnotify_bot.UpnotifyReceiver;
 
-
+/**
+ * Interface that summarizes the initial functional expections from the MPU
+ */
 interface MultiprocessingUtilsInterface {
 	/**
 	 * Returns the size of the thread pool which is potentially about to be created
@@ -52,6 +54,10 @@ public class MultiprocessingUtils implements MultiprocessingUtilsInterface {
 	
 	private static MultiprocessingUtils single_instance = null;
 	
+	/**
+	 * Accesses and returns the single (singleton) instance of this class
+	 * @return the only instance of MPU class
+	 */
 	public static MultiprocessingUtils getMultiProcessingUtils() {
 		
 		if (single_instance == null) {
@@ -73,6 +79,9 @@ public class MultiprocessingUtils implements MultiprocessingUtilsInterface {
 	 * */
 	private Map<Integer, UpnotifyReceiver> upnotifyMap = new HashMap<Integer, UpnotifyReceiver>();
 	
+	/**
+	 * Single, empty constructor of MPU
+	 */
 	private MultiprocessingUtils() {
 		// tps: thread pool size
 		int tps_update = getThreadPoolSize(Config.getConfig().THREAD_PER_CORE_UPDATE);
@@ -110,6 +119,11 @@ public class MultiprocessingUtils implements MultiprocessingUtilsInterface {
 	}
 	
 	
+	/**
+	 * Submits upnotify requests to their respective thread pool
+	 * @param ub reference to the upnotify bot instance
+	 * @param upnotify request that is to be added to the pool
+	 */
 	public void submitUpnotify(UpnotifyBot ub, Request upnotify) {
 		System.out.println("Submitting the upnotify request with id " + upnotify.requestId + " to the thread pool");
 		UpnotifyReceiver rc = new UpnotifyReceiver(ub, upnotify);
@@ -117,6 +131,10 @@ public class MultiprocessingUtils implements MultiprocessingUtilsInterface {
 		upnotifyExecutor.submit(rc);
 	}
 	
+	/**
+	 * Removes a (upnotify) request from the resp. thread pool if it is present in the said pool
+	 * @param requestId id of the request to be removed.
+	 */
 	public void removeUpnotify(int requestId) {
 
 		// if doesn't contain, probably inactive

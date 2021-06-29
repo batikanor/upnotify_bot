@@ -169,7 +169,7 @@ public class UpdateReceiver implements Runnable{
 					// Direct text handling, without any importance being given to the conversation stance
 
 					case "hi":
-						while(!MessageUtils.getMessageUtils().sendWelcomeMessage(ub, threadId, chatId, update)) {
+						while(!MessageUtils.getMessageUtils().sendWelcomeMessage(ub, threadId, chatId)) {
 							System.out.println("Error whilst sending the message, trying again...");
 							try {
 								Thread.sleep(Config.getConfig().WAIT_UNTIL_ERR_MESSAGE_RESEND);

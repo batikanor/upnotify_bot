@@ -42,6 +42,9 @@ public class MessageUtils {
 		
 	}
 	// Has only a private constructor, so that only one instance can exist
+	/**
+	 * Private default empty constructor of class
+	 */
 	private MessageUtils() {}
 	
 	
@@ -103,9 +106,19 @@ public class MessageUtils {
 	}
 	
 	/**
-	 * @TODO MOVE THE WEB RELATED CODE TO A DIFFERENT CLASS
-	 * @PROBLEM https://tau.edu.tr doesn't work cuz it is not signed etc
+	 * 
+
 	 * @return
+	 */
+	/**
+	 * Checks the HTTP response of the stie and sends a message accordingly
+	//  * @TODO MOVE THE WEB RELATED CODE TO A DIFFERENT CLASS
+	//  * @PROBLEM https://tau.edu.tr doesn't work cuz it is not signed etc
+	 * @param ub the upnotify bot instance
+	 * @param threadId id of the thread on which this request is running
+	 * @param chatId id of the chat where the message is to be sent
+	 * @param url url of the page to be checked
+	 * @return true if ran without exceptions, false otherwise
 	 */
 	public boolean checkSiteHTTPResponse(UpnotifyBot ub, String threadId, String chatId, String url){
 		String code = WebUtils.getWebUtils().getHTTPResponseFromUrl(url);
@@ -120,7 +133,13 @@ public class MessageUtils {
 		return true;
 	
 	}
-	
+	/**
+	 * Checks if html body of site is PROBABLY static. 
+	 * @param ub the upnotify bot instance
+	 * @param chatId id of the chat where the message is to be sent
+	 * @param url url of the page to be checked
+	 * @return true iff ran without exceptions, false otherwise
+	 */
 	public boolean checkIfHTMLBodyStatic(UpnotifyBot ub, String chatId, String url){
 		WebUtils wu = WebUtils.getWebUtils();
 		String body = wu.getHTMLBodyStringFromUrl(url);
@@ -153,7 +172,15 @@ public class MessageUtils {
 //	public boolean insertRequest() {
 //		
 //	}
-	public boolean sendWelcomeMessage(UpnotifyBot ub, String threadId, String chatId, Update update) {
+
+	/**
+	 * Sends a welcome image to the user
+	 * @param ub the upnotify bot instance
+	 * @param threadId id of the thread that called this function
+	 * @param chatId id of the chat where the image is supposed to be sent
+	 * @return true iff ran without exceptions, false otherwise
+	 */
+	public boolean sendWelcomeMessage(UpnotifyBot ub, String threadId, String chatId) {
 		SendPhoto sp = new SendPhoto();
 		sp.setChatId(chatId);
 		File file;
@@ -177,11 +204,13 @@ public class MessageUtils {
 
 	}
 	/**
+	 * Sends message that contains general relevant info about the user and the bot.
+	 * 
 	 * only some html tags are available, take a look at https://core.telegram.org/bots/api ctrl+f HTML ()
-	 * @param ub
-	 * @param chatId
-	 * @param update
-	 * @param upUser
+	 * @param ub the upnotify bot instance
+	 * @param chatId id of the chat where the help message is to be sent
+	 * @param update update instance (update contains all info about a new message or so received by bot)
+	 * @param upUser user that sent the request for the update 
 	 */
 	public void sendHelpMessage(UpnotifyBot ub, String chatId, Update update, objects.User upUser) {
 		// TODO Auto-generated method stub
@@ -241,6 +270,15 @@ public class MessageUtils {
 				
 		
 	}
+
+	/**
+	 * Add a request to the database and to the thread pool and send information message to user
+	 * @param ub the upnotify bot instance
+	 * @param chatId id of the chat where the message is to be sent
+	 * @param update update instance (update contains all info about a new message or so received by bot)
+	 * @param upUser user that sent the request for the update 
+	 * @param args info about the request that is to be added
+	 */
 	public void addRequestAndSendConfirmation(UpnotifyBot ub, String chatId, Update update, User upUser,
 			ArrayList<String> args) {
 		objects.Snapshot snap = new objects.Snapshot();
@@ -282,6 +320,14 @@ public class MessageUtils {
 		}
 		
 	}
+
+	/**
+	 * Sends warning message to the user about the incorrect usage of a command and recommends the 'help' command
+	 * @param ub the upnotify bot instance
+	 * @param threadId id of the thread where this function is called
+	 * @param chatId id of the chat
+	 * @param messageId id of the message that is to be replied to (that is the cause of the warning) 
+	 */
     public void sendWarningMessage(UpnotifyBot ub, String threadId, String chatId, int messageId) {
 		String txt = "You used that command incorrectly! please refer to '/help'";
 
@@ -296,6 +342,14 @@ public class MessageUtils {
 			e.printStackTrace();
 		}
     }
+
+	/**
+	 * Send (up)notification message to the user about one of the Upnotify Requests of theirs
+	 * @param ub the upnotify bot instance
+	 * @param telegramId id of private user or group chat
+	 * @param notificationTxt the notification to be sent
+	 * @param notificationIm the image that is to be added to the notification
+	 */
     public void sendNotificationMessage(UpnotifyBot ub, Long telegramId, String notificationTxt, BufferedImage notificationIm) {
     	SendMessage sm = new SendMessage();
 		sm.setChatId(telegramId.toString());
@@ -325,6 +379,13 @@ public class MessageUtils {
 
 	}
 	
+	/**
+	 * Edits an upnotify request with given arguments
+	 * @param ub the upnotify bot instance
+	 * @param chatId id of the chat where the resp. request is present
+	 * @param upUser user of the bot
+	 * @param args new request parameters
+	 */
     public void editRequest(UpnotifyBot ub, String chatId, User upUser, ArrayList<String> args) {
 		
 		Request req = DatabaseUtils.getDatabaseUtils().retrieveRequestFromId(Integer.parseInt(args.get(0)));
@@ -379,6 +440,14 @@ public class MessageUtils {
 			e.printStackTrace();
 		}
 	}
+
+	/**
+	 * Shows requests within a private or group chat
+	 * @param ub the upnotify bot instance
+	 * @param chatId id of the chat
+	 * @param upUser user data
+	 * @param msgIdToReply message to be replied to
+	 */
     public void seeRequests(UpnotifyBot ub, String chatId, User upUser, Integer msgIdToReply) {
 		SendMessage sm = new SendMessage();
 		sm.setChatId(chatId);
@@ -403,8 +472,18 @@ public class MessageUtils {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
-		
 	}
+
+
+	/**
+	 * Removes a request from the db and the thread pool
+	 * @param ub the upnotify bot instance
+	 * @param chatId id of the chat
+	 * @param upUser user data
+	 * @param msgIdToReply message to reply to (the original removal request message)
+	 * @param arg id's of the requests to be removed
+	 * @return true iff ran without errors
+	 */
 	public boolean removeRequest(UpnotifyBot ub, String chatId, User upUser, Integer msgIdToReply, String arg) {
 		// TODO Auto-generated method stub
 		SendMessage sm = new SendMessage();
@@ -446,9 +525,17 @@ public class MessageUtils {
 			return false;
 		}
 		return true;
-	
-		
 	}
+
+	/**
+	 * Toggles the activity status of a request
+	 * @param ub the upnotify bot instance
+	 * @param chatId id of the chat
+	 * @param upUser user data
+	 * @param msgIdToReply message id to be replied to
+	 * @param arg id's of requests the activity statuses of which are to be toggled.
+	 * @return true iff ran without errors.
+	 */
 	public boolean toggleRequest(UpnotifyBot ub, String chatId, User upUser, Integer msgIdToReply, String arg) {
 		
 		SendMessage sm = new SendMessage();
@@ -486,7 +573,5 @@ public class MessageUtils {
 		}
 		return true;
 	
-
-		
 	}
 }

@@ -51,10 +51,17 @@ interface WebUtilsInterface{
 	
 }
 
+/**
+ * Interface that exhibits the initial fundamental functional expectance from this class
+ */
 public class WebUtils implements WebUtilsInterface{
 	
 	private static WebUtils single_instance = null;
 	
+	/**
+	 * Accesses and returns the single instance
+	 * @return the single instance
+	 */
 	public static WebUtils getWebUtils() {
 		if (single_instance == null) {
 			single_instance = new WebUtils();
@@ -64,6 +71,9 @@ public class WebUtils implements WebUtilsInterface{
 	}
 	
 	// Has only a private constructor, so that only one instance can exist
+	/**
+	 * The single empty constructor of WebUtils class
+	 */
 	private WebUtils() {}
 	
 	/**
@@ -167,7 +177,12 @@ public class WebUtils implements WebUtilsInterface{
 	}
 
 
- 
+	/**
+	 * Gets string from url and selector path using jsoup and selenium
+	 * @param url url of the website
+	 * @param selectorPath selector path of the item within the web page that is to be checked.
+	 * @return the text within the item
+	 */
 	public String getStringFromUrlAndSelectorPathUsingJsoupAndSelenium(String url, String selectorPath) {
 		//URL driverURL = getClass().getClassLoader().getResource("chromedriver.exe");
 		//System.out.println("URL:" + driverURL);
@@ -195,6 +210,14 @@ public class WebUtils implements WebUtilsInterface{
 		
 	}
 
+	/**
+	 * Saves a screenshot using selenium and ashot
+	 * @param url url of the web page
+	 * @param selectorPath selector path of the item within the page
+	 * @param requestId id of the reqeust
+	 * @return true iff ran without exceptions
+	 * @throws IOException
+	 */
 	public boolean saveScreenshotUsingSelenium(String url, String selectorPath, Integer requestId) throws IOException {
 		// requestId will be sent to this function as a parameter as soon as DB is implemented.
 		// requestId will be fetched from DB.
@@ -232,6 +255,11 @@ public class WebUtils implements WebUtilsInterface{
 //		}
 	}
 	
+	/**
+	 * Returns the http response after trying to access a site
+	 * @param url url of aforementioned site
+	 * @return the http response string
+	 */
 	public String getHTTPResponseFromUrl(String url) {
 		url = fixUrl(url);
 		String response = null;
@@ -256,10 +284,15 @@ public class WebUtils implements WebUtilsInterface{
 //		FileUtils.getFile()
 //	}
 
-	public void compareHtmlContent() {
+	// public void compareHtmlContent() {
 
-	}
+	// }
 
+	/**
+	 * Returns the html body string of a site
+	 * @param url url of the site
+	 * @return the html body string
+	 */
 	public String getHTMLBodyStringHash(String url) {
 		
 		String sha256hex = Hashing.sha256()
@@ -267,12 +300,14 @@ public class WebUtils implements WebUtilsInterface{
 				  .toString();
 		System.out.println("For url "+ url + " currently calculated body string hash is: " + sha256hex );
 		return sha256hex;
-		
-		
 	}
 
+	/**
+	 * Takes a screenshot of a site using selenium
+	 * @param url url of the site
+	 * @return BufferedImage that is the screenshot of the site.
+	 */
 	public BufferedImage getScreenshotUsingSelenium(String url) {
-
 		String path = "CHROME_DRIVERS/chromedriver_" + Config.getConfig().CHROME_DRIVER_VER + "_" + (Config.getConfig().os == OS.LINUX ? "linux" : "win.exe");
 		System.out.println(path);
 		URL chrome_driver_url = getClass().getClassLoader().getResource(path);
@@ -292,7 +327,10 @@ public class WebUtils implements WebUtilsInterface{
 		return fullScreenshot.getImage();
 	}
 
-	//Function that adds UBlock Origin extension into Selenium Chrome Web Driver
+	/**
+	 * Adds UBlock Origin Extension into selenium chrome web driver.
+	 * @return the aforementioned web driver.
+	 */
 	public WebDriver loadUBlockOriginToSeleniumWebDriver() {
 		String pathToExtension = "CHROME_DRIVERS/uBlockOrigin_1.35.2.0.crx";
 		URL urlPathToExtension = getClass().getClassLoader().getResource(pathToExtension);
@@ -318,10 +356,5 @@ public class WebUtils implements WebUtilsInterface{
 
 		return driver;
 	}
-
-
-
-
-
 
 }

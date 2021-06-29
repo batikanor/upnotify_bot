@@ -50,6 +50,9 @@ public class Config {
 		
 	}
 
+	/**
+	 * Constructs the only instance of the Config class. Maps lines from Config.Properties to fields in instance.
+	 */
 	private Config() {		
 		
 		
