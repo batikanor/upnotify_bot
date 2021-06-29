@@ -1039,7 +1039,11 @@ public class DatabaseUtils implements DatabaseUtilsInterface
         return true;
        
 	}
-
+    /**
+     * Fixed the journal mode pragma of the database
+     * Write-Ahead Logging is used instead of the standard rollback journal. This means that when database data is updated, the original content is preserved in the database file, and the changes are appended into a separate WAL file and eventually are transferred to the database.
+     * @return
+     */
     private boolean fixPragmaWAL(){
         buildConnection();
         try {
@@ -1059,7 +1063,6 @@ public class DatabaseUtils implements DatabaseUtilsInterface
      * @param id    Id of the Request
      * @return      True if the Request is active, false otherwise
      */
-    
     public boolean getRequestActiveFromId(int id) {
         buildConnection();
         boolean ret = false;
@@ -1069,8 +1072,6 @@ public class DatabaseUtils implements DatabaseUtilsInterface
             ps.setInt(1, id);
             ResultSet rs = ps.executeQuery();
             
-
-
             while(rs.next()){
                 ret = rs.getBoolean("isActive");
             }

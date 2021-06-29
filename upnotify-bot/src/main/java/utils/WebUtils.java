@@ -205,12 +205,12 @@ public class WebUtils implements WebUtilsInterface{
 		System.setProperty("webdriver.chrome.driver", chrome_driver_path);
 		WebDriver driver = loadUBlockOriginToSeleniumWebDriver();
 		driver.get(fixUrl(url));
-		driver.manage().timeouts().implicitlyWait(15, TimeUnit.SECONDS);
+		driver.manage().timeouts().implicitlyWait(30, TimeUnit.SECONDS);
 
 		// automatised full screenshot using AShot plugin with 1.25f scale (in order to take properly scaled) and 1000 ms scroll interval.
 
-		//Screenshot fullScreenshot = new AShot().shootingStrategy(ShootingStrategies.viewportPasting(ShootingStrategies.scaling(1.25f), 1000)).takeScreenshot(driver);
-		Screenshot fullScreenshot = new AShot().shootingStrategy(ShootingStrategies.viewportPasting(ShootingStrategies.scaling(1), 1)).takeScreenshot(driver));
+		Screenshot fullScreenshot = new AShot().shootingStrategy(ShootingStrategies.viewportPasting(ShootingStrategies.scaling(1.25f), 1000)).takeScreenshot(driver);
+		//Screenshot fullScreenshot = new AShot().shootingStrategy(ShootingStrategies.viewportPasting(ShootingStrategies.scaling(1), 1)).takeScreenshot(driver);
 
 
 		try {
@@ -280,11 +280,13 @@ public class WebUtils implements WebUtilsInterface{
 		System.setProperty("webdriver.chrome.driver", chrome_driver_path);
 		WebDriver driver = loadUBlockOriginToSeleniumWebDriver();
 		driver.get(fixUrl(url));
-		driver.manage().timeouts().implicitlyWait(30, TimeUnit.SECONDS);
+		driver.manage().timeouts().implicitlyWait(15, TimeUnit.SECONDS);
 		
 
 		// automatised full screenshot using AShot plugin with 1.25f scale (in order to take properly scaled) and 5000 ms scroll interval.
-		Screenshot fullScreenshot = new AShot().shootingStrategy(ShootingStrategies.viewportPasting(ShootingStrategies.scaling(1.25f), 5000)).takeScreenshot(driver);
+		//Screenshot fullScreenshot = new AShot().shootingStrategy(ShootingStrategies.viewportPasting(ShootingStrategies.scaling(1.25f), 5000)).takeScreenshot(driver);
+		Screenshot fullScreenshot = new AShot().shootingStrategy(ShootingStrategies.viewportPasting(ShootingStrategies.scaling(1.01f), 3500)).takeScreenshot(driver);
+
 		System.out.println("Returning BufferedImage via getScreenshotUsingSelenium()");
 		driver.close();
 		return fullScreenshot.getImage();

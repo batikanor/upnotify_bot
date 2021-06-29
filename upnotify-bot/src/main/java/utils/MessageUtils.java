@@ -191,7 +191,7 @@ public class MessageUtils {
 		sb.append("\n<i>"
 				+ "Your level is: <b>" + upUser.checkLevel + "</b> and with that, you can "
 				+ "have your upnotify request run once every "
-				+ Config.getConfig().MIN_WAIT_LEVEL[upUser.checkLevel] + " minutes or less often if you request so."
+				+ Config.getConfig().MIN_WAIT_LEVEL[upUser.checkLevel] + " minutes or less often if you request so. (to be added in a later update)"
 				+ "</i>");
 		sb.append("\n\n");
 		sb.append("\n<b>Bot Info </b>");

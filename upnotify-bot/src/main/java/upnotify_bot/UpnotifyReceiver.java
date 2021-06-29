@@ -59,6 +59,7 @@ public class UpnotifyReceiver implements Runnable{
 			System.out.println("[Request "+ upnotify.requestId + "] Retrieving snapshot from db");
 			Snapshot snap = DatabaseUtils.getDatabaseUtils().retrieveSnapshotFromId(upnotify.snapshotId);
 			System.out.println("[Request "+ upnotify.requestId + "] Retrieved snapshot from db");
+			System.out.println(upnotify);
 			notificationTxt = "Hello, this is a notification about your request no: " + upnotify.requestId 
 			+ "\non url: " + snap.url 
 			+ "\n There has been an update!";
