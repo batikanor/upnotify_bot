@@ -38,6 +38,10 @@ public class Config {
 	
 	private static Config single_instance = null;
 	
+	/**
+	 * Returns the only config instance
+	 * @return only config instance
+	 */
 	public static Config getConfig(){
 		
 		if (single_instance == null) {
