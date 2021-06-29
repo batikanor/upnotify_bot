@@ -33,6 +33,10 @@ public class MessageUtils {
 	
 	private static MessageUtils single_instance = null;
 	
+	
+	/** 
+	 * @return MessageUtils
+	 */
 	public static MessageUtils getMessageUtils() {
 		if (single_instance == null) {
 			single_instance = new MessageUtils();
@@ -168,6 +172,10 @@ public class MessageUtils {
 		
 		
 	}
+
+/** 
+ * @return boolean
+ */
 //	
 //	public boolean insertRequest() {
 //		

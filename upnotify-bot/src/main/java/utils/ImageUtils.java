@@ -21,6 +21,10 @@ import objects.ImageDifferenceData;
 public class ImageUtils {
 	private static ImageUtils single_instance = null;
 	
+	
+	/** 
+	 * @return ImageUtils
+	 */
 	public static ImageUtils getImageUtils() {
 		if (single_instance == null) {
 			single_instance = new ImageUtils();

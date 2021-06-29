@@ -13,6 +13,10 @@ import utils.ImageUtils;
 
 public class ImageUtilsTest {
 	
+	
+	/** 
+	 * @throws IOException
+	 */
 	@Test
 	public void testImageConversion() throws IOException {
 		//This test case tests all 3 functions in the ImageUtils class

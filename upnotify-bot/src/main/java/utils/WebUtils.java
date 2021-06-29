@@ -146,6 +146,11 @@ public class WebUtils implements WebUtilsInterface{
 		return null;
 	}
 	
+	
+	/** 
+	 * @param url
+	 * @return String
+	 */
 	public String getHTMLBodyStringFromUrlJSoup (String url) {
 		return getHTMLBodyFromUrlJSoup(url).toString();
 	}
@@ -280,6 +285,10 @@ public class WebUtils implements WebUtilsInterface{
 	
 
 
+
+/** 
+ * @return String
+ */
 //	public void compareSeleniumScreenshots(File f1, File f2) {
 //		FileUtils.getFile()
 //	}

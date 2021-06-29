@@ -75,6 +75,10 @@ public class DatabaseUtils implements DatabaseUtilsInterface
     public String url = "jdbc:" + Config.getConfig().DATABASE_ENGINE + ":" + this.getClass().getResource("/upnotify.db");
     private static DatabaseUtils single_instance = null;
 
+    
+    /** 
+     * @return DatabaseUtils
+     */
     public static DatabaseUtils getDatabaseUtils() {
         if (single_instance == null) {
             single_instance = new DatabaseUtils();
@@ -107,6 +111,10 @@ public class DatabaseUtils implements DatabaseUtilsInterface
 
     }
     
+    
+    /** 
+     * @return String
+     */
     //Instead of relative path use absolute path to resolve path conflict between different IDEs
     //However if it's ever meant to be run from a standalone jar file this path has to be changed, like the same place as the jar file run from
     private String getDatabasePath() {
@@ -466,6 +474,10 @@ public class DatabaseUtils implements DatabaseUtilsInterface
     return is;
     }
 
+
+/** 
+ * @return boolean
+ */
 /*
         private void insertRequest(Long telegramId,String userName, int checkInterval,String url,InputStream screenshot,
                                   String siteContentHash){
