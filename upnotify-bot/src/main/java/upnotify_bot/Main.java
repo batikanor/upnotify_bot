@@ -16,8 +16,6 @@ import utils.MultiprocessingUtils;
 /**
  * Main class of the upnotify-bot project, here the telegram bot API will be initialized, bot will be instantiated and registered.
  */
-
-
 public class Main {
 
 	/**

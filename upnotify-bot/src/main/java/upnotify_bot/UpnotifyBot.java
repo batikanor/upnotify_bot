@@ -75,15 +75,12 @@ public class UpnotifyBot extends TelegramLongPollingBot {
 			DatabaseUtils.getDatabaseUtils().removeSnapshotFromId(snapId);
 		}
 
-
-
-
-				
-		
-		
-		
-
 	}
+
+	/**
+	 * Returns the single upnotify bot instance within the project
+	 * @return only instance of upnotify bot.
+	 */
 	public static UpnotifyBot getUpnotifyBot(){
 		
 		if (single_instance == null) {

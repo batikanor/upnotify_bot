@@ -9,7 +9,13 @@ import utils.DatabaseUtils;
 import utils.ImageUtils;
 import utils.MessageUtils;
 import utils.WebUtils;
-
+/**
+ * Receives the (upnotify) Requests and handles them until they are stopped by some other factors.
+ *
+ * Instances of this class run on a thread taken from the upnotify thread pool, 
+ * 
+ *
+ */
 public class UpnotifyReceiver implements Runnable{
 	private UpnotifyBot ub;
 	private Request upnotify;
@@ -19,12 +25,20 @@ public class UpnotifyReceiver implements Runnable{
 	private objects.ImageDifferenceData imDiff;
 	private volatile boolean shutdown = false;
 	
+	/**
+	 * Constructs an UpnotifyReceiver instance
+	 * @param ub the single UpnotifyBot instance
+	 * @param upnotify A request instance that is to be handled by this UpnotifyReceiver instance
+	 */
 	public UpnotifyReceiver(UpnotifyBot ub, Request upnotify) {
 		this.upnotify = upnotify;
 		this.ub = ub;
 	}
 	
 	// This is where a single upnotify Request will run. 
+	/**
+	 * Gets run on an upnotify thread pool from MultiprocessingUtils, handles a request
+	 */
 	@Override
 	public void run() {
 		
@@ -128,7 +142,9 @@ public class UpnotifyReceiver implements Runnable{
 
 		
 	}
-	
+	/**
+	 * Shuts the resp. Upnotify Request down.
+	 */
 	public void shutdown() {
 		shutdown = true;
 	}
