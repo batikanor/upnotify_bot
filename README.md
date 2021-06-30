@@ -12,7 +12,22 @@ msginfo - see what the bot sees when you send it a message
 
 checksite - checks the site, returns True if HTTP response is 200 (OK)
 
+checkstatic - checks if the given site is probably somehow static. Does that by simply checking the website twice within one second. If the body is the same, assumes it is static.
+
+help - Shows help message
+
+addrequest - Adds web page tracking request & snapshot with given URL 
+
+editrequest - Edits request with given requestId 
+
+removerequest - Removes request with given requestId 
+
+togglerequest- Toggles activity status of request with given requestId 
+
+seerequests - Lists current requests
+
 checkstatic - checks if the given site is **probably** somehow static. Does that by simply checking the website twice within one second. If the body is the same, assumes it is static.
+
 
 
 ## Important Notices
@@ -27,6 +42,9 @@ checkstatic - checks if the given site is **probably** somehow static. Does that
 
 
 ## Running the code on your local machine
+
+## Further Information About Development
+https://linkx.tk/upnotify
 
 ### Problems
 #### Chromedriver cannot be executed
